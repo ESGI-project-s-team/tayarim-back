@@ -1,5 +1,0 @@
-DROP TABLE IF EXISTS exemple;
-CREATE TABLE exemple(
-    id SMALLINT PRIMARY KEY NOT NULL,
-    name VARCHAR(30)
-);
