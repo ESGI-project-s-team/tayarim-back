@@ -36,5 +36,3 @@ build/
 .env
 demo.mv.db
 demo.trace.db
-demo_test.mv.db
-demo_test.trace.db
