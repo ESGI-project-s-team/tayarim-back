@@ -1,4 +1,4 @@
-package fr.esgi.al5_2.Tayarim.models;
+package fr.esgi.al5_2.Tayarim.entities;
 
 
 import jakarta.persistence.Entity;
@@ -16,11 +16,11 @@ import lombok.NoArgsConstructor;
 public class Logement {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "idProprietaire", nullable = false)
+    @JoinColumn(name = "IDPROPRIETAIRE", nullable = false)
     private Proprietaire proprietaire;
 
 }
