@@ -1,33 +1,24 @@
 package fr.esgi.al5_2.Tayarim.dto.proprietaire;
 
 import lombok.Data;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 @Data // Generates getters, setters, toString, equals, and hashCode methods
-@RequiredArgsConstructor
+@NoArgsConstructor // Generates a no-args constructor
 @AllArgsConstructor // Generates an all-args constructor
 public class ProprietaireCreationDTO {
 
-    @Valid
-
-    @NotBlank(message = "error_owner_invalid_name")
+    @NonNull
     private String nom;
-
-    @NotBlank(message = "error_owner_invalid_firstName")
+    @NonNull
     private String prenom;
-    
-    @NotBlank(message = "error_owner_invalid_mail")
-    @Email(message = "error_owner_invalid_mail")
+    @NonNull
     private String email;
-    
-    @NotBlank(message = "error_owner_invalid_phone")
+    @NonNull
     private String numTel;
-    
-    @NotBlank(message = "error_owner_invalid_password")
+    @NonNull
     private String motDePasse;
 
     // No need for explicit getters, setters, or constructors

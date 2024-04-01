@@ -4,11 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.transaction.annotation.Transactional;
 
 import fr.esgi.al5_2.Tayarim.entities.Proprietaire;
 import fr.esgi.al5_2.Tayarim.repositories.ProprietaireRepository;
@@ -19,7 +15,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @ExtendWith(SpringExtension.class)
-@Transactional
 @DataJpaTest
 public class ProprietaireRepositoryTest {
 
@@ -35,7 +30,7 @@ public class ProprietaireRepositoryTest {
             "Ferreira", 
             "Mathieu", 
             "test@gmail.com", 
-            "0612345678", 
+            "0675000495", 
             "password", 
             dateInscription);
 
