@@ -5,7 +5,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.transaction.annotation.Transactional;
 
 import fr.esgi.al5_2.Tayarim.entities.Proprietaire;
 import fr.esgi.al5_2.Tayarim.repositories.ProprietaireRepository;
@@ -17,7 +16,6 @@ import java.util.List;
 
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
-@Transactional
 public class ProprietaireRepositoryTest {
 
     @Autowired
@@ -32,7 +30,7 @@ public class ProprietaireRepositoryTest {
             "Ferreira", 
             "Mathieu", 
             "test@gmail.com", 
-            "0612345678", 
+            "0675000495", 
             "password", 
             dateInscription);
 
@@ -51,7 +49,6 @@ public class ProprietaireRepositoryTest {
         assertThat(proprietaires).isNotNull();
         assertThat(proprietaires).isNotEmpty();
         assertThat(proprietaires.size()).isEqualTo(1);
-        assertThat(proprietaires.get(0)).isEqualTo(savedProprietaire);
-        //assertThat(proprietaires.getFirst()).isEqualTo(savedProprietaire);  //.getFirst() not working on IntelliJ ???
+        assertThat(proprietaires.getFirst()).isEqualTo(savedProprietaire);
     }
 }
