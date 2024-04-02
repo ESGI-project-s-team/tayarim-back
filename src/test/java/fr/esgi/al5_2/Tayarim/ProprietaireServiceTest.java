@@ -55,7 +55,7 @@ public class ProprietaireServiceTest {
             mockProprietaire.setId(id);
 
         when(proprietaireRepository.save(any(Proprietaire.class))).thenReturn(mockProprietaire);
-        ProprietaireDTO proprietaireDTO = proprietaireService.creerProprietaire(proprietaireCreationDTO);
+        ProprietaireDTO proprietaireDTO = proprietaireService.creeProprietaire(proprietaireCreationDTO, false);
 
         assertThat(proprietaireDTO).isNotNull();
         assertThat(proprietaireDTO.getId()).isEqualTo(id);
@@ -63,6 +63,7 @@ public class ProprietaireServiceTest {
         assertThat(proprietaireDTO.getPrenom()).isEqualTo(proprietaireCreationDTO.getPrenom());
         assertThat(proprietaireDTO.getEmail()).isEqualTo(proprietaireCreationDTO.getEmail());
         assertThat(proprietaireDTO.getNumTel()).isEqualTo(proprietaireCreationDTO.getNumTel());
+        assertThat(proprietaireDTO.getMotDePasse()).isNull();
         assertThat(proprietaireDTO.getDateInscription()).isEqualTo(dateInscription);
         assertThat(proprietaireDTO.getLogements()).isNull();
         // Assert other fields as necessary...
