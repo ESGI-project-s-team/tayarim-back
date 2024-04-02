@@ -19,7 +19,7 @@ public class ProprietaireService {
     @Autowired
     private ProprietaireRepository proprietaireRepository;
 
-    public ProprietaireDTO creeProprietaire(@NonNull ProprietaireCreationDTO proprietaireCreationDTO) {
+    public ProprietaireDTO creeProprietaire(@NonNull ProprietaireCreationDTO proprietaireCreationDTO, boolean isLogement) {
         
         Proprietaire proprietaire = proprietaireMapper.creationDtoToEntity(proprietaireCreationDTO);
         
@@ -27,6 +27,6 @@ public class ProprietaireService {
             throw new ProprietaireNullException();
         }
 
-        return proprietaireMapper.entityToDto(proprietaireRepository.save(proprietaire));
+        return proprietaireMapper.entityToDto(proprietaireRepository.save(proprietaire), isLogement);
     }
 }
