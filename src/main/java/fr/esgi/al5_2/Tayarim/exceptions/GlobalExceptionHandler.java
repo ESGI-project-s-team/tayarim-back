@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ProprietaireNullException.class)
-    public ResponseEntity<String> handleBookNotFoundException(ProprietaireNullException ex) {
+    public ResponseEntity<String> handleProprietaireNullException(ProprietaireNullException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 
