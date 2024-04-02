@@ -8,10 +8,16 @@ import org.springframework.stereotype.Component;
 import fr.esgi.al5_2.Tayarim.dto.logement.LogementDTO;
 import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireDTO;
 import fr.esgi.al5_2.Tayarim.entities.Logement;
+import fr.esgi.al5_2.Tayarim.entities.Proprietaire;
 import lombok.NonNull;
 
 @Component
 public class LogementMapper {
+
+    public static Logement dtoToEntity(@NonNull LogementDTO logementDTO){
+        Proprietaire proprietaire = ProprietaireMapper.dtoToEntity(logementDTO.getProprietaire());
+        return new Logement(proprietaire);
+    }
 
     public static LogementDTO entityToDto(@NonNull Logement logement){
         ProprietaireDTO proprietaireDTO = ProprietaireMapper.entityToDto(logement.getProprietaire(), false);

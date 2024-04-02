@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import fr.esgi.al5_2.Tayarim.Services.ProprietaireService;
@@ -20,11 +21,10 @@ public class ProprietaireController {
     @Autowired
     private ProprietaireService proprietaireService;
 
-    @PostMapping("/host")
-    public ResponseEntity<ProprietaireDTO> creeProprietaire(@NonNull @RequestBody ProprietaireCreationDTO proprietaireCreationDTO) {
-        
+    @PostMapping("")
+    public ResponseEntity<ProprietaireDTO> creeProprietaire(@NonNull @RequestBody ProprietaireCreationDTO proprietaireCreationDTO/* , @RequestParam(name = "logement", defaultValue = "false") Boolean isLogement*/) {
         return new ResponseEntity<>(
-            proprietaireService.creeProprietaire(proprietaireCreationDTO), 
+            proprietaireService.creeProprietaire(proprietaireCreationDTO, false), 
             HttpStatus.CREATED);
     }
 }
