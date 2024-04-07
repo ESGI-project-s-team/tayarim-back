@@ -2,8 +2,8 @@ name: Build, Test and Lint
 
 on:
   push:
-    branches: [ "master" ]
- 
+    branches: ["main", "dev"]
+
 jobs:
   build:
     runs-on: ubuntu-latest

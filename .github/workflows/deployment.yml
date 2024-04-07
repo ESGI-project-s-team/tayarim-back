@@ -21,3 +21,21 @@ jobs:
         run: docker push rg.fr-par.scw.cloud/babyteacher-registry/backend:$GITHUB_SHA
       - name: Push the image with latest tag
         run: docker push rg.fr-par.scw.cloud/babyteacher-registry/backend:latest
+
+  trigger_workflow:
+    runs-on: ubuntu-latest
+    needs:
+      - build-backend-image
+    steps:
+      - name: Trigger terraform workflow
+        uses: convictional/trigger-workflow-and-wait@v1.6.5
+        with:
+          owner: QuentinCoqueran
+          repo: iac-tayarim
+          github_token: ${{ secrets.ACTIONS_KEY }}
+          workflow_file_name: terraform_deploy.yml
+          ref: main
+          wait_interval: 30
+          propagate_failure: true
+          wait_workflow: true
+          client_payload: '{"back":"${{ github.sha }}"}'
