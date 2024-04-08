@@ -9,6 +9,7 @@ import fr.esgi.al5_2.Tayarim.entities.Proprietaire;
 import fr.esgi.al5_2.Tayarim.exceptions.ProprietaireNullException;
 import fr.esgi.al5_2.Tayarim.mappers.ProprietaireMapper;
 import fr.esgi.al5_2.Tayarim.repositories.ProprietaireRepository;
+import jakarta.validation.Validator;
 import lombok.NonNull;
 
 @Service
@@ -18,6 +19,9 @@ public class ProprietaireService {
 
     @Autowired
     private ProprietaireRepository proprietaireRepository;
+
+    @Autowired
+	private Validator validator;
 
     public ProprietaireDTO creeProprietaire(@NonNull ProprietaireCreationDTO proprietaireCreationDTO, boolean isLogement) {
         
