@@ -34,3 +34,5 @@ build/
 
 ### Local Configuration ###
 .env
+demo.mv.db
+demo.trace.db
