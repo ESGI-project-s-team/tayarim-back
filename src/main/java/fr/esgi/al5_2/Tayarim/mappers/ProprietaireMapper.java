@@ -29,19 +29,8 @@ public class ProprietaireMapper {
             proprietaire.getPrenom(),
             proprietaire.getEmail(),
             proprietaire.getNumTel(),
-            null,
-            proprietaire.getDateInscription(), 
+            proprietaire.getDateInscription(),
             isLogements ? LogementMapper.entityListToDtoList(proprietaire.getLogements()) : null);
-    }
-
-    public static Proprietaire dtoToEntity(@NonNull ProprietaireDTO proprietaireDTO){
-        return new Proprietaire(
-            proprietaireDTO.getNom(), 
-            proprietaireDTO.getPrenom(), 
-            proprietaireDTO.getEmail(), 
-            proprietaireDTO.getNumTel(), 
-            proprietaireDTO.getMotDePasse(), 
-            proprietaireDTO.getDateInscription());
     }
 
 }
