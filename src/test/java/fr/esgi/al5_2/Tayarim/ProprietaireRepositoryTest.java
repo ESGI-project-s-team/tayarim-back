@@ -51,6 +51,7 @@ public class ProprietaireRepositoryTest {
         assertThat(proprietaires).isNotNull();
         assertThat(proprietaires).isNotEmpty();
         assertThat(proprietaires.size()).isEqualTo(1);
-        assertThat(proprietaires.getFirst()).isEqualTo(savedProprietaire);
+        assertThat(proprietaires.get(0)).isEqualTo(savedProprietaire);
+        //assertThat(proprietaires.getFirst()).isEqualTo(savedProprietaire);  //.getFirst() not working on IntelliJ ???
     }
 }
