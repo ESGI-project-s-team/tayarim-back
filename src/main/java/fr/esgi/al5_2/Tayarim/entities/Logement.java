@@ -25,6 +25,10 @@ public class Logement {
     @NonNull
     private Proprietaire proprietaire;
 
+    public Logement() {
+
+    }
+
     // public Logement(@NonNull Proprietaire proprietaire){
     //     this.proprietaire = proprietaire;
     // }
