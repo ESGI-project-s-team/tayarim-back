@@ -44,7 +44,7 @@ public class ProprietaireControllerTest {
 
         mockMvc.perform(post("/proprietaires")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(proprietaireCreationDTO))) // Convert the object to JSON string
+            .content(objectMapper.writeValueAsString(proprietaireCreationDTO))) // Convert the object to JSON string // Set your validator here
             .andExpect(status().isCreated());
 
     }
