@@ -29,9 +29,9 @@ public class ProprietaireController {
     private ProprietaireService proprietaireService;
 
     @PostMapping("")
-    public ResponseEntity<ProprietaireDTO> creeProprietaire(@Valid @RequestBody ProprietaireCreationDTO proprietaireCreationDTO/* , @RequestParam(name = "logement", defaultValue = "false") Boolean isLogement*/) {
+    public ResponseEntity<ProprietaireDTO> creerProprietaire(@Valid @RequestBody ProprietaireCreationDTO proprietaireCreationDTO/* , @RequestParam(name = "logement", defaultValue = "false") Boolean isLogement*/) {
         return new ResponseEntity<>(
-            proprietaireService.creeProprietaire(proprietaireCreationDTO, false), 
+            proprietaireService.creerProprietaire(proprietaireCreationDTO, false),
             HttpStatus.CREATED);
     }
 
