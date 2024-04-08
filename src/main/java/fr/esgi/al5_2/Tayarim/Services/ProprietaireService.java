@@ -18,7 +18,7 @@ public class ProprietaireService {
         this.proprietaireRepository = proprietaireRepository;
     }
 
-    public ProprietaireDTO creeProprietaire(@NonNull ProprietaireCreationDTO proprietaireCreationDTO, boolean isLogement) {
+    public ProprietaireDTO creerProprietaire(@NonNull ProprietaireCreationDTO proprietaireCreationDTO, boolean isLogement) {
         
         Proprietaire proprietaire = ProprietaireMapper.creationDtoToEntity(proprietaireCreationDTO);
 
