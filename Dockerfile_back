@@ -1,4 +1,4 @@
-FROM maven:amazoncorretto-21-debian as build
+FROM maven:3.9.6-amazoncorretto-21-debian as build
 
 WORKDIR /app
 
@@ -11,6 +11,6 @@ FROM amazoncorretto:21-alpine
 
 WORKDIR /app
 
-COPY - from=build /app/target/my-application.jar .
+COPY --from=build /app/target/Tayarim-0.0.1-SNAPSHOT.jar .
 
-CMD ["java", "-jar", "my-application.jar"]
+CMD ["java", "-jar", "Tayarim-0.0.1-SNAPSHOT.jar"]
