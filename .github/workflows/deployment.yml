@@ -1,0 +1,41 @@
+name: 'Deployment'
+
+on:
+  push:
+    branches:
+      - prod
+
+jobs:
+  build-backend-image:
+    runs-on: ubuntu-latest
+    steps:
+    # A MODIFIER
+      - uses: actions/checkout@v3
+      - name: Docker login to registry
+        run: echo "${{ secrets.REGISTRY_PASS }}" | docker login rg.fr-par.scw.cloud/babyteacher-regitstry -u nologin --password-stdin
+      - name: Build the Docker image for the backend
+        run: docker build . -f Dockerfile_back --tag rg.fr-par.scw.cloud/babyteacher-registry/backend:$GITHUB_SHA
+      - name: Tag the image
+        run: docker tag rg.fr-par.scw.cloud/babyteacher-registry/backend:$GITHUB_SHA rg.fr-par.scw.cloud/babyteacher-registry/backend:latest
+      - name: Push the image to private registry
+        run: docker push rg.fr-par.scw.cloud/babyteacher-registry/backend:$GITHUB_SHA
+      - name: Push the image with latest tag
+        run: docker push rg.fr-par.scw.cloud/babyteacher-registry/backend:latest
+
+  trigger_workflow:
+    runs-on: ubuntu-latest
+    needs:
+      - build-backend-image
+    steps:
+      - name: Trigger terraform workflow
+        uses: convictional/trigger-workflow-and-wait@v1.6.5
+        with:
+          owner: QuentinCoqueran
+          repo: iac-tayarim
+          github_token: ${{ secrets.ACTIONS_KEY }}
+          workflow_file_name: terraform_deploy.yml
+          ref: main
+          wait_interval: 30
+          propagate_failure: true
+          wait_workflow: true
+          client_payload: '{"back":"${{ github.sha }}"}'
