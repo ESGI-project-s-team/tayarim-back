@@ -38,7 +38,7 @@ public class ProprietaireController {
     @GetMapping("")
     public ResponseEntity<List<ProprietaireDTO>> getProprietaire(@RequestParam(name = "logement", defaultValue = "false") Boolean isLogement){
         return new ResponseEntity<>(
-                proprietaireService.getProprietaire(isLogemen),
+                proprietaireService.getProprietaire(isLogement),
                 HttpStatus.OK
         );
     }
