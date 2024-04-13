@@ -5,18 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import fr.esgi.al5_2.Tayarim.exceptions.ProprietaireEmailAlreadyExistException;
+import fr.esgi.al5_2.Tayarim.exceptions.ProprietaireNotFoundException;
+import fr.esgi.al5_2.Tayarim.exceptions.ProprietaireNumTelAlreadyExistException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import fr.esgi.al5_2.Tayarim.Services.ProprietaireService;
 import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireCreationDTO;
@@ -27,14 +22,36 @@ import jakarta.validation.Valid;
 @RequestMapping("/proprietaires")
 public class ProprietaireController {
 
-    @Autowired
-    private ProprietaireService proprietaireService;
+    private final ProprietaireService proprietaireService;
+
+    public ProprietaireController(ProprietaireService proprietaireService) {
+        this.proprietaireService = proprietaireService;
+    }
 
     @PostMapping("")
-    public ResponseEntity<ProprietaireDTO> creeProprietaire(@Valid @RequestBody ProprietaireCreationDTO proprietaireCreationDTO/* , @RequestParam(name = "logement", defaultValue = "false") Boolean isLogement*/) {
+    public ResponseEntity<ProprietaireDTO> creerProprietaire(@Valid @RequestBody ProprietaireCreationDTO proprietaireCreationDTO) {
         return new ResponseEntity<>(
-            proprietaireService.creeProprietaire(proprietaireCreationDTO, false), 
+            proprietaireService.creerProprietaire(proprietaireCreationDTO),
             HttpStatus.CREATED);
+    }
+
+    @GetMapping("")
+    public ResponseEntity<List<ProprietaireDTO>> getProprietaire(@RequestParam(name = "logement", defaultValue = "false") Boolean isLogement){
+        return new ResponseEntity<>(
+                proprietaireService.getProprietaire(isLogement),
+                HttpStatus.OK
+        );
+    }
+
+    @GetMapping("/login")
+    public ResponseEntity<ProprietaireDTO> loginProprietaire(@Valid @RequestBody)
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ProprietaireDTO> getProprietaire(@PathVariable Long id, @RequestParam(name = "logement", defaultValue = "false") Boolean isLogement){
+        return new ResponseEntity<>(
+                proprietaireService.getProprietaireById(id, isLogement),
+                HttpStatus.OK
+        );
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -49,6 +66,33 @@ public class ProprietaireController {
 
         errorMapping.put("errors", errors);
 
+        return errorMapping;
+    }
+
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler({ProprietaireEmailAlreadyExistException.class})
+    public Map<String, List<String>> proprietaireEmailAlreadyExistException(ProprietaireEmailAlreadyExistException ex){
+        return mapException(ex);
+    }
+
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler({ProprietaireNumTelAlreadyExistException.class})
+    public Map<String, List<String>> proprietaireNumTelAlreadyExistException(ProprietaireNumTelAlreadyExistException ex){
+        return mapException(ex);
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler({ProprietaireNotFoundException.class})
+    public Map<String, List<String>> proprietaireNotFoundException(ProprietaireNotFoundException ex){
+        return mapException(ex);
+    }
+
+    private Map<String, List<String>> mapException(RuntimeException exception){
+        ArrayList<String> errors = new ArrayList<>();
+        Map<String, List<String>> errorMapping = new HashMap<>();
+        errors.add(exception.getMessage());
+
+        errorMapping.put("errors", errors);
 
         return errorMapping;
     }
