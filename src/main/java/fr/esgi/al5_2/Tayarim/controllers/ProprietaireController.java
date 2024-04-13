@@ -43,6 +43,9 @@ public class ProprietaireController {
         );
     }
 
+    @GetMapping("/login")
+    public ResponseEntity<ProprietaireDTO> loginProprietaire(@Valid @RequestBody)
+
     @GetMapping("/{id}")
     public ResponseEntity<ProprietaireDTO> getProprietaire(@PathVariable Long id, @RequestParam(name = "logement", defaultValue = "false") Boolean isLogement){
         return new ResponseEntity<>(
