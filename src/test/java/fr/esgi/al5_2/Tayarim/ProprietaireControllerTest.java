@@ -9,7 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
-import fr.esgi.al5_2.Tayarim.Services.ProprietaireService;
+import fr.esgi.al5_2.Tayarim.services.ProprietaireService;
 import fr.esgi.al5_2.Tayarim.controllers.ProprietaireController;
 import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireCreationDTO;
 
