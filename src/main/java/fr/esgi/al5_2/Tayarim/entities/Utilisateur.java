@@ -42,5 +42,5 @@ public abstract class Utilisateur {
 
     @Column(name="MOTDEPASSE", nullable = false)
     @NonNull
-    private String MotDePasse;
+    private String motDePasse;
 }

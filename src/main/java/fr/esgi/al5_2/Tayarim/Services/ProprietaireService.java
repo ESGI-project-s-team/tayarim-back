@@ -1,9 +1,10 @@
-package fr.esgi.al5_2.Tayarim.Services;
+package fr.esgi.al5_2.Tayarim.services;
 
-import fr.esgi.al5_2.Tayarim.exceptions.ProprietaireEmailAlreadyExistException;
-import fr.esgi.al5_2.Tayarim.exceptions.ProprietaireNotFoundException;
-import fr.esgi.al5_2.Tayarim.exceptions.ProprietaireNumTelAlreadyExistException;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import fr.esgi.al5_2.Tayarim.auth.JwtHelper;
+import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireLoginResponseDTO;
+import fr.esgi.al5_2.Tayarim.exceptions.*;
+import io.jsonwebtoken.ExpiredJwtException;
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
 import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireCreationDTO;
@@ -22,28 +23,31 @@ import java.util.Optional;
 public class ProprietaireService {
 
     private final ProprietaireRepository proprietaireRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final JwtHelper jwtHelper;
 
-    public ProprietaireService(ProprietaireRepository proprietaireRepository, PasswordEncoder passwordEncoder) {
+    public ProprietaireService(ProprietaireRepository proprietaireRepository, JwtHelper jwtHelper) {
         this.proprietaireRepository = proprietaireRepository;
-        this.passwordEncoder = passwordEncoder;
+        this.jwtHelper = jwtHelper;
     }
 
     @Transactional
     public ProprietaireDTO creerProprietaire(@NonNull ProprietaireCreationDTO proprietaireCreationDTO) {
-
-        if (proprietaireRepository.findFirstByEmail(proprietaireCreationDTO.getEmail()) != null){
+        if (proprietaireRepository.findFirstByEmail(proprietaireCreationDTO.getEmail()).isPresent()){
             throw new ProprietaireEmailAlreadyExistException();
         }
 
         String numTel = proprietaireCreationDTO.getNumTel();
         numTel = numTel.replaceAll(" ", "");
-        if (proprietaireRepository.findFirstByNumTel(numTel) != null){
+        if (proprietaireRepository.findFirstByNumTel(numTel).isPresent()){
             throw new ProprietaireNumTelAlreadyExistException();
         }
         proprietaireCreationDTO.setNumTel(numTel);
 
-        String hashedPassword = passwordEncoder.encode(proprietaireCreationDTO.getMotDePasse());
+        String hashedPassword = hashPassword(proprietaireCreationDTO.getMotDePasse());
+        if (hashedPassword == null){
+            throw new PasswordHashNotPossibleException();
+        }
+
         proprietaireCreationDTO.setMotDePasse(hashedPassword);
 
         Proprietaire proprietaire = ProprietaireMapper.creationDtoToEntity(proprietaireCreationDTO);
@@ -62,5 +66,61 @@ public class ProprietaireService {
             throw new ProprietaireNotFoundException();
         }
         return ProprietaireMapper.entityToDto(optionalProprietaire.get(), isLogement);
+    }
+
+    public ProprietaireLoginResponseDTO loginProprietaire(String email, String password){
+        System.out.println("FIRST");
+        Optional<Proprietaire> optionalProprietaire = proprietaireRepository.findFirstByEmail(email);
+        if (optionalProprietaire.isEmpty()){
+            throw new ProprietaireNotFoundException();
+        }
+
+        Proprietaire proprietaire = optionalProprietaire.get();
+        if(!verifyHashedPassword(password, proprietaire.getMotDePasse())){
+            throw new ProprietaireNotFoundException();
+        }
+
+        String token = jwtHelper.generateToken(email);
+
+        return new ProprietaireLoginResponseDTO(
+                proprietaire.getId(),
+                token
+        );
+
+    }
+
+    public ProprietaireLoginResponseDTO authProprietaire(String token, Long id){
+
+        Optional<Proprietaire> optionalProprietaire = proprietaireRepository.findById(id);
+        if (optionalProprietaire.isEmpty()){
+            throw new ProprietaireNotFoundException();
+        }
+
+        Proprietaire proprietaire = optionalProprietaire.get();
+        if(!jwtHelper.validateToken(token, proprietaire)){
+            System.out.println("HERE ?");
+            throw new TokenExpireOrInvalidException();
+        }
+
+        return new ProprietaireLoginResponseDTO(
+                proprietaire.getId(),
+                token
+        );
+
+    }
+
+    private String hashPassword(@NonNull String password){
+        String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt(12));
+
+        if(!verifyHashedPassword(password, hashedPassword)){
+            return null;
+        }
+
+        return hashedPassword;
+    }
+
+    private boolean verifyHashedPassword(@NonNull String password, @NonNull String hashedPassword){
+        return BCrypt.checkpw(password, hashedPassword);
+
     }
 }
