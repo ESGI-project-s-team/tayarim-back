@@ -12,6 +12,7 @@ import io.jsonwebtoken.security.SignatureException;
 import java.security.Key;
 import java.time.Instant;
 import java.time.chrono.ChronoPeriod;
+import java.util.Arrays;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -25,23 +26,45 @@ public class JwtHelper {
     @Value("${PRIVATE_KEY}")
     private String privateKey;
 
-    public String generateToken(String email) {
+    public String generateToken(String email, String uuid) {
+        String subject = email.concat(";").concat(uuid);
         var now = Instant.now();
         return Jwts.builder()
-                .subject(email)
+                .subject(subject)
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(now.plusSeconds(60*60))) //60s * 60m = 1h
                 .signWith(getSignKey())
                 .compact();
     }
 
-    public String extractEmail(String token) {
-        return getTokenBody(token).getSubject();
+    public String extractSubject(String token) {
+        try{
+            Claims tokenBody = getTokenBody(token);
+            if(tokenBody == null){
+                return null;
+            }
+
+            return tokenBody.getSubject();
+        } catch (Exception e){
+            return null;
+        }
     }
 
-    public Boolean validateToken(String token, Proprietaire proprietaire) {
-        final String email = extractEmail(token);
-        return email.equals(proprietaire.getEmail()) && !isTokenExpired(token);
+    public Boolean validateToken(String token, String email, String uuid) {
+        String extractedSubject = extractSubject(token);
+        if(extractedSubject == null){
+            return false;
+        }
+
+        String[] subjects = extractedSubject.split(";");
+        String extractedEmail = subjects[0];
+        String extractedUUID = subjects[1];
+
+        return extractedEmail != null &&
+                extractedUUID != null &&
+                extractedEmail.equals(email) &&
+                extractedUUID.equals(uuid) &&
+                !isTokenExpired(token);
     }
 
     private Claims getTokenBody(String token) {
@@ -59,6 +82,9 @@ public class JwtHelper {
 
     private boolean isTokenExpired(String token) {
         Claims claims = getTokenBody(token);
+        if (claims == null){
+            return true;
+        }
         return claims.getExpiration().before(new Date());
     }
 
