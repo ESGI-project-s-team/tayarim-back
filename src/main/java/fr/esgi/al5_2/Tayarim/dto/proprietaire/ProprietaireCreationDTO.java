@@ -5,8 +5,10 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 @Data // Generates getters, setters, toString, equals, and hashCode methods
+@RequiredArgsConstructor
 @AllArgsConstructor // Generates an all-args constructor
 public class ProprietaireCreationDTO {
 
