@@ -36,9 +36,9 @@ public class ProprietaireController {
     }
 
     @GetMapping("")
-    public ResponseEntity<List<ProprietaireDTO>> getProprietaire(@RequestParam(name = "logement", defaultValue = "false") Boolean isLogement){
+    public ResponseEntity<List<ProprietaireDTO>> getProprietaire(@RequestHeader("Authorization") String authHeader, @RequestParam(name = "logement", defaultValue = "false") Boolean isLogement){
         return new ResponseEntity<>(
-                proprietaireService.getProprietaire(isLogement),
+                proprietaireService.getProprietaire(getTokenFromHeader(authHeader), isLogement),
                 HttpStatus.OK
         );
     }
@@ -74,9 +74,9 @@ public class ProprietaireController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProprietaireDTO> getProprietaire(@PathVariable Long id, @RequestParam(name = "logement", defaultValue = "false") Boolean isLogement){
+    public ResponseEntity<ProprietaireDTO> getProprietaire(@RequestHeader("Authorization") String authHeader, @PathVariable Long id, @RequestParam(name = "logement", defaultValue = "false") Boolean isLogement){
         return new ResponseEntity<>(
-                proprietaireService.getProprietaireById(id, isLogement),
+                proprietaireService.getProprietaireById(getTokenFromHeader(authHeader), id, isLogement),
                 HttpStatus.OK
         );
     }

@@ -1,18 +1,12 @@
 package fr.esgi.al5_2.Tayarim.auth;
 
-import fr.esgi.al5_2.Tayarim.entities.Proprietaire;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.security.MacAlgorithm;
 import io.jsonwebtoken.security.SignatureException;
-import java.security.Key;
 import java.time.Instant;
-import java.time.chrono.ChronoPeriod;
-import java.util.Arrays;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Value;
