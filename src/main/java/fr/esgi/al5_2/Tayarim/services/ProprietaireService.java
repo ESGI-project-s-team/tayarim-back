@@ -99,9 +99,10 @@ public class ProprietaireService {
 
     }
 
-    public ProprietaireLoginResponseDTO authProprietaire(String token, Long id){
+    public ProprietaireLoginResponseDTO authProprietaire(String token){
 
-        Optional<Proprietaire> optionalProprietaire = proprietaireRepository.findById(id);
+
+        Optional<Proprietaire> optionalProprietaire = proprietaireRepository.findFirstByEmail(jwtHelper.extractEmail(token));
         if (optionalProprietaire.isEmpty()){
             throw new ProprietaireNotFoundException();
         }
@@ -124,9 +125,9 @@ public class ProprietaireService {
 
     }
 
-    public void logoutProprietaire(String token, Long id){
+    public void logoutProprietaire(String token){
 
-        Optional<Proprietaire> optionalProprietaire = proprietaireRepository.findById(id);
+        Optional<Proprietaire> optionalProprietaire = proprietaireRepository.findFirstByEmail(jwtHelper.extractEmail(token));
         if (optionalProprietaire.isEmpty()){
             throw new ProprietaireNotFoundException();
         }
@@ -142,7 +143,7 @@ public class ProprietaireService {
             throw new TokenExpireOrInvalidException();
         }
 
-        tokenCacheService.addToCache(id, UUID.randomUUID().toString());
+        tokenCacheService.addToCache(proprietaire.getId(), UUID.randomUUID().toString());
 
     }
 
