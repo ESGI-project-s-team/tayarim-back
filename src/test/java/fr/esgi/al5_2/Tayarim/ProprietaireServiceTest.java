@@ -55,7 +55,7 @@ public class ProprietaireServiceTest {
             mockProprietaire.setId(id);
 
         when(proprietaireRepository.save(any(Proprietaire.class))).thenReturn(mockProprietaire);
-        ProprietaireDTO proprietaireDTO = proprietaireService.creerProprietaire(proprietaireCreationDTO, false);
+        ProprietaireDTO proprietaireDTO = proprietaireService.creerProprietaire(proprietaireCreationDTO);
 
         assertThat(proprietaireDTO).isNotNull();
         assertThat(proprietaireDTO.getId()).isEqualTo(id);
