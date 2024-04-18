@@ -4,7 +4,6 @@ import fr.esgi.al5_2.Tayarim.auth.JwtHelper;
 import fr.esgi.al5_2.Tayarim.auth.TokenCacheService;
 import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireLoginResponseDTO;
 import fr.esgi.al5_2.Tayarim.exceptions.*;
-import io.jsonwebtoken.ExpiredJwtException;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
