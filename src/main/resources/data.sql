@@ -1,0 +1,1 @@
+INSERT INTO Proprietaire (nom, prenom, email, numtel, motDePasse, dateInscription) VALUES ('John', 'Doe', 'johndoe@gmail.com', '0612345678', 'password', CURRENT_TIME);
