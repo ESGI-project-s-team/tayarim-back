@@ -4,17 +4,15 @@ on:
   push:
     branches:
       - prod
-      - master
 
 jobs:
-  build-frontend-image:
+  build-backend-image:
     runs-on: ubuntu-latest
     steps:
+    # A MODIFIER
       - uses: actions/checkout@v3
-      - name: Create account.json
-        run: echo $SERVICE_ACCOUNT_KEY | base64 --decode > account.json
       - name: Docker login to registry
-        run: docker login -u _json_key --password-stdin https://eu.gcr.io < account.json
+        run: echo "${{ secrets.GCP_SERVICE_ACCOUNT }}" | docker login https://eu.gcr.io -u nologin --password-stdin
 #      - name: Build the Docker image for the backend
 #        run: docker build . -f Dockerfile_back --tag rg.fr-par.scw.cloud/tayarim-registry/backend:$GITHUB_SHA
 #      - name: Tag the image
