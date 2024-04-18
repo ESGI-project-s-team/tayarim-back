@@ -50,15 +50,17 @@ public class JwtHelper {
         }
     }
 
-    public Boolean validateToken(String token, String email, String uuid) {
-        String extractedSubject = extractSubject(token);
-        if(extractedSubject == null){
-            return false;
-        }
+    public String extractEmail(String token) {
+        return extractSubject(token).split(";")[0];
+    }
 
-        String[] subjects = extractedSubject.split(";");
-        String extractedEmail = subjects[0];
-        String extractedUUID = subjects[1];
+    public String extractUuid(String token) {
+        return extractSubject(token).split(";")[1];
+    }
+
+    public Boolean validateToken(String token, String email, String uuid) {
+        String extractedEmail = extractEmail(token);
+        String extractedUUID = extractUuid(token);
 
         return extractedEmail != null &&
                 extractedUUID != null &&
