@@ -5,13 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import fr.esgi.al5_2.Tayarim.dto.auth.AuthDTO;
 import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireLoginDTO;
 import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireLoginResponseDTO;
 import fr.esgi.al5_2.Tayarim.exceptions.*;
 import fr.esgi.al5_2.Tayarim.services.ProprietaireService;
-import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -55,21 +52,21 @@ public class ProprietaireController {
     }
 
     @PostMapping("/auth")
-    public ResponseEntity<ProprietaireLoginResponseDTO> authProprietaire(@RequestHeader("Authorization") String authHeader, @Valid @RequestBody AuthDTO authDTO){
+    public ResponseEntity<ProprietaireLoginResponseDTO> authProprietaire(@RequestHeader("Authorization") String authHeader){
 
         String jwtToken = getTokenFromHeader(authHeader);
 
         return new ResponseEntity<>(
-                proprietaireService.authProprietaire(jwtToken, authDTO.getId()),
+                proprietaireService.authProprietaire(jwtToken),
                 HttpStatus.OK
         );
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logoutProprietaire(@RequestHeader("Authorization") String authHeader, @Valid @RequestBody AuthDTO authDTO){
+    public ResponseEntity<Void> logoutProprietaire(@RequestHeader("Authorization") String authHeader){
 
         String jwtToken = getTokenFromHeader(authHeader);
-        proprietaireService.logoutProprietaire(jwtToken, authDTO.getId());
+        proprietaireService.logoutProprietaire(jwtToken);
 
         return new ResponseEntity<>(
                 HttpStatus.OK
