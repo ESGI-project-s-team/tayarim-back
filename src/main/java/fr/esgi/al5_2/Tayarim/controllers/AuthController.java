@@ -33,7 +33,7 @@ public class AuthController {
         );
     }
 
-    @GetMapping("")
+    @PostMapping("")
     public ResponseEntity<AuthLoginResponseDTO> authProprietaire(@RequestHeader("Authorization") String authHeader){
 
         String jwtToken = getTokenFromHeader(authHeader);
@@ -44,7 +44,7 @@ public class AuthController {
         );
     }
 
-    @GetMapping("/logout")
+    @PostMapping("/logout")
     public ResponseEntity<Void> logoutProprietaire(@RequestHeader("Authorization") String authHeader){
 
         String jwtToken = getTokenFromHeader(authHeader);
