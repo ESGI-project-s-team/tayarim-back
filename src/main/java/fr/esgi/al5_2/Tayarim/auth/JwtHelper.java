@@ -1,5 +1,6 @@
 package fr.esgi.al5_2.Tayarim.auth;
 
+import fr.esgi.al5_2.Tayarim.exceptions.TokenExpireOrInvalidException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -40,7 +41,7 @@ public class JwtHelper {
 
             return tokenBody.getSubject();
         } catch (Exception e){
-            return null;
+            throw new TokenExpireOrInvalidException();
         }
     }
 
