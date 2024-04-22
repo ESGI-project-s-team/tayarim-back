@@ -5,9 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireLoginDTO;
-import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireLoginResponseDTO;
 import fr.esgi.al5_2.Tayarim.exceptions.*;
+import fr.esgi.al5_2.Tayarim.services.AuthService;
 import fr.esgi.al5_2.Tayarim.services.ProprietaireService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,9 +22,10 @@ import jakarta.validation.Valid;
 public class ProprietaireController {
 
     private final ProprietaireService proprietaireService;
-
-    public ProprietaireController(ProprietaireService proprietaireService) {
+    private final AuthService authService;
+    public ProprietaireController(ProprietaireService proprietaireService, AuthService authService) {
         this.proprietaireService = proprietaireService;
+        this.authService = authService;
     }
 
     @PostMapping("")
@@ -37,46 +37,22 @@ public class ProprietaireController {
 
     @GetMapping("")
     public ResponseEntity<List<ProprietaireDTO>> getProprietaire(@RequestHeader("Authorization") String authHeader, @RequestParam(name = "logement", defaultValue = "false") Boolean isLogement){
-        return new ResponseEntity<>(
-                proprietaireService.getProprietaire(getTokenFromHeader(authHeader), isLogement),
-                HttpStatus.OK
-        );
-    }
 
-    @PostMapping("/login")
-    public ResponseEntity<ProprietaireLoginResponseDTO> loginProprietaire(@Valid @RequestBody ProprietaireLoginDTO proprietaireLoginDTO){
-        return new ResponseEntity<>(
-                proprietaireService.loginProprietaire(proprietaireLoginDTO.getEmail(),proprietaireLoginDTO.getMotDePasse()),
-                HttpStatus.OK
-        );
-    }
-
-    @PostMapping("/auth")
-    public ResponseEntity<ProprietaireLoginResponseDTO> authProprietaire(@RequestHeader("Authorization") String authHeader){
-
-        String jwtToken = getTokenFromHeader(authHeader);
+        authService.verifyToken(getTokenFromHeader(authHeader));
 
         return new ResponseEntity<>(
-                proprietaireService.authProprietaire(jwtToken),
-                HttpStatus.OK
-        );
-    }
-
-    @PostMapping("/logout")
-    public ResponseEntity<Void> logoutProprietaire(@RequestHeader("Authorization") String authHeader){
-
-        String jwtToken = getTokenFromHeader(authHeader);
-        proprietaireService.logoutProprietaire(jwtToken);
-
-        return new ResponseEntity<>(
+                proprietaireService.getProprietaire(isLogement),
                 HttpStatus.OK
         );
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ProprietaireDTO> getProprietaire(@RequestHeader("Authorization") String authHeader, @PathVariable Long id, @RequestParam(name = "logement", defaultValue = "false") Boolean isLogement){
+
+        authService.verifyToken(getTokenFromHeader(authHeader));
+
         return new ResponseEntity<>(
-                proprietaireService.getProprietaireById(getTokenFromHeader(authHeader), id, isLogement),
+                proprietaireService.getProprietaireById(id, isLogement),
                 HttpStatus.OK
         );
     }

@@ -2,7 +2,7 @@ package fr.esgi.al5_2.Tayarim.services;
 
 import fr.esgi.al5_2.Tayarim.auth.JwtHelper;
 import fr.esgi.al5_2.Tayarim.auth.TokenCacheService;
-import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireLoginResponseDTO;
+import fr.esgi.al5_2.Tayarim.dto.proprietaire.AuthLoginResponseDTO;
 import fr.esgi.al5_2.Tayarim.exceptions.*;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
@@ -59,11 +59,11 @@ public class ProprietaireService {
         return ProprietaireMapper.entityToDto(proprietaireRepository.save(proprietaire), false);
     }
 
-    public List<ProprietaireDTO> getProprietaire(@NonNull String token, boolean isLogement){
+    public List<ProprietaireDTO> getProprietaire(boolean isLogement){
         return ProprietaireMapper.entityListToDtoList(proprietaireRepository.findAll(), isLogement);
     }
 
-    public ProprietaireDTO getProprietaireById(@NonNull String token, @NonNull Long id, boolean isLogement){
+    public ProprietaireDTO getProprietaireById(@NonNull Long id, boolean isLogement){
 
         Optional<Proprietaire> optionalProprietaire = proprietaireRepository.findById(id);
         if(optionalProprietaire.isEmpty()){
@@ -72,48 +72,24 @@ public class ProprietaireService {
         return ProprietaireMapper.entityToDto(optionalProprietaire.get(), isLogement);
     }
 
-    public ProprietaireLoginResponseDTO loginProprietaire(@NonNull String email, @NonNull String password){
+    public ProprietaireDTO getProprietaireByEmail(@NonNull String email){
         Optional<Proprietaire> optionalProprietaire = proprietaireRepository.findFirstByEmail(email);
         if (optionalProprietaire.isEmpty()){
             throw new ProprietaireNotFoundException();
         }
 
-        Proprietaire proprietaire = optionalProprietaire.get();
-        if(!verifyHashedPassword(password, proprietaire.getMotDePasse())){
+        return ProprietaireMapper.entityToDto(optionalProprietaire.get(), false);
+    }
+
+    public boolean verifyPassword(@NonNull String password, @NonNull Long proprietaireId){
+        Optional<Proprietaire> optionalProprietaire = proprietaireRepository.findById(proprietaireId);
+        if (optionalProprietaire.isEmpty()){
             throw new ProprietaireNotFoundException();
         }
 
-        String uuid = tokenCacheService.getFromCache(proprietaire.getId());
-        if (uuid == null){
-            uuid = UUID.randomUUID().toString();
-            tokenCacheService.addToCache(proprietaire.getId() ,uuid);
-        }
+        Proprietaire proprietaire = optionalProprietaire.get();
 
-        String token = jwtHelper.generateToken(email, uuid);
-
-        return new ProprietaireLoginResponseDTO(
-                proprietaire.getId(),
-                token
-        );
-
-    }
-
-    public ProprietaireLoginResponseDTO authProprietaire(@NonNull String token){
-
-        Proprietaire proprietaire = verifyToken(token);
-        
-        return new ProprietaireLoginResponseDTO(
-                proprietaire.getId(),
-                token
-        );
-
-    }
-
-    public void logoutProprietaire(@NonNull String token){
-
-        Proprietaire proprietaire = verifyToken(token);
-
-        tokenCacheService.addToCache(proprietaire.getId(), UUID.randomUUID().toString());
+        return BCrypt.checkpw(password, proprietaire.getMotDePasse());
 
     }
 
@@ -130,24 +106,5 @@ public class ProprietaireService {
     private boolean verifyHashedPassword(@NonNull String password, @NonNull String hashedPassword){
         return BCrypt.checkpw(password, hashedPassword);
 
-    }
-
-    public Proprietaire verifyToken(@NonNull String token){
-        Optional<Proprietaire> optionalProprietaire = proprietaireRepository.findFirstByEmail(jwtHelper.extractEmail(token));
-        if (optionalProprietaire.isEmpty()){
-            throw new ProprietaireNotFoundException();
-        }
-
-        Proprietaire proprietaire = optionalProprietaire.get();
-
-        String uuid = tokenCacheService.getFromCache(proprietaire.getId());
-        if(uuid == null){
-            throw new TokenExpireOrInvalidException();
-        }
-
-        if(!jwtHelper.validateToken(token, proprietaire.getEmail(), uuid)){
-            throw new TokenExpireOrInvalidException();
-        }
-        return proprietaire;
     }
 }
