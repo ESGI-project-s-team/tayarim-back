@@ -1,5 +1,6 @@
 package fr.esgi.al5_2.Tayarim;
 
+import fr.esgi.al5_2.Tayarim.services.AuthService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,9 @@ public class ProprietaireControllerTest {
 
     @MockBean
     private ProprietaireService proprietaireService;
+
+    @MockBean
+    private AuthService authService;
 
     @Autowired
     private ObjectMapper objectMapper; // Spring Boot will automatically provide an ObjectMapper bean
