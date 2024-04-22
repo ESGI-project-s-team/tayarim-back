@@ -8,7 +8,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class ProprietaireLoginDTO {
+public class AuthLoginDTO {
 
     @Valid
 
