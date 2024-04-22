@@ -10,6 +10,7 @@ import fr.esgi.al5_2.Tayarim.controllers.AuthController;
 import fr.esgi.al5_2.Tayarim.controllers.AuthController;
 import fr.esgi.al5_2.Tayarim.services.AuthService;
 import fr.esgi.al5_2.Tayarim.services.ProprietaireService;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -39,7 +40,7 @@ public class ProprietaireController {
 
     @GetMapping("")
     public ResponseEntity<List<ProprietaireDTO>> getProprietaire(@RequestHeader("Authorization") String authHeader, @RequestParam(name = "logement", defaultValue = "false") Boolean isLogement){
-
+        System.out.println("HERE ?");
         authService.verifyToken(getTokenFromHeader(authHeader));
 
         return new ResponseEntity<>(

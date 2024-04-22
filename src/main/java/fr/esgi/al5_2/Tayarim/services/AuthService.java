@@ -4,15 +4,11 @@ import fr.esgi.al5_2.Tayarim.auth.JwtHelper;
 import fr.esgi.al5_2.Tayarim.auth.TokenCacheService;
 import fr.esgi.al5_2.Tayarim.dto.proprietaire.AuthLoginResponseDTO;
 import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireDTO;
-import fr.esgi.al5_2.Tayarim.entities.Proprietaire;
 import fr.esgi.al5_2.Tayarim.exceptions.*;
-import fr.esgi.al5_2.Tayarim.repositories.ProprietaireRepository;
 import lombok.NonNull;
-import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
