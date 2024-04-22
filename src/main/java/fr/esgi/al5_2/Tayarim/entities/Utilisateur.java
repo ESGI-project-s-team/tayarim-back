@@ -1,10 +1,6 @@
 package fr.esgi.al5_2.Tayarim.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,15 +9,14 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 @Data
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 @RequiredArgsConstructor
-//on donne les 3 constructor pour exclure Id. Moi non plus je comprend pas comment c'est possible
-@MappedSuperclass
 public abstract class Utilisateur {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="ID")
+    @Column(name = "ID", nullable = false)
     private Long id;
 
     @Column(name="NOM", nullable = false)

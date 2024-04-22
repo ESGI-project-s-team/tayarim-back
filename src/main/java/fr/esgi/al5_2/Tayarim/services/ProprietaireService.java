@@ -1,8 +1,6 @@
 package fr.esgi.al5_2.Tayarim.services;
 
-import fr.esgi.al5_2.Tayarim.auth.JwtHelper;
-import fr.esgi.al5_2.Tayarim.auth.TokenCacheService;
-import fr.esgi.al5_2.Tayarim.dto.proprietaire.AuthLoginResponseDTO;
+import fr.esgi.al5_2.Tayarim.entities.Utilisateur;
 import fr.esgi.al5_2.Tayarim.exceptions.*;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
@@ -17,21 +15,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @Transactional(readOnly = true)
 public class ProprietaireService {
 
     private final ProprietaireRepository proprietaireRepository;
-    private final JwtHelper jwtHelper;
 
-    private final TokenCacheService tokenCacheService;
-
-    public ProprietaireService(ProprietaireRepository proprietaireRepository, JwtHelper jwtHelper, TokenCacheService tokenCacheService) {
+    public ProprietaireService(ProprietaireRepository proprietaireRepository) {
         this.proprietaireRepository = proprietaireRepository;
-        this.jwtHelper = jwtHelper;
-        this.tokenCacheService = tokenCacheService;
     }
 
     @Transactional
@@ -74,7 +66,7 @@ public class ProprietaireService {
 
     public ProprietaireDTO getProprietaireByEmail(@NonNull String email){
         Optional<Proprietaire> optionalProprietaire = proprietaireRepository.findFirstByEmail(email);
-        if (optionalProprietaire.isEmpty()){
+        if (optionalProprietaire.isEmpty()) {
             throw new ProprietaireNotFoundException();
         }
 

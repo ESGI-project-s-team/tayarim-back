@@ -10,12 +10,6 @@ import java.util.Optional;
 
 @Repository
 public interface ProprietaireRepository extends JpaRepository<Proprietaire, Long>{
-
     Optional<Proprietaire> findFirstByEmail(@NonNull String email);
-
     Optional<Proprietaire> findFirstByNumTel(@NonNull String numTel);
-
-    Optional<Proprietaire> findFirstByEmailAndMotDePasse(@NonNull String email, @NonNull String motDePasse);
-
-
 }

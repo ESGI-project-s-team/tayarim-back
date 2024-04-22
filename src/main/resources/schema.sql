@@ -13,25 +13,24 @@ DROP TABLE IF EXISTS CategorieAmenagement;
 DROP TABLE IF EXISTS Adresse;
 DROP TABLE IF EXISTS Administrateur;
 DROP TABLE IF EXISTS Proprietaire;
+DROP TABLE IF EXISTS Utilisateur;
 
-
-CREATE TABLE IF NOT EXISTS Proprietaire (
+CREATE TABLE IF NOT EXISTS Utilisateur (
     id INT PRIMARY KEY AUTO_INCREMENT,
     nom VARCHAR(100),
     prenom VARCHAR(100),
     email VARCHAR(100),
     numTel VARCHAR(100),
-    motDePasse VARCHAR(100),
+    motDePasse VARCHAR(100)
+);
+
+CREATE TABLE IF NOT EXISTS Proprietaire (
+    idUser INT PRIMARY KEY,
     dateInscription DATETIME
 );
 
 CREATE TABLE IF NOT EXISTS Administrateur (
-    id INT PRIMARY KEY,
-    nom VARCHAR(100),
-    prenom VARCHAR(100),
-    email VARCHAR(100),
-    numTel VARCHAR(100),
-    motDePasse VARCHAR(100)
+    idUser INT PRIMARY KEY
 );
 
 CREATE TABLE IF NOT EXISTS Logement (
@@ -143,11 +142,15 @@ CREATE TABLE IF NOT EXISTS Contenir (
     PRIMARY KEY(idLogement,idAmenagement)
 );
 
+ALTER TABLE Proprietaire ADD FOREIGN KEY (idUser) REFERENCES Utilisateur(id);
+
+ALTER TABLE Administrateur ADD FOREIGN KEY (idUser) REFERENCES Utilisateur(id);
+
 ALTER TABLE Logement ADD FOREIGN KEY (idAdresse) REFERENCES Adresse(id);
 
 ALTER TABLE Logement ADD FOREIGN KEY (idTypeLogement) REFERENCES TypeLogement(id);
 
-ALTER TABLE Logement ADD FOREIGN KEY (idProprietaire) REFERENCES Proprietaire(id);
+ALTER TABLE Logement ADD FOREIGN KEY (idProprietaire) REFERENCES Proprietaire(idUser);
 
 ALTER TABLE TypeLogement ADD FOREIGN KEY (idIcone) REFERENCES Icone(id);
 
