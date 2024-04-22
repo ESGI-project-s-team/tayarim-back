@@ -7,8 +7,6 @@ import java.util.Map;
 
 import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireUpdateDTO;
 import fr.esgi.al5_2.Tayarim.exceptions.*;
-import fr.esgi.al5_2.Tayarim.controllers.AuthController;
-import fr.esgi.al5_2.Tayarim.controllers.AuthController;
 import fr.esgi.al5_2.Tayarim.services.AuthService;
 import fr.esgi.al5_2.Tayarim.services.ProprietaireService;
 import jakarta.validation.constraints.NotNull;
@@ -34,15 +32,16 @@ public class ProprietaireController {
     }
 
     @PostMapping("")
-    public ResponseEntity<ProprietaireDTO> creerProprietaire(@Valid @RequestBody ProprietaireCreationDTO proprietaireCreationDTO) {
+    public ResponseEntity<ProprietaireDTO> creerProprietaire(@RequestHeader("Authorization") String authHeader, @Valid @RequestBody ProprietaireCreationDTO proprietaireCreationDTO) {
+        authService.verifyToken(getTokenFromHeader(authHeader), true);
         return new ResponseEntity<>(
-            proprietaireService.creerProprietaire(proprietaireCreationDTO),
-            HttpStatus.CREATED);
+                proprietaireService.creerProprietaire(proprietaireCreationDTO),
+                HttpStatus.CREATED);
     }
 
     @GetMapping("")
     public ResponseEntity<List<ProprietaireDTO>> getProprietaire(@RequestHeader("Authorization") String authHeader, @RequestParam(name = "logement", defaultValue = "false") Boolean isLogement){
-        authService.verifyToken(getTokenFromHeader(authHeader));
+        authService.verifyToken(getTokenFromHeader(authHeader), true);
 
         return new ResponseEntity<>(
                 proprietaireService.getProprietaire(isLogement),
@@ -53,7 +52,7 @@ public class ProprietaireController {
     @GetMapping("/{id}")
     public ResponseEntity<ProprietaireDTO> getProprietaire(@RequestHeader("Authorization") String authHeader, @PathVariable Long id, @RequestParam(name = "logement", defaultValue = "false") Boolean isLogement){
 
-        authService.verifyToken(getTokenFromHeader(authHeader));
+        authService.verifyToken(getTokenFromHeader(authHeader), false);
 
         return new ResponseEntity<>(
                 proprietaireService.getProprietaireById(id, isLogement),
@@ -63,7 +62,7 @@ public class ProprietaireController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ProprietaireDTO> updateProprietaire(@RequestHeader("Authorization") String authHeader, @PathVariable Long id, @RequestBody ProprietaireUpdateDTO proprietaireUpdateDTO){
-        Long idToken = authService.verifyToken(getTokenFromHeader(authHeader)).getId();
+        Long idToken = authService.verifyToken(getTokenFromHeader(authHeader), true);
 
         if(!idToken.equals(id)){
             throw new UnauthorizedException();
@@ -77,7 +76,7 @@ public class ProprietaireController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ProprietaireDTO> deleteProprietaire(@RequestHeader("Authorization") String authHeader, @PathVariable Long id){
-        Long idToken = authService.verifyToken(getTokenFromHeader(authHeader)).getId();
+        Long idToken = authService.verifyToken(getTokenFromHeader(authHeader), true);
         if(!idToken.equals(id)){
             throw new UnauthorizedException();
         }

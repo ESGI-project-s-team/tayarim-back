@@ -21,7 +21,7 @@ public abstract class Utilisateur {
     @Column(name="PRENOM", nullable = false)
     @NonNull
     private String prenom;
-    
+
     @Column(name="EMAIL", nullable = false)
     @NonNull
     private String email;

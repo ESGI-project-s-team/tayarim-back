@@ -24,7 +24,7 @@ public class Proprietaire extends Utilisateur{
     public Proprietaire(@NonNull String nom, @NonNull String prenom, @NonNull String email, @NonNull String numTel, @NonNull String motDePasse, @NonNull LocalDateTime dateInscription) {
         // Utiliser super() pour appeler le constructeur de la classe parente
         super(nom, prenom, email, numTel, motDePasse);
-    
+
         // Initialisation des champs propres à Proprietaire
         this.dateInscription = dateInscription;
         // Initialisation de la liste des logements pour éviter NullPointerException lors de l'ajout de logements
