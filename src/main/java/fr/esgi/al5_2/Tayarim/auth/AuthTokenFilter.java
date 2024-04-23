@@ -24,7 +24,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
-            response.getWriter().write("{\"errors\": [\"error_token_missing\"]}"); //TODO add to dico
+            response.getWriter().write("{\"errors\": [\"error_token_missing\"]}");
             return;
         }
 
