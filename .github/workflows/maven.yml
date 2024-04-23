@@ -19,4 +19,6 @@ jobs:
         distribution: 'corretto'
         cache: maven
     - name: Verify
+      env:
+        PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
       run: mvn --batch-mode --update-snapshots verify
