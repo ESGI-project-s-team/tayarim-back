@@ -1,2 +1,2 @@
-INSERT INTO Utilisateur (NOM, PRENOM, EMAIL, NUMTEL, MOTDEPASSE) VALUES ('John', 'Doe', 'johndoe@gmail.com', '0612345678', 'password');
+INSERT INTO Utilisateur (NOM, PRENOM, EMAIL, NUMTEL, MOTDEPASSE) VALUES ('John', 'Doe', 'johndoe@gmail.com', '0612345678', '$2a$12$3hQDUblvPShmuQg/.g0Qk.wHAGjqPL54RMO/lNgsei/HQGo0ZLIYm');
 INSERT INTO Proprietaire (IDUSER, DATEINSCRIPTION) VALUES ((SELECT max(ID) FROM UTILISATEUR), CURRENT_TIME());
