@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireUpdateDTO;
 import fr.esgi.al5_2.Tayarim.exceptions.*;
 import fr.esgi.al5_2.Tayarim.controllers.AuthController;
 import fr.esgi.al5_2.Tayarim.controllers.AuthController;
@@ -13,6 +14,7 @@ import fr.esgi.al5_2.Tayarim.services.ProprietaireService;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
@@ -59,6 +61,33 @@ public class ProprietaireController {
         );
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<ProprietaireDTO> updateProprietaire(@RequestHeader("Authorization") String authHeader, @PathVariable Long id, @RequestBody ProprietaireUpdateDTO proprietaireUpdateDTO){
+        Long idToken = authService.verifyToken(getTokenFromHeader(authHeader)).getId();
+
+        if(!idToken.equals(id)){
+            throw new UnauthorizedException();
+        }
+
+        return new ResponseEntity<>(
+                proprietaireService.updateProprietaire(id, proprietaireUpdateDTO),
+                HttpStatus.OK
+        );
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ProprietaireDTO> deleteProprietaire(@RequestHeader("Authorization") String authHeader, @PathVariable Long id){
+        Long idToken = authService.verifyToken(getTokenFromHeader(authHeader)).getId();
+        if(!idToken.equals(id)){
+            throw new UnauthorizedException();
+        }
+
+        return new ResponseEntity<>(
+                proprietaireService.deleteProprietaire(id),
+                HttpStatus.OK
+        );
+    }
+
     private String getTokenFromHeader(String authHeader){
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             throw new TokenExpireOrInvalidException();
@@ -80,6 +109,12 @@ public class ProprietaireController {
         errorMapping.put("errors", errors);
 
         return errorMapping;
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(ProprietaireInvalidUpdateBody.class)
+    public Map<String, List<String>> proprietaireInvalidUpdateBody(ProprietaireInvalidUpdateBody ex){
+        return mapException(ex);
     }
 
     @ResponseStatus(HttpStatus.CONFLICT)
@@ -109,6 +144,12 @@ public class ProprietaireController {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler({TokenExpireOrInvalidException.class})
     public Map<String, List<String>> tokenExpireOrInvalidException(TokenExpireOrInvalidException ex){
+        return mapException(ex);
+    }
+
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler({UnauthorizedException.class})
+    public Map<String, List<String>> unauthorizedException(UnauthorizedException ex){
         return mapException(ex);
     }
 

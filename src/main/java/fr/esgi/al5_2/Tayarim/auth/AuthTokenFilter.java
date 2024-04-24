@@ -19,9 +19,6 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
         String authHeader = request.getHeader("Authorization");
 
-        System.out.println(request.getMethod());
-        System.out.println(request.getServletPath());
-
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json");
@@ -37,6 +34,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) {
         // Exclure le filtre pour les requêtes POST vers /proprietaire
         return request.getMethod().equalsIgnoreCase("POST") && request.getServletPath().equals("/proprietaires")
+                || request.getMethod().equalsIgnoreCase("POST") && request.getServletPath().equals("/auth/login")
                 || !request.getServletPath().startsWith("/auth") && !request.getServletPath().startsWith("/proprietaires");
     }
 }

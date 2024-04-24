@@ -2,7 +2,7 @@ package fr.esgi.al5_2.Tayarim.services;
 
 import fr.esgi.al5_2.Tayarim.auth.JwtHelper;
 import fr.esgi.al5_2.Tayarim.auth.TokenCacheService;
-import fr.esgi.al5_2.Tayarim.dto.proprietaire.AuthLoginResponseDTO;
+import fr.esgi.al5_2.Tayarim.dto.auth.AuthLoginResponseDTO;
 import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireDTO;
 import fr.esgi.al5_2.Tayarim.exceptions.*;
 import lombok.NonNull;
@@ -68,7 +68,12 @@ public class AuthService {
     }
 
     public ProprietaireDTO verifyToken(@NonNull String token){
-        ProprietaireDTO proprietaireDTO = proprietaireService.getProprietaireByEmail(jwtHelper.extractEmail(token));
+        ProprietaireDTO proprietaireDTO;
+        try{
+            proprietaireDTO = proprietaireService.getProprietaireByEmail(jwtHelper.extractEmail(token));
+        } catch (ProprietaireNotFoundException ex){
+            throw new TokenExpireOrInvalidException();
+        }
 
         String uuid = tokenCacheService.getFromCache(proprietaireDTO.getId());
         if(uuid == null){
