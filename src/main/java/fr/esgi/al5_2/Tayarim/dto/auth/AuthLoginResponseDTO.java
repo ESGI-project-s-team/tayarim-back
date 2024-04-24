@@ -1,4 +1,4 @@
-package fr.esgi.al5_2.Tayarim.dto.proprietaire;
+package fr.esgi.al5_2.Tayarim.dto.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
