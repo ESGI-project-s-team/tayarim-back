@@ -21,8 +21,7 @@ public class Logement {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "IDPROPRIETAIRE", nullable = false)
-    @NonNull
+    @JoinColumn(name = "IDPROPRIETAIRE")
     private Proprietaire proprietaire;
 
     // public Logement(@NonNull Proprietaire proprietaire){
