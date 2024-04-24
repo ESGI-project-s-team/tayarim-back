@@ -4,16 +4,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import lombok.*;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Entity
 @PrimaryKeyJoinColumn(name = "IDUSER")
 public class Proprietaire extends Utilisateur{
 
@@ -24,6 +20,7 @@ public class Proprietaire extends Utilisateur{
     @NonNull
     private LocalDateTime dateInscription;
 
+    @Builder
     public Proprietaire(@NonNull String nom, @NonNull String prenom, @NonNull String email, @NonNull String numTel, @NonNull String motDePasse, @NonNull LocalDateTime dateInscription) {
         // Utiliser super() pour appeler le constructeur de la classe parente
         super(nom, prenom, email, numTel, motDePasse);

@@ -15,24 +15,26 @@ import lombok.NonNull;
 public class ProprietaireMapper {
 
     public static Proprietaire creationDtoToEntity(@NonNull ProprietaireCreationDTO proprietaireCreationDTO){
-        return new Proprietaire(
-            proprietaireCreationDTO.getNom(), 
-            proprietaireCreationDTO.getPrenom(), 
-            proprietaireCreationDTO.getEmail(), 
-            proprietaireCreationDTO.getNumTel(), 
-            proprietaireCreationDTO.getMotDePasse(),
-            LocalDateTime.now());
+        return Proprietaire.builder()
+                .nom(proprietaireCreationDTO.getNom())
+                .prenom(proprietaireCreationDTO.getPrenom())
+                .email(proprietaireCreationDTO.getEmail())
+                .numTel(proprietaireCreationDTO.getNumTel())
+                .motDePasse(proprietaireCreationDTO.getMotDePasse())
+                .dateInscription(LocalDateTime.now())
+                .build();
     }
 
     public static ProprietaireDTO entityToDto(@NonNull Proprietaire proprietaire, boolean isLogement){
-        return new ProprietaireDTO(
-            proprietaire.getId(),
-            proprietaire.getNom(),
-            proprietaire.getPrenom(),
-            proprietaire.getEmail(),
-            proprietaire.getNumTel(),
-            proprietaire.getDateInscription(),
-            isLogement ? LogementMapper.entityListToDtoList(proprietaire.getLogements()) : null);
+
+        return ProprietaireDTO.builder()
+                .id(proprietaire.getId())
+                .nom(proprietaire.getNom())
+                .prenom(proprietaire.getPrenom())
+                .email(proprietaire.getEmail())
+                .numTel(proprietaire.getNumTel())
+                .dateInscription(proprietaire.getDateInscription())
+                .logements(isLogement ? LogementMapper.entityListToDtoList(proprietaire.getLogements()) : null).build();
     }
 
     public static List<ProprietaireDTO> entityListToDtoList(@NonNull List<Proprietaire> proprietaireList, boolean isLogement){

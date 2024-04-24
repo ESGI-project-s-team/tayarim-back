@@ -1,9 +1,13 @@
 package fr.esgi.al5_2.Tayarim;
 
+import fr.esgi.al5_2.Tayarim.auth.AuthTokenFilter;
+import fr.esgi.al5_2.Tayarim.repositories.ProprietaireRepository;
 import fr.esgi.al5_2.Tayarim.services.AuthService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -27,17 +31,16 @@ public class ProprietaireControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private ProprietaireService proprietaireService;
+    private AuthService authService;
 
     @MockBean
-    private AuthService authService;
+    private AuthTokenFilter authTokenFilter;
 
     @Autowired
     private ObjectMapper objectMapper; // Spring Boot will automatically provide an ObjectMapper bean
 
-
     @Test
-    public void testCreateUser() throws Exception {
+    public void shouldCreateUser() throws Exception {
 
         ProprietaireCreationDTO proprietaireCreationDTO = new ProprietaireCreationDTO(
         "Ferreira", 
@@ -52,5 +55,6 @@ public class ProprietaireControllerTest {
             .andExpect(status().isCreated());
 
     }
+
 }
 

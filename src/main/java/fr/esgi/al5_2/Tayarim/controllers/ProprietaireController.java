@@ -40,7 +40,6 @@ public class ProprietaireController {
 
     @GetMapping("")
     public ResponseEntity<List<ProprietaireDTO>> getProprietaire(@RequestHeader("Authorization") String authHeader, @RequestParam(name = "logement", defaultValue = "false") Boolean isLogement){
-        System.out.println("HERE ?");
         authService.verifyToken(getTokenFromHeader(authHeader));
 
         return new ResponseEntity<>(

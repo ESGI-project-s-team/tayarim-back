@@ -1,5 +1,6 @@
 package fr.esgi.al5_2.Tayarim.dto.proprietaire;
 
+import lombok.Builder;
 import lombok.Data;
 import lombok.NonNull;
 
@@ -11,6 +12,7 @@ import lombok.AllArgsConstructor;
 
 @Data // Generates getters, setters, toString, equals, and hashCode methods
 @AllArgsConstructor // Generates an all-args constructor
+@Builder
 public class ProprietaireDTO {
 
     @NonNull
