@@ -36,6 +36,7 @@ CREATE TABLE IF NOT EXISTS Administrateur (
 CREATE TABLE IF NOT EXISTS Logement (
     id INT PRIMARY KEY AUTO_INCREMENT,
     type VARCHAR(50),
+    louable BOOL,
     nombresDeChambres INT,
     nombresDeLits INT,
     nombresSallesDeBains INT,
@@ -46,6 +47,7 @@ CREATE TABLE IF NOT EXISTS Logement (
     prixParNuit FLOAT,
     defaultCheckIn TIME,
     defaultCheckOut TIME,
+    intervalReservation INT,
     idAdresse INT,
     idTypeLogement INT,
     idProprietaire INT
