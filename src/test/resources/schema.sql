@@ -16,8 +16,8 @@ DROP TABLE IF EXISTS Proprietaire;
 DROP TABLE IF EXISTS Utilisateur;
 
 CREATE TABLE IF NOT EXISTS Utilisateur (
-                                           id INT PRIMARY KEY AUTO_INCREMENT,
-                                           nom VARCHAR(100),
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    nom VARCHAR(100),
     prenom VARCHAR(100),
     email VARCHAR(100),
     numTel VARCHAR(100),
@@ -25,8 +25,8 @@ CREATE TABLE IF NOT EXISTS Utilisateur (
     );
 
 CREATE TABLE IF NOT EXISTS Proprietaire (
-                                            idUser INT PRIMARY KEY,
-                                            dateInscription DATETIME
+    idUser INT PRIMARY KEY,
+    dateInscription DATETIME
 );
 
 CREATE TABLE IF NOT EXISTS Administrateur (
@@ -36,20 +36,22 @@ CREATE TABLE IF NOT EXISTS Administrateur (
 CREATE TABLE IF NOT EXISTS Logement (
                                         id INT PRIMARY KEY AUTO_INCREMENT,
                                         type VARCHAR(50),
-    nombresDeChambres INT,
-    nombresDeLits INT,
-    nombresSallesDeBains INT,
-    capaciteMaxPersonne INT,
-    nombresNuitsMin INT,
-    description VARCHAR(100),
-    note FLOAT,
-    prixParNuit FLOAT,
-    defaultCheckIn TIME,
-    defaultCheckOut TIME,
-    idAdresse INT,
-    idTypeLogement INT,
-    idProprietaire INT
-    );
+                                        louable BOOL,
+                                        nombresDeChambres INT,
+                                        nombresDeLits INT,
+                                        nombresSallesDeBains INT,
+                                        capaciteMaxPersonne INT,
+                                        nombresNuitsMin INT,
+                                        description VARCHAR(100),
+                                        note FLOAT,
+                                        prixParNuit FLOAT,
+                                        defaultCheckIn TIME,
+                                        defaultCheckOut TIME,
+                                        intervalReservation INT,
+                                        idAdresse INT,
+                                        idTypeLogement INT,
+                                        idProprietaire INT
+);
 
 CREATE TABLE IF NOT EXISTS TypeLogement (
                                             id INT PRIMARY KEY AUTO_INCREMENT,

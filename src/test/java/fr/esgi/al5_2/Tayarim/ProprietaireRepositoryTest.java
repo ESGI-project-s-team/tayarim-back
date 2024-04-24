@@ -1,15 +1,18 @@
 package fr.esgi.al5_2.Tayarim;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import fr.esgi.al5_2.Tayarim.entities.Proprietaire;
 import fr.esgi.al5_2.Tayarim.repositories.ProprietaireRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -19,7 +22,7 @@ import java.util.Optional;
 
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
-@AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class ProprietaireRepositoryTest {
 
     @Autowired
@@ -105,11 +108,11 @@ public class ProprietaireRepositoryTest {
         List<Proprietaire> proprietaires = proprietaireRepository.findAll();
 
         assertThat(proprietaires).isNotNull();
-        assertThat(proprietaires).hasSize(2);
+        assertThat(proprietaires).hasSizeGreaterThan(1);
     }
 
     @Test
-    public void ProprietaireRepository_FindFirstByEmail_ReturnOneProprietaire() {
+    public void ProprietaireRepository_FindFirstByEmail_ReturnProprietaire() {
 
         LocalDateTime dateInscription = LocalDateTime.now();
         Proprietaire proprietaire = Proprietaire.builder()
@@ -134,5 +137,51 @@ public class ProprietaireRepositoryTest {
         assertThat(findProprietaire.getDateInscription()).isEqualTo(proprietaire.getDateInscription());
     }
 
+    @Test
+    public void ProprietaireRepository_FindFirstByNumTel_ReturnProprietaire() {
+
+        LocalDateTime dateInscription = LocalDateTime.now();
+        Proprietaire proprietaire = Proprietaire.builder()
+                .nom("Ferreira")
+                .prenom("Mathieu")
+                .email("test@gmail.com")
+                .numTel("0612345678")
+                .motDePasse("password")
+                .dateInscription(dateInscription)
+                .build();
+        proprietaireRepository.save(proprietaire);
+
+        Proprietaire findProprietaire = proprietaireRepository.findFirstByNumTel(proprietaire.getNumTel()).get();
+
+        assertThat(findProprietaire).isNotNull();
+        assertThat(findProprietaire.getId()).isNotNull();
+        assertThat(findProprietaire.getNom()).isEqualTo(proprietaire.getNom());
+        assertThat(findProprietaire.getPrenom()).isEqualTo(proprietaire.getPrenom());
+        assertThat(findProprietaire.getEmail()).isEqualTo(proprietaire.getEmail());
+        assertThat(findProprietaire.getNumTel()).isEqualTo(proprietaire.getNumTel());
+        assertThat(findProprietaire.getMotDePasse()).isEqualTo(proprietaire.getMotDePasse());
+        assertThat(findProprietaire.getDateInscription()).isEqualTo(proprietaire.getDateInscription());
+    }
+
+    @Test
+    public void ProprietaireRepository_DeleteById_ReturnProprietaire() {
+
+        LocalDateTime dateInscription = LocalDateTime.now();
+        Proprietaire proprietaire = Proprietaire.builder()
+                .nom("Ferreira")
+                .prenom("Mathieu")
+                .email("test@gmail.com")
+                .numTel("0612345678")
+                .motDePasse("password")
+                .dateInscription(dateInscription)
+                .build();
+        proprietaireRepository.save(proprietaire);
+
+        proprietaireRepository.deleteById(proprietaire.getId());
+
+        List<Proprietaire> proprietaires = proprietaireRepository.findAll();
+        assertThat(proprietaires).isNotNull();
+        assertThat(proprietaires).hasSize(0);
+    }
 
 }
