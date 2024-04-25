@@ -25,8 +25,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
-          context: .
-          file: Dockefile_back
+          file: ./Dockefile_back
           push: true
           tags: tayarim_back:latest
 #      - name: Build the Docker image for the backend
