@@ -23,7 +23,7 @@ jobs:
         with:
           file: ./Dockerfile_back
           push: true
-          tags: gcr.io/tayarim-project/tayarim_back:latest
+          tags: eu.gcr.io/tayarim-project/tayarim_back:latest
 #      - name: Build the Docker image for the backend
 #        run: docker build . -f Dockerfile_back --tag rg.fr-par.scw.cloud/tayarim-registry/backend:$GITHUB_SHA
 #      - name: Tag the image
