@@ -236,4 +236,60 @@ public class ProprietaireServiceTest {
 
     }
 
+    @Test
+    public void ProprietaireService_VerifyHashedPassword_ReturnTrue(){
+        LocalDateTime localDateTime = LocalDateTime.now();
+        Long id = 1L;
+
+        Proprietaire proprietaire = Proprietaire.builder()
+                .nom("Ferreira")
+                .prenom("Mathieu")
+                .email("test@gmail.com")
+                .numTel("0612345678")
+                .motDePasse("password")
+                .dateInscription(localDateTime)
+                .build();
+        proprietaire.setLogements(null);
+        proprietaire.setId(id);
+        when(proprietaireRepository.findById(id)).thenReturn(Optional.of(proprietaire));
+
+    }
+    @Test
+    public void ProprietaireService_HashPassword_ReturnHashedPAssword(){
+        LocalDateTime localDateTime = LocalDateTime.now();
+        Long id = 1L;
+
+        Proprietaire proprietaire = Proprietaire.builder()
+                .nom("Ferreira")
+                .prenom("Mathieu")
+                .email("test@gmail.com")
+                .numTel("0612345678")
+                .motDePasse("password")
+                .dateInscription(localDateTime)
+                .build();
+        proprietaire.setLogements(null);
+        proprietaire.setId(id);
+        when(proprietaireRepository.findById(id)).thenReturn(Optional.of(proprietaire));
+
+    }
+
+    @Test
+    public void ProprietaireService_VerifyPassword_ReturnTrue(){
+        LocalDateTime localDateTime = LocalDateTime.now();
+        Long id = 1L;
+
+        Proprietaire proprietaire = Proprietaire.builder()
+                .nom("Ferreira")
+                .prenom("Mathieu")
+                .email("test@gmail.com")
+                .numTel("0612345678")
+                .motDePasse("password")
+                .dateInscription(localDateTime)
+                .build();
+        proprietaire.setLogements(null);
+        proprietaire.setId(id);
+        when(proprietaireRepository.findById(id)).thenReturn(Optional.of(proprietaire));
+
+    }
+
 }
