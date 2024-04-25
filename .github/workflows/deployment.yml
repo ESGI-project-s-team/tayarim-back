@@ -10,7 +10,6 @@ jobs:
   login:
     runs-on: ubuntu-latest
     steps:
-      
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
         
@@ -22,9 +21,9 @@ jobs:
           password: ${{ secrets.GCR_JSON_KEY }}
           
       - name: Build and push
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v4
         with:
-          file: ./Dockefile_back
+          file: ./Dockerfile_back
           push: true
           tags: tayarim_back:latest
 #      - name: Build the Docker image for the backend
