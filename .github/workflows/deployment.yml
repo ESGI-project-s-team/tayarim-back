@@ -28,7 +28,7 @@ jobs:
           context: ./app
           file: Dockefile_back
           push: true
-          tags: tayarim_back:$GITHUB_SHA
+          tags: tayarim_back:latest
 #      - name: Build the Docker image for the backend
 #        run: docker build . -f Dockerfile_back --tag rg.fr-par.scw.cloud/tayarim-registry/backend:$GITHUB_SHA
 #      - name: Tag the image
