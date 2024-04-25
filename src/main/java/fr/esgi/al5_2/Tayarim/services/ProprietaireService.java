@@ -127,7 +127,7 @@ public class ProprietaireService {
 
         Proprietaire proprietaire = optionalProprietaire.get();
 
-        return BCrypt.checkpw(password, proprietaire.getMotDePasse());
+        return verifyHashedPassword(password, proprietaire.getMotDePasse());
 
     }
 
