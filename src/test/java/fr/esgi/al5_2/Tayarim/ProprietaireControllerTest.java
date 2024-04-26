@@ -108,5 +108,110 @@ public class ProprietaireControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.numTel", CoreMatchers.is(proprietaireDTO.getNumTel())));
     }
 
+    @Test
+    public void ProprietaireController_CreerProprietaire_ReturnErrorOwnerInvalidName() throws Exception {
+        proprietaireCreationDTO.setNom("");
+        given(proprietaireService.creerProprietaire(ArgumentMatchers.any())).willAnswer(invocationOnMock -> proprietaireDTO);
+
+        ResultActions response = mockMvc.perform(post("/proprietaires")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(proprietaireCreationDTO)));
+
+        List<String> errors = List.of("error_owner_invalid_name");
+
+        response.andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors", CoreMatchers.is(errors)));
+    }
+
+    @Test
+    public void ProprietaireController_CreerProprietaire_ReturnErrorOwnerInvalidFirstName() throws Exception {
+        proprietaireCreationDTO.setPrenom("");
+        given(proprietaireService.creerProprietaire(ArgumentMatchers.any())).willAnswer(invocationOnMock -> proprietaireDTO);
+
+        ResultActions response = mockMvc.perform(post("/proprietaires")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(proprietaireCreationDTO)));
+
+        List<String> errors = List.of("error_owner_invalid_firstName");
+
+        response.andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors", CoreMatchers.is(errors)));
+    }
+
+    @Test
+    public void ProprietaireController_CreerProprietaire_ReturnErrorOwnerInvalidMail_WhenEmailIsEmpty() throws Exception {
+        proprietaireCreationDTO.setEmail("");
+        given(proprietaireService.creerProprietaire(ArgumentMatchers.any())).willAnswer(invocationOnMock -> proprietaireDTO);
+
+        ResultActions response = mockMvc.perform(post("/proprietaires")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(proprietaireCreationDTO)));
+
+        List<String> errors = List.of("error_owner_invalid_mail");
+
+        response.andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors", CoreMatchers.is(errors)));
+    }
+
+    @Test
+    public void ProprietaireController_CreerProprietaire_ReturnErrorOwnerInvalidMail_WhenEmailDoesntMatchFormat() throws Exception {
+        proprietaireCreationDTO.setEmail("testmailcom");
+        given(proprietaireService.creerProprietaire(ArgumentMatchers.any())).willAnswer(invocationOnMock -> proprietaireDTO);
+
+        ResultActions response = mockMvc.perform(post("/proprietaires")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(proprietaireCreationDTO)));
+
+        List<String> errors = List.of("error_owner_invalid_mail");
+
+        response.andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors", CoreMatchers.is(errors)));
+    }
+
+    @Test
+    public void ProprietaireController_CreerProprietaire_ReturnErrorOwnerInvalidNumTel_WhenNumTelIsEmpty() throws Exception {
+        proprietaireCreationDTO.setNumTel("");
+        given(proprietaireService.creerProprietaire(ArgumentMatchers.any())).willAnswer(invocationOnMock -> proprietaireDTO);
+
+        ResultActions response = mockMvc.perform(post("/proprietaires")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(proprietaireCreationDTO)));
+
+        List<String> errors = List.of("error_owner_invalid_phone", "error_owner_invalid_phone"); // 2 error because it also doesnt match Regex
+
+        response.andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors", CoreMatchers.is(errors)));
+    }
+
+    @Test
+    public void ProprietaireController_CreerProprietaire_ReturnErrorOwnerInvalidNumTel_WhenNumTelDoesntMatchFormat() throws Exception {
+        proprietaireCreationDTO.setNumTel("aaaaa");
+        given(proprietaireService.creerProprietaire(ArgumentMatchers.any())).willAnswer(invocationOnMock -> proprietaireDTO);
+
+        ResultActions response = mockMvc.perform(post("/proprietaires")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(proprietaireCreationDTO)));
+
+        List<String> errors = List.of("error_owner_invalid_phone");
+
+        response.andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors", CoreMatchers.is(errors)));
+    }
+
+    @Test
+    public void ProprietaireController_CreerProprietaire_ReturnErrorOwnerInvalidMotDePasse() throws Exception {
+        proprietaireCreationDTO.setMotDePasse("");
+        given(proprietaireService.creerProprietaire(ArgumentMatchers.any())).willAnswer(invocationOnMock -> proprietaireDTO);
+
+        ResultActions response = mockMvc.perform(post("/proprietaires")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(proprietaireCreationDTO)));
+
+        List<String> errors = List.of("error_owner_invalid_password");
+
+        response.andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors", CoreMatchers.is(errors)));
+    }
+
 }
 
