@@ -1,11 +1,17 @@
 package fr.esgi.al5_2.Tayarim;
 
 import fr.esgi.al5_2.Tayarim.auth.AuthTokenFilter;
+import fr.esgi.al5_2.Tayarim.dto.logement.LogementDTO;
+import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireDTO;
+import fr.esgi.al5_2.Tayarim.entities.Proprietaire;
 import fr.esgi.al5_2.Tayarim.repositories.ProprietaireRepository;
 import fr.esgi.al5_2.Tayarim.services.AuthService;
+import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -18,42 +24,88 @@ import fr.esgi.al5_2.Tayarim.services.ProprietaireService;
 import fr.esgi.al5_2.Tayarim.controllers.ProprietaireController;
 import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireCreationDTO;
 
+import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper; // Make sure to import ObjectMapper
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-@ExtendWith(SpringExtension.class)
-@WebMvcTest(ProprietaireController.class)
+import java.time.LocalDateTime;
+import java.util.List;
+
+@WebMvcTest(controllers = ProprietaireController.class)
+@AutoConfigureMockMvc(addFilters = false)
+@ExtendWith(MockitoExtension.class)
 public class ProprietaireControllerTest {
-
     @Autowired
     private MockMvc mockMvc;
 
     @MockBean
-    private AuthService authService;
+    private ProprietaireService proprietaireService;
 
     @MockBean
-    private AuthTokenFilter authTokenFilter;
+    private AuthService authService;
 
     @Autowired
-    private ObjectMapper objectMapper; // Spring Boot will automatically provide an ObjectMapper bean
+    private ObjectMapper objectMapper;
+    private ProprietaireCreationDTO proprietaireCreationDTO;
+    private Proprietaire proprietaire;
+    private ProprietaireDTO proprietaireDTO;
+    private ProprietaireDTO proprietaireDTOWithLogement;
+
+    @BeforeEach
+    public void init() {
+        LocalDateTime localDateTime = LocalDateTime.now();
+        proprietaireCreationDTO = ProprietaireCreationDTO.builder()
+                .nom("Ferreira")
+                .prenom("Mathieu")
+                .email("test@gmail.com")
+                .numTel("0612345678")
+                .motDePasse("password")
+                .build();
+        proprietaire = Proprietaire.builder()
+                .nom("Ferreira")
+                .prenom("Mathieu")
+                .email("test@gmail.com")
+                .numTel("0612345678")
+                .motDePasse("$2a$12$3hQDUblvPShmuQg/.g0Qk.wHAGjqPL54RMO/lNgsei/HQGo0ZLIYm")
+                .dateInscription(LocalDateTime.now())
+                .build();
+        proprietaireDTO = ProprietaireDTO.builder()
+                .id(1L)
+                .nom("Ferreira")
+                .prenom("Mathieu")
+                .email("test@gmail.com")
+                .numTel("0612345678")
+                .dateInscription(localDateTime)
+                .logements(null)
+                .build();
+        proprietaireDTOWithLogement = ProprietaireDTO.builder()
+                .id(1L)
+                .nom("Ferreira")
+                .prenom("Mathieu")
+                .email("test@gmail.com")
+                .numTel("0612345678")
+                .dateInscription(localDateTime)
+                .logements(List.of(new LogementDTO(1L, 1L)))
+                .build();
+    }
 
     @Test
-    public void shouldCreateUser() throws Exception {
+    public void ProprietaireController_CreerProprietaire_ReturnCreated() throws Exception {
+        given(proprietaireService.creerProprietaire(ArgumentMatchers.any())).willAnswer(invocationOnMock -> proprietaireDTO);
 
-        ProprietaireCreationDTO proprietaireCreationDTO = new ProprietaireCreationDTO(
-        "Ferreira", 
-        "Mathieu", 
-        "test@gmail.com", 
-        "0612345678", 
-        "password");
+        ResultActions response = mockMvc.perform(post("/proprietaires")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(proprietaireCreationDTO)));
 
-        mockMvc.perform(post("/proprietaires")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(proprietaireCreationDTO))) // Convert the object to JSON string // Set your validator here
-            .andExpect(status().isCreated());
-
+        response.andExpect(MockMvcResultMatchers.status().isCreated())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.nom", CoreMatchers.is(proprietaireDTO.getNom())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.prenom", CoreMatchers.is(proprietaireDTO.getPrenom())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.email", CoreMatchers.is(proprietaireDTO.getEmail())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.numTel", CoreMatchers.is(proprietaireDTO.getNumTel())));
     }
 
 }
