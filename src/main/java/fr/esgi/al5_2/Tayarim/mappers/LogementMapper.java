@@ -14,10 +14,9 @@ import lombok.NonNull;
 public class LogementMapper {
 
     public static LogementDTO entityToDto(@NonNull Logement logement){
-        ProprietaireDTO proprietaireDTO = ProprietaireMapper.entityToDto(logement.getProprietaire(), false);
         return new LogementDTO(
             logement.getId(), 
-            proprietaireDTO);
+            logement.getProprietaire().getId());
     }
 
     public static List<LogementDTO> entityListToDtoList(@NonNull List<Logement> logements){
