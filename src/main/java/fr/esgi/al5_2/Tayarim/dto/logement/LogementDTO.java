@@ -12,7 +12,7 @@ public class LogementDTO {
     @NonNull
     private Long id;
     @NonNull
-    private ProprietaireDTO proprietaire;
+    private Long idProprietaire;
 
 
 }
