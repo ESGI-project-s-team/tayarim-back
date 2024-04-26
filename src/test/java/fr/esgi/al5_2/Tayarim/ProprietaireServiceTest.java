@@ -237,58 +237,50 @@ public class ProprietaireServiceTest {
     }
 
     @Test
-    public void ProprietaireService_VerifyHashedPassword_ReturnTrue(){
-        LocalDateTime localDateTime = LocalDateTime.now();
-        Long id = 1L;
-
-        Proprietaire proprietaire = Proprietaire.builder()
-                .nom("Ferreira")
-                .prenom("Mathieu")
-                .email("test@gmail.com")
-                .numTel("0612345678")
-                .motDePasse("password")
-                .dateInscription(localDateTime)
-                .build();
-        proprietaire.setLogements(null);
-        proprietaire.setId(id);
-        when(proprietaireRepository.findById(id)).thenReturn(Optional.of(proprietaire));
-
-    }
-    @Test
-    public void ProprietaireService_HashPassword_ReturnHashedPAssword(){
-        LocalDateTime localDateTime = LocalDateTime.now();
-        Long id = 1L;
-
-        Proprietaire proprietaire = Proprietaire.builder()
-                .nom("Ferreira")
-                .prenom("Mathieu")
-                .email("test@gmail.com")
-                .numTel("0612345678")
-                .motDePasse("password")
-                .dateInscription(localDateTime)
-                .build();
-        proprietaire.setLogements(null);
-        proprietaire.setId(id);
-        when(proprietaireRepository.findById(id)).thenReturn(Optional.of(proprietaire));
-
-    }
-
-    @Test
     public void ProprietaireService_VerifyPassword_ReturnTrue(){
-        LocalDateTime localDateTime = LocalDateTime.now();
         Long id = 1L;
+        LocalDateTime localDateTime = LocalDateTime.now();
+        String password = "password";
+        String hashedPassword = "$2a$12$3hQDUblvPShmuQg/.g0Qk.wHAGjqPL54RMO/lNgsei/HQGo0ZLIYm";
 
         Proprietaire proprietaire = Proprietaire.builder()
                 .nom("Ferreira")
                 .prenom("Mathieu")
                 .email("test@gmail.com")
                 .numTel("0612345678")
-                .motDePasse("password")
+                .motDePasse(hashedPassword)
                 .dateInscription(localDateTime)
                 .build();
-        proprietaire.setLogements(null);
-        proprietaire.setId(id);
-        when(proprietaireRepository.findById(id)).thenReturn(Optional.of(proprietaire));
+        when(proprietaireRepository.findById(id)).thenReturn(Optional.ofNullable(proprietaire));
+
+        boolean result = proprietaireService.verifyPassword(password, id);
+
+        Assertions.assertThat(result).isTrue();
+
+
+    }
+
+    @Test
+    public void ProprietaireService_VerifyPassword_ReturnFalse(){
+        Long id = 1L;
+        LocalDateTime localDateTime = LocalDateTime.now();
+        String password = "passwordFalse";
+        String hashedPassword = "$2a$12$3hQDUblvPShmuQg/.g0Qk.wHAGjqPL54RMO/lNgsei/HQGo0ZLIYm";
+
+        Proprietaire proprietaire = Proprietaire.builder()
+                .nom("Ferreira")
+                .prenom("Mathieu")
+                .email("test@gmail.com")
+                .numTel("0612345678")
+                .motDePasse(hashedPassword)
+                .dateInscription(localDateTime)
+                .build();
+        when(proprietaireRepository.findById(id)).thenReturn(Optional.ofNullable(proprietaire));
+
+        boolean result = proprietaireService.verifyPassword(password, id);
+
+        Assertions.assertThat(result).isFalse();
+
 
     }
 
