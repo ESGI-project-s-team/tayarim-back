@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import fr.esgi.al5_2.Tayarim.exceptions.*;
+import fr.esgi.al5_2.Tayarim.controllers.AuthController;
 import fr.esgi.al5_2.Tayarim.services.AuthService;
 import fr.esgi.al5_2.Tayarim.services.ProprietaireService;
 import org.springframework.http.HttpStatus;
