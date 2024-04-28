@@ -21,8 +21,8 @@ public class JwtHelper {
     @Value("${PRIVATE_KEY}")
     private String privateKey;
 
-    public String generateToken(String email, String uuid) {
-        String subject = email.concat(";").concat(uuid);
+    public String generateToken(String email, String uuid, boolean isAdmin) {
+        String subject = email.concat(";").concat(uuid).concat(";").concat(Boolean.toString(isAdmin));
         var now = Instant.now();
         return Jwts.builder()
                 .subject(subject)
@@ -46,11 +46,27 @@ public class JwtHelper {
     }
 
     public String extractEmail(String token) {
+        if (extractSubject(token).split(";")[0] == null){
+            throw new TokenExpireOrInvalidException();
+        }
+
         return extractSubject(token).split(";")[0];
     }
 
     public String extractUuid(String token) {
+        if (extractSubject(token).split(";")[1] == null){
+            throw new TokenExpireOrInvalidException();
+        }
+
         return extractSubject(token).split(";")[1];
+    }
+
+    public Boolean extractAdmin(String token) {
+        if (extractSubject(token).split(";")[0] == null){
+            throw new TokenExpireOrInvalidException();
+        }
+
+        return Boolean.getBoolean(extractSubject(token).split(";")[0]);
     }
 
     public Boolean validateToken(String token, String email, String uuid) {
