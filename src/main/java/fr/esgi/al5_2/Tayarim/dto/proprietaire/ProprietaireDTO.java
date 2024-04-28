@@ -24,6 +24,8 @@ public class ProprietaireDTO {
     @NonNull
     private String numTel;
 
+    private String motDePasse;
+    
     @NonNull
     private LocalDateTime dateInscription;
 

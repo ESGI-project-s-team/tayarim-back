@@ -6,12 +6,16 @@ import org.springframework.stereotype.Repository;
 
 import fr.esgi.al5_2.Tayarim.entities.Proprietaire;
 
+import java.util.Optional;
+
 @Repository
 public interface ProprietaireRepository extends JpaRepository<Proprietaire, Long>{
 
-    Proprietaire findFirstByEmail(@NonNull String email);
+    Optional<Proprietaire> findFirstByEmail(@NonNull String email);
 
-    Proprietaire findFirstByNumTel(@NonNull String numTel);
+    Optional<Proprietaire> findFirstByNumTel(@NonNull String numTel);
+
+    Optional<Proprietaire> findFirstByEmailAndMotDePasse(@NonNull String email, @NonNull String motDePasse);
 
 
 }

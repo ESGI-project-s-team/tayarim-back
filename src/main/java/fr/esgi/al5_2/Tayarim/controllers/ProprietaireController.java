@@ -5,15 +5,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import fr.esgi.al5_2.Tayarim.exceptions.ProprietaireEmailAlreadyExistException;
-import fr.esgi.al5_2.Tayarim.exceptions.ProprietaireNotFoundException;
-import fr.esgi.al5_2.Tayarim.exceptions.ProprietaireNumTelAlreadyExistException;
+import fr.esgi.al5_2.Tayarim.exceptions.*;
+import fr.esgi.al5_2.Tayarim.controllers.AuthController;
+import fr.esgi.al5_2.Tayarim.controllers.AuthController;
+import fr.esgi.al5_2.Tayarim.services.AuthService;
+import fr.esgi.al5_2.Tayarim.services.ProprietaireService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
-import fr.esgi.al5_2.Tayarim.Services.ProprietaireService;
 import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireCreationDTO;
 import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireDTO;
 import jakarta.validation.Valid;
@@ -23,9 +24,10 @@ import jakarta.validation.Valid;
 public class ProprietaireController {
 
     private final ProprietaireService proprietaireService;
-
-    public ProprietaireController(ProprietaireService proprietaireService) {
+    private final AuthService authService;
+    public ProprietaireController(ProprietaireService proprietaireService, AuthService authService) {
         this.proprietaireService = proprietaireService;
+        this.authService = authService;
     }
 
     @PostMapping("")
@@ -36,7 +38,10 @@ public class ProprietaireController {
     }
 
     @GetMapping("")
-    public ResponseEntity<List<ProprietaireDTO>> getProprietaire(@RequestParam(name = "logement", defaultValue = "false") Boolean isLogement){
+    public ResponseEntity<List<ProprietaireDTO>> getProprietaire(@RequestHeader("Authorization") String authHeader, @RequestParam(name = "logement", defaultValue = "false") Boolean isLogement){
+
+        authService.verifyToken(getTokenFromHeader(authHeader));
+
         return new ResponseEntity<>(
                 proprietaireService.getProprietaire(isLogement),
                 HttpStatus.OK
@@ -44,11 +49,22 @@ public class ProprietaireController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProprietaireDTO> getProprietaire(@PathVariable Long id, @RequestParam(name = "logement", defaultValue = "false") Boolean isLogement){
+    public ResponseEntity<ProprietaireDTO> getProprietaire(@RequestHeader("Authorization") String authHeader, @PathVariable Long id, @RequestParam(name = "logement", defaultValue = "false") Boolean isLogement){
+
+        authService.verifyToken(getTokenFromHeader(authHeader));
+
         return new ResponseEntity<>(
                 proprietaireService.getProprietaireById(id, isLogement),
                 HttpStatus.OK
         );
+    }
+
+    private String getTokenFromHeader(String authHeader){
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new TokenExpireOrInvalidException();
+        }
+
+        return authHeader.substring(7);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -81,6 +97,18 @@ public class ProprietaireController {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler({ProprietaireNotFoundException.class})
     public Map<String, List<String>> proprietaireNotFoundException(ProprietaireNotFoundException ex){
+        return mapException(ex);
+    }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler({PasswordHashNotPossibleException.class})
+    public Map<String, List<String>> passwordHashNotPossibleException(PasswordHashNotPossibleException ex){
+        return mapException(ex);
+    }
+
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler({TokenExpireOrInvalidException.class})
+    public Map<String, List<String>> tokenExpireOrInvalidException(TokenExpireOrInvalidException ex){
         return mapException(ex);
     }
 

@@ -1,5 +1,6 @@
 package fr.esgi.al5_2.Tayarim;
 
+import fr.esgi.al5_2.Tayarim.services.AuthService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
-import fr.esgi.al5_2.Tayarim.Services.ProprietaireService;
+import fr.esgi.al5_2.Tayarim.services.ProprietaireService;
 import fr.esgi.al5_2.Tayarim.controllers.ProprietaireController;
 import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireCreationDTO;
 
@@ -27,6 +28,9 @@ public class ProprietaireControllerTest {
 
     @MockBean
     private ProprietaireService proprietaireService;
+
+    @MockBean
+    private AuthService authService;
 
     @Autowired
     private ObjectMapper objectMapper; // Spring Boot will automatically provide an ObjectMapper bean

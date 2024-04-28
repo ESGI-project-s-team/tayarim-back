@@ -1,8 +1,6 @@
 package fr.esgi.al5_2.Tayarim.mappers;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
@@ -24,21 +22,26 @@ public class ProprietaireMapper {
             LocalDateTime.now());
     }
 
-    public static ProprietaireDTO entityToDto(@NonNull Proprietaire proprietaire, boolean isLogement){
+    public static ProprietaireDTO entityToDto(@NonNull Proprietaire proprietaire, boolean isLogements){
         return new ProprietaireDTO(
             proprietaire.getId(),
             proprietaire.getNom(),
             proprietaire.getPrenom(),
             proprietaire.getEmail(),
             proprietaire.getNumTel(),
-            proprietaire.getDateInscription(),
-            isLogement ? LogementMapper.entityListToDtoList(proprietaire.getLogements()) : null);
+            null,
+            proprietaire.getDateInscription(), 
+            isLogements ? LogementMapper.entityListToDtoList(proprietaire.getLogements()) : null);
     }
 
-    public static List<ProprietaireDTO> entityListToDtoList(@NonNull List<Proprietaire> proprietaireList, boolean isLogement){
-        return proprietaireList.stream()
-                .map(proprietaire -> ProprietaireMapper.entityToDto(proprietaire, isLogement))
-                .collect(Collectors.toList());
+    public static Proprietaire dtoToEntity(@NonNull ProprietaireDTO proprietaireDTO){
+        return new Proprietaire(
+            proprietaireDTO.getNom(), 
+            proprietaireDTO.getPrenom(), 
+            proprietaireDTO.getEmail(), 
+            proprietaireDTO.getNumTel(), 
+            proprietaireDTO.getMotDePasse(), 
+            proprietaireDTO.getDateInscription());
     }
 
 }
