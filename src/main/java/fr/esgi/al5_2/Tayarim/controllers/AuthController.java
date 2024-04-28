@@ -1,7 +1,7 @@
 package fr.esgi.al5_2.Tayarim.controllers;
 
-import fr.esgi.al5_2.Tayarim.dto.proprietaire.AuthLoginDTO;
-import fr.esgi.al5_2.Tayarim.dto.proprietaire.AuthLoginResponseDTO;
+import fr.esgi.al5_2.Tayarim.dto.auth.AuthLoginDTO;
+import fr.esgi.al5_2.Tayarim.dto.auth.AuthLoginResponseDTO;
 import fr.esgi.al5_2.Tayarim.exceptions.*;
 import fr.esgi.al5_2.Tayarim.services.AuthService;
 import jakarta.validation.Valid;
