@@ -3,6 +3,7 @@ package fr.esgi.al5_2.Tayarim.services;
 import fr.esgi.al5_2.Tayarim.auth.JwtHelper;
 import fr.esgi.al5_2.Tayarim.auth.TokenCacheService;
 import fr.esgi.al5_2.Tayarim.dto.auth.AuthLoginResponseDTO;
+import fr.esgi.al5_2.Tayarim.dto.proprietaire.AdministrateurDTO;
 import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireDTO;
 import fr.esgi.al5_2.Tayarim.entities.Proprietaire;
 import fr.esgi.al5_2.Tayarim.exceptions.*;
@@ -17,73 +18,122 @@ import java.util.UUID;
 public class AuthService {
 
     private final ProprietaireService proprietaireService;
+    private final AdministrateurService administrateurService;
     private final JwtHelper jwtHelper;
 
     private final TokenCacheService tokenCacheService;
 
-    public AuthService(ProprietaireService proprietaireService, JwtHelper jwtHelper, TokenCacheService tokenCacheService) {
+    public AuthService(ProprietaireService proprietaireService, AdministrateurService administrateurService, JwtHelper jwtHelper, TokenCacheService tokenCacheService) {
         this.proprietaireService = proprietaireService;
+        this.administrateurService = administrateurService;
         this.jwtHelper = jwtHelper;
         this.tokenCacheService = tokenCacheService;
     }
 
-    public AuthLoginResponseDTO loginProprietaire(@NonNull String email, @NonNull String password){
-        ProprietaireDTO proprietaireDTO = proprietaireService.getProprietaireByEmail(email);
+    public AuthLoginResponseDTO login(@NonNull String email, @NonNull String password){
+        System.out.println("1");
+        ProprietaireDTO proprietaireDTO = null;
+        AdministrateurDTO administrateurDTO = null;
+        Long id;
+        boolean isAdmin = false;
+        try {
+            System.out.println("2.1");
+            proprietaireDTO = proprietaireService.getProprietaireByEmail(email);
+            id = proprietaireDTO.getId();
+        } catch (Exception e){
+            System.out.println("2.2");
+            try{
+                administrateurDTO = administrateurService.getAdministrateurByEmail(email);
+                id = administrateurDTO.getId();
+                isAdmin = true;
+            } catch (Exception exception){
+                throw new UtilisateurNotFoundException();
+            }
 
-        if(!proprietaireService.verifyPassword(password, proprietaireDTO.getId())){
-            throw new ProprietaireNotFoundException();
         }
+        System.out.println("3");
 
-        String uuid = tokenCacheService.getFromCache(proprietaireDTO.getId());
+        if( proprietaireDTO != null && !proprietaireService.verifyPassword(password, proprietaireDTO.getId())){
+            System.out.println("4.1");
+            throw new ProprietaireNotFoundException();
+        } else if (administrateurDTO != null && !administrateurService.verifyPassword(password, administrateurDTO.getId())) {
+            System.out.println("4.2");
+            throw new AdministrateurNotFoundException();
+        }
+        System.out.println("5");
+
+        String uuid = tokenCacheService.getFromCache(id);
         if (uuid == null){
             uuid = UUID.randomUUID().toString();
-            tokenCacheService.addToCache(proprietaireDTO.getId() ,uuid);
+            tokenCacheService.addToCache(id ,uuid);
         }
+        System.out.println("6");
 
-        String token = jwtHelper.generateToken(email, uuid);
+        String token = jwtHelper.generateToken(email, uuid, isAdmin);
+        System.out.println("7");
 
         return new AuthLoginResponseDTO(
-                proprietaireDTO.getId(),
+                id,
                 token
         );
 
     }
 
-    public AuthLoginResponseDTO authProprietaire(@NonNull String token){
+    public AuthLoginResponseDTO auth(@NonNull String token){
 
-        ProprietaireDTO proprietaireDTO = verifyToken(token);
+        Long id = verifyToken(token, false);
         
         return new AuthLoginResponseDTO(
-                proprietaireDTO.getId(),
+                id,
                 token
         );
 
     }
 
-    public void logoutProprietaire(@NonNull String token){
+    public void logout(@NonNull String token){
 
-        ProprietaireDTO proprietaireDTO = verifyToken(token);
+        Long id = verifyToken(token,false);
 
-        tokenCacheService.addToCache(proprietaireDTO.getId(), UUID.randomUUID().toString());
+        tokenCacheService.addToCache(id, UUID.randomUUID().toString());
 
     }
 
-    public ProprietaireDTO verifyToken(@NonNull String token){
+    public Long verifyToken(@NonNull String token, boolean shouldBeAdmin){
         ProprietaireDTO proprietaireDTO;
-        try{
-            proprietaireDTO = proprietaireService.getProprietaireByEmail(jwtHelper.extractEmail(token));
-        } catch (ProprietaireNotFoundException ex){
+        AdministrateurDTO administrateurDTO;
+        Long id;
+        String email;
+        boolean isAdmin = jwtHelper.extractAdmin(token);
+        if(shouldBeAdmin && !isAdmin){
             throw new TokenExpireOrInvalidException();
         }
 
-        String uuid = tokenCacheService.getFromCache(proprietaireDTO.getId());
+        if(isAdmin){
+            try{
+                administrateurDTO = administrateurService.getAdministrateurByEmail(jwtHelper.extractEmail(token));
+                id = administrateurDTO.getId();
+                email = administrateurDTO.getEmail();
+            } catch (AdministrateurNotFoundException ex){
+                throw new TokenExpireOrInvalidException();
+            }
+        }else{
+            try{
+                proprietaireDTO = proprietaireService.getProprietaireByEmail(jwtHelper.extractEmail(token));
+                id = proprietaireDTO.getId();
+                email = proprietaireDTO.getEmail();
+            } catch (ProprietaireNotFoundException ex){
+                throw new TokenExpireOrInvalidException();
+            }
+        }
+
+        String uuid = tokenCacheService.getFromCache(id);
         if(uuid == null){
             throw new TokenExpireOrInvalidException();
         }
 
-        if(!jwtHelper.validateToken(token, proprietaireDTO.getEmail(), uuid)){
+        if(!jwtHelper.validateToken(token, email, uuid)){
             throw new TokenExpireOrInvalidException();
         }
-        return proprietaireDTO;
+        return id;
     }
 }

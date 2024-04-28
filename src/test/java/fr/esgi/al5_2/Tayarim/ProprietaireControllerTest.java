@@ -26,6 +26,7 @@ import fr.esgi.al5_2.Tayarim.controllers.ProprietaireController;
 import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireCreationDTO;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -115,8 +116,10 @@ public class ProprietaireControllerTest {
     @Test
     public void ProprietaireController_CreerProprietaire_ReturnCreated() throws Exception {
         given(proprietaireService.creerProprietaire(ArgumentMatchers.any())).willAnswer(invocationOnMock -> proprietaireDTO);
+        when(authService.verifyToken(any(), anyBoolean())).thenReturn(proprietaireDTO.getId()); //skip token verif
 
         ResultActions response = mockMvc.perform(post("/proprietaires")
+                .header("Authorization", "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqb2huZG9lQGdtYWlsLmNvbTs2MjZjMjlhNS0zZGU0LTQ5Y2YtODI4ZS1hNDkxNWQzMzM5N2EiLCJpYXQiOjE3MTQxMTM1NzcsImV4cCI6MTcxNDExNzE3N30.kbU1pVkUHkRXktX44JBFN_xzDv-ZvSmtPjnjORO0vHPiHd3f2MGfDF15VTFO5icIrU_bV9cTqZ70RDlKdlp0-g")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(proprietaireCreationDTO)));
 
@@ -131,8 +134,10 @@ public class ProprietaireControllerTest {
     public void ProprietaireController_CreerProprietaire_ReturnErrorOwnerInvalidName() throws Exception {
         proprietaireCreationDTO.setNom("");
         given(proprietaireService.creerProprietaire(ArgumentMatchers.any())).willAnswer(invocationOnMock -> proprietaireDTO);
+        when(authService.verifyToken(any(), anyBoolean())).thenReturn(proprietaireDTO.getId()); //skip token verif
 
         ResultActions response = mockMvc.perform(post("/proprietaires")
+                .header("Authorization", "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqb2huZG9lQGdtYWlsLmNvbTs2MjZjMjlhNS0zZGU0LTQ5Y2YtODI4ZS1hNDkxNWQzMzM5N2EiLCJpYXQiOjE3MTQxMTM1NzcsImV4cCI6MTcxNDExNzE3N30.kbU1pVkUHkRXktX44JBFN_xzDv-ZvSmtPjnjORO0vHPiHd3f2MGfDF15VTFO5icIrU_bV9cTqZ70RDlKdlp0-g")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(proprietaireCreationDTO)));
 
@@ -146,8 +151,10 @@ public class ProprietaireControllerTest {
     public void ProprietaireController_CreerProprietaire_ReturnErrorOwnerInvalidFirstName() throws Exception {
         proprietaireCreationDTO.setPrenom("");
         given(proprietaireService.creerProprietaire(ArgumentMatchers.any())).willAnswer(invocationOnMock -> proprietaireDTO);
+        when(authService.verifyToken(any(), anyBoolean())).thenReturn(proprietaireDTO.getId()); //skip token verif
 
         ResultActions response = mockMvc.perform(post("/proprietaires")
+                .header("Authorization", "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqb2huZG9lQGdtYWlsLmNvbTs2MjZjMjlhNS0zZGU0LTQ5Y2YtODI4ZS1hNDkxNWQzMzM5N2EiLCJpYXQiOjE3MTQxMTM1NzcsImV4cCI6MTcxNDExNzE3N30.kbU1pVkUHkRXktX44JBFN_xzDv-ZvSmtPjnjORO0vHPiHd3f2MGfDF15VTFO5icIrU_bV9cTqZ70RDlKdlp0-g")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(proprietaireCreationDTO)));
 
@@ -161,8 +168,10 @@ public class ProprietaireControllerTest {
     public void ProprietaireController_CreerProprietaire_ReturnErrorOwnerInvalidMail_WhenEmailIsEmpty() throws Exception {
         proprietaireCreationDTO.setEmail("");
         given(proprietaireService.creerProprietaire(ArgumentMatchers.any())).willAnswer(invocationOnMock -> proprietaireDTO);
+        when(authService.verifyToken(any(), anyBoolean())).thenReturn(proprietaireDTO.getId()); //skip token verif
 
         ResultActions response = mockMvc.perform(post("/proprietaires")
+                .header("Authorization", "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqb2huZG9lQGdtYWlsLmNvbTs2MjZjMjlhNS0zZGU0LTQ5Y2YtODI4ZS1hNDkxNWQzMzM5N2EiLCJpYXQiOjE3MTQxMTM1NzcsImV4cCI6MTcxNDExNzE3N30.kbU1pVkUHkRXktX44JBFN_xzDv-ZvSmtPjnjORO0vHPiHd3f2MGfDF15VTFO5icIrU_bV9cTqZ70RDlKdlp0-g")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(proprietaireCreationDTO)));
 
@@ -176,8 +185,10 @@ public class ProprietaireControllerTest {
     public void ProprietaireController_CreerProprietaire_ReturnErrorOwnerInvalidMail_WhenEmailDoesntMatchFormat() throws Exception {
         proprietaireCreationDTO.setEmail("testmailcom");
         given(proprietaireService.creerProprietaire(ArgumentMatchers.any())).willAnswer(invocationOnMock -> proprietaireDTO);
+        when(authService.verifyToken(any(), anyBoolean())).thenReturn(proprietaireDTO.getId()); //skip token verif
 
         ResultActions response = mockMvc.perform(post("/proprietaires")
+                .header("Authorization", "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqb2huZG9lQGdtYWlsLmNvbTs2MjZjMjlhNS0zZGU0LTQ5Y2YtODI4ZS1hNDkxNWQzMzM5N2EiLCJpYXQiOjE3MTQxMTM1NzcsImV4cCI6MTcxNDExNzE3N30.kbU1pVkUHkRXktX44JBFN_xzDv-ZvSmtPjnjORO0vHPiHd3f2MGfDF15VTFO5icIrU_bV9cTqZ70RDlKdlp0-g")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(proprietaireCreationDTO)));
 
@@ -191,8 +202,10 @@ public class ProprietaireControllerTest {
     public void ProprietaireController_CreerProprietaire_ReturnErrorOwnerInvalidNumTel_WhenNumTelIsEmpty() throws Exception {
         proprietaireCreationDTO.setNumTel("");
         given(proprietaireService.creerProprietaire(ArgumentMatchers.any())).willAnswer(invocationOnMock -> proprietaireDTO);
+        when(authService.verifyToken(any(), anyBoolean())).thenReturn(proprietaireDTO.getId()); //skip token verif
 
         ResultActions response = mockMvc.perform(post("/proprietaires")
+                .header("Authorization", "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqb2huZG9lQGdtYWlsLmNvbTs2MjZjMjlhNS0zZGU0LTQ5Y2YtODI4ZS1hNDkxNWQzMzM5N2EiLCJpYXQiOjE3MTQxMTM1NzcsImV4cCI6MTcxNDExNzE3N30.kbU1pVkUHkRXktX44JBFN_xzDv-ZvSmtPjnjORO0vHPiHd3f2MGfDF15VTFO5icIrU_bV9cTqZ70RDlKdlp0-g")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(proprietaireCreationDTO)));
 
@@ -206,8 +219,10 @@ public class ProprietaireControllerTest {
     public void ProprietaireController_CreerProprietaire_ReturnErrorOwnerInvalidNumTel_WhenNumTelDoesntMatchFormat() throws Exception {
         proprietaireCreationDTO.setNumTel("aaaaa");
         given(proprietaireService.creerProprietaire(ArgumentMatchers.any())).willAnswer(invocationOnMock -> proprietaireDTO);
+        when(authService.verifyToken(any(), anyBoolean())).thenReturn(proprietaireDTO.getId()); //skip token verif
 
         ResultActions response = mockMvc.perform(post("/proprietaires")
+                .header("Authorization", "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqb2huZG9lQGdtYWlsLmNvbTs2MjZjMjlhNS0zZGU0LTQ5Y2YtODI4ZS1hNDkxNWQzMzM5N2EiLCJpYXQiOjE3MTQxMTM1NzcsImV4cCI6MTcxNDExNzE3N30.kbU1pVkUHkRXktX44JBFN_xzDv-ZvSmtPjnjORO0vHPiHd3f2MGfDF15VTFO5icIrU_bV9cTqZ70RDlKdlp0-g")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(proprietaireCreationDTO)));
 
@@ -221,8 +236,10 @@ public class ProprietaireControllerTest {
     public void ProprietaireController_CreerProprietaire_ReturnErrorOwnerInvalidMotDePasse() throws Exception {
         proprietaireCreationDTO.setMotDePasse("");
         given(proprietaireService.creerProprietaire(ArgumentMatchers.any())).willAnswer(invocationOnMock -> proprietaireDTO);
+        when(authService.verifyToken(any(), anyBoolean())).thenReturn(proprietaireDTO.getId()); //skip token verif
 
         ResultActions response = mockMvc.perform(post("/proprietaires")
+                .header("Authorization", "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqb2huZG9lQGdtYWlsLmNvbTs2MjZjMjlhNS0zZGU0LTQ5Y2YtODI4ZS1hNDkxNWQzMzM5N2EiLCJpYXQiOjE3MTQxMTM1NzcsImV4cCI6MTcxNDExNzE3N30.kbU1pVkUHkRXktX44JBFN_xzDv-ZvSmtPjnjORO0vHPiHd3f2MGfDF15VTFO5icIrU_bV9cTqZ70RDlKdlp0-g")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(proprietaireCreationDTO)));
 
@@ -236,7 +253,7 @@ public class ProprietaireControllerTest {
     public void ProprietaireController_GetProprietaire_ReturnOk() throws Exception {
         given(proprietaireService.getProprietaire(false)).willAnswer(invocationOnMock -> proprietaireDTOS);
 
-        when(authService.verifyToken(any())).thenReturn(proprietaireDTO); //skip token verif
+        when(authService.verifyToken(any(), anyBoolean())).thenReturn(proprietaireDTO.getId()); //skip token verif
 
         ResultActions response = mockMvc.perform(get("/proprietaires")
                 .header("Authorization", "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqb2huZG9lQGdtYWlsLmNvbTs2MjZjMjlhNS0zZGU0LTQ5Y2YtODI4ZS1hNDkxNWQzMzM5N2EiLCJpYXQiOjE3MTQxMTM1NzcsImV4cCI6MTcxNDExNzE3N30.kbU1pVkUHkRXktX44JBFN_xzDv-ZvSmtPjnjORO0vHPiHd3f2MGfDF15VTFO5icIrU_bV9cTqZ70RDlKdlp0-g")
@@ -259,7 +276,7 @@ public class ProprietaireControllerTest {
     public void ProprietaireController_GetProprietaire_WithIdInPath_ReturnOk() throws Exception {
         given(proprietaireService.getProprietaireById(1L, false)).willAnswer(invocationOnMock -> proprietaireDTO);
 
-        when(authService.verifyToken(any())).thenReturn(proprietaireDTO); //skip token verif
+        when(authService.verifyToken(any(), anyBoolean())).thenReturn(proprietaireDTO.getId()); //skip token verif
 
         ResultActions response = mockMvc.perform(get("/proprietaires/1")
                 .header("Authorization", "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqb2huZG9lQGdtYWlsLmNvbTs2MjZjMjlhNS0zZGU0LTQ5Y2YtODI4ZS1hNDkxNWQzMzM5N2EiLCJpYXQiOjE3MTQxMTM1NzcsImV4cCI6MTcxNDExNzE3N30.kbU1pVkUHkRXktX44JBFN_xzDv-ZvSmtPjnjORO0vHPiHd3f2MGfDF15VTFO5icIrU_bV9cTqZ70RDlKdlp0-g")
@@ -278,7 +295,7 @@ public class ProprietaireControllerTest {
         proprietaireDTO.setPrenom(proprietaireUpdateDTO.getPrenom());
         given(proprietaireService.updateProprietaire(1L, proprietaireUpdateDTO)).willAnswer(invocationOnMock -> proprietaireDTO);
 
-        when(authService.verifyToken(any())).thenReturn(proprietaireDTO); //skip token verif
+        when(authService.verifyToken(any(), anyBoolean())).thenReturn(proprietaireDTO.getId()); //skip token verif
 
         ResultActions response = mockMvc.perform(put("/proprietaires/1")
                 .header("Authorization", "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqb2huZG9lQGdtYWlsLmNvbTs2MjZjMjlhNS0zZGU0LTQ5Y2YtODI4ZS1hNDkxNWQzMzM5N2EiLCJpYXQiOjE3MTQxMTM1NzcsImV4cCI6MTcxNDExNzE3N30.kbU1pVkUHkRXktX44JBFN_xzDv-ZvSmtPjnjORO0vHPiHd3f2MGfDF15VTFO5icIrU_bV9cTqZ70RDlKdlp0-g")
@@ -297,7 +314,7 @@ public class ProprietaireControllerTest {
     public void ProprietaireController_DeleteProprietaire_ReturnOk() throws Exception {
         given(proprietaireService.deleteProprietaire(1L)).willAnswer(invocationOnMock -> proprietaireDTO);
 
-        when(authService.verifyToken(any())).thenReturn(proprietaireDTO); //skip token verif
+        when(authService.verifyToken(any(), anyBoolean())).thenReturn(proprietaireDTO.getId()); //skip token verif
 
         ResultActions response = mockMvc.perform(delete("/proprietaires/1")
                 .header("Authorization", "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqb2huZG9lQGdtYWlsLmNvbTs2MjZjMjlhNS0zZGU0LTQ5Y2YtODI4ZS1hNDkxNWQzMzM5N2EiLCJpYXQiOjE3MTQxMTM1NzcsImV4cCI6MTcxNDExNzE3N30.kbU1pVkUHkRXktX44JBFN_xzDv-ZvSmtPjnjORO0vHPiHd3f2MGfDF15VTFO5icIrU_bV9cTqZ70RDlKdlp0-g")

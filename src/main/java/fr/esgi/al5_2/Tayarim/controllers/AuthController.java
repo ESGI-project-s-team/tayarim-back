@@ -26,29 +26,29 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthLoginResponseDTO> loginProprietaire(@Valid @RequestBody AuthLoginDTO authLoginDTO){
+    public ResponseEntity<AuthLoginResponseDTO> login(@Valid @RequestBody AuthLoginDTO authLoginDTO){
         return new ResponseEntity<>(
-                authService.loginProprietaire(authLoginDTO.getEmail(), authLoginDTO.getMotDePasse()),
+                authService.login(authLoginDTO.getEmail(), authLoginDTO.getMotDePasse()),
                 HttpStatus.OK
         );
     }
 
     @GetMapping("")
-    public ResponseEntity<AuthLoginResponseDTO> authProprietaire(@RequestHeader("Authorization") String authHeader){
+    public ResponseEntity<AuthLoginResponseDTO> auth(@RequestHeader("Authorization") String authHeader){
 
         String jwtToken = getTokenFromHeader(authHeader);
 
         return new ResponseEntity<>(
-                authService.authProprietaire(jwtToken),
+                authService.auth(jwtToken),
                 HttpStatus.OK
         );
     }
 
     @GetMapping("/logout")
-    public ResponseEntity<Void> logoutProprietaire(@RequestHeader("Authorization") String authHeader){
+    public ResponseEntity<Void> logout(@RequestHeader("Authorization") String authHeader){
 
         String jwtToken = getTokenFromHeader(authHeader);
-        authService.logoutProprietaire(jwtToken);
+        authService.logout(jwtToken);
 
         return new ResponseEntity<>(
                 HttpStatus.OK
@@ -79,8 +79,8 @@ public class AuthController {
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler({ProprietaireNotFoundException.class})
-    public Map<String, List<String>> proprietaireNotFoundException(ProprietaireNotFoundException ex){
+    @ExceptionHandler({UtilisateurNotFoundException.class})
+    public Map<String, List<String>> utilisateurNotFoundException(UtilisateurNotFoundException ex){
         return mapException(ex);
     }
 
