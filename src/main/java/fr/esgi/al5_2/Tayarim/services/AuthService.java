@@ -12,6 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.AbstractMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
 
 @Service
@@ -67,30 +70,32 @@ public class AuthService {
 
         return new AuthLoginResponseDTO(
                 id,
-                token
+                token,
+                isAdmin
         );
     }
 
     public AuthLoginResponseDTO auth(@NonNull String token){
 
-        Long id = verifyToken(token, false);
+        Entry<Long, Boolean> entry = verifyToken(token, false);
         
         return new AuthLoginResponseDTO(
-                id,
-                token
+                entry.getKey(),
+                token,
+                entry.getValue()
         );
 
     }
 
     public void logout(@NonNull String token){
 
-        Long id = verifyToken(token,false);
+        Entry<Long, Boolean> entry = verifyToken(token, false);
 
-        tokenCacheService.addToCache(id, UUID.randomUUID().toString());
+        tokenCacheService.addToCache(entry.getKey(), UUID.randomUUID().toString());
 
     }
 
-    public Long verifyToken(@NonNull String token, boolean shouldBeAdmin){
+    public Entry<Long, Boolean> verifyToken(@NonNull String token, boolean shouldBeAdmin){
         ProprietaireDTO proprietaireDTO;
         AdministrateurDTO administrateurDTO;
         Long id;
@@ -126,6 +131,6 @@ public class AuthService {
         if(!jwtHelper.validateToken(token, email, uuid)){
             throw new TokenExpireOrInvalidException();
         }
-        return id;
+        return new AbstractMap.SimpleEntry<>(id, isAdmin);
     }
 }

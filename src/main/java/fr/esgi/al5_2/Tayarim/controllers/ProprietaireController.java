@@ -62,7 +62,7 @@ public class ProprietaireController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ProprietaireDTO> updateProprietaire(@RequestHeader("Authorization") String authHeader, @PathVariable Long id, @RequestBody ProprietaireUpdateDTO proprietaireUpdateDTO){
-        Long idToken = authService.verifyToken(getTokenFromHeader(authHeader), true);
+        Long idToken = authService.verifyToken(getTokenFromHeader(authHeader), true).getKey();
 
         if(!idToken.equals(id)){
             throw new UnauthorizedException();
@@ -76,7 +76,7 @@ public class ProprietaireController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ProprietaireDTO> deleteProprietaire(@RequestHeader("Authorization") String authHeader, @PathVariable Long id){
-        Long idToken = authService.verifyToken(getTokenFromHeader(authHeader), true);
+        Long idToken = authService.verifyToken(getTokenFromHeader(authHeader), true).getKey();
         if(!idToken.equals(id)){
             throw new UnauthorizedException();
         }

@@ -14,5 +14,7 @@ public class AuthLoginResponseDTO {
     @NonNull
     private String token;
 
+    private boolean admin;
+
     // No need for explicit getters, setters, or constructors
 }

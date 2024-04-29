@@ -59,7 +59,7 @@ public class AdministrateurController {
 
     @PutMapping("/{id}")
     public ResponseEntity<AdministrateurDTO> updateAdministrateur(@RequestHeader("Authorization") String authHeader, @PathVariable Long id, @RequestBody AdministrateurUpdateDTO administrateurUpdateDTO){
-        Long idToken = authService.verifyToken(getTokenFromHeader(authHeader), true);
+        Long idToken = authService.verifyToken(getTokenFromHeader(authHeader), true).getKey();
 
         if(!idToken.equals(id)){
             throw new UnauthorizedException();
@@ -73,7 +73,7 @@ public class AdministrateurController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<AdministrateurDTO> deleteAdministrateur(@RequestHeader("Authorization") String authHeader, @PathVariable Long id){
-        Long idToken = authService.verifyToken(getTokenFromHeader(authHeader), true);
+        Long idToken = authService.verifyToken(getTokenFromHeader(authHeader), true).getKey();
         if(!idToken.equals(id)){
             throw new UnauthorizedException();
         }
