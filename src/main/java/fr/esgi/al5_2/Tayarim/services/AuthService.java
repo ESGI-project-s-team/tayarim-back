@@ -4,6 +4,7 @@ import fr.esgi.al5_2.Tayarim.auth.JwtHelper;
 import fr.esgi.al5_2.Tayarim.auth.TokenCacheService;
 import fr.esgi.al5_2.Tayarim.dto.auth.AuthLoginResponseDTO;
 import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireDTO;
+import fr.esgi.al5_2.Tayarim.entities.Proprietaire;
 import fr.esgi.al5_2.Tayarim.exceptions.*;
 import lombok.NonNull;
 import org.springframework.stereotype.Service;

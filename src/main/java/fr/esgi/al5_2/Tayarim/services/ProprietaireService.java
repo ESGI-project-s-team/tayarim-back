@@ -78,10 +78,10 @@ public class ProprietaireService {
 
         if(
                 proprietaireUpdateDTO.getNom() == null
-                && proprietaireUpdateDTO.getPrenom() == null
-                && proprietaireUpdateDTO.getEmail() == null
-                && proprietaireUpdateDTO.getNumTel() == null
-                && proprietaireUpdateDTO.getMotDePasse() == null
+                        && proprietaireUpdateDTO.getPrenom() == null
+                        && proprietaireUpdateDTO.getEmail() == null
+                        && proprietaireUpdateDTO.getNumTel() == null
+                        && proprietaireUpdateDTO.getMotDePasse() == null
         ){
             throw new ProprietaireInvalidUpdateBody();
         }
@@ -90,6 +90,14 @@ public class ProprietaireService {
         Optional<Proprietaire> optionalProprietaire = proprietaireRepository.findById(id);
         if(optionalProprietaire.isEmpty()){
             throw new ProprietaireNotFoundException();
+        }
+
+        if(proprietaireUpdateDTO.getEmail() != null && proprietaireRepository.findFirstByEmail(proprietaireUpdateDTO.getEmail()).isPresent()){
+            throw new ProprietaireInvalidUpdateBody();
+        }
+
+        if(proprietaireUpdateDTO.getNumTel() != null && proprietaireRepository.findFirstByNumTel(proprietaireUpdateDTO.getNumTel()).isPresent()){
+            throw new ProprietaireInvalidUpdateBody();
         }
 
         Proprietaire proprietaire = optionalProprietaire.get();
