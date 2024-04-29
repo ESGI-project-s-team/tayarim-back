@@ -27,10 +27,12 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthLoginResponseDTO> login(@Valid @RequestBody AuthLoginDTO authLoginDTO){
-        return new ResponseEntity<>(
+        ResponseEntity<AuthLoginResponseDTO> response = new ResponseEntity<>(
                 authService.login(authLoginDTO.getEmail(), authLoginDTO.getMotDePasse()),
                 HttpStatus.OK
         );
+
+        return response;
     }
 
     @GetMapping("")
