@@ -27,7 +27,7 @@ public class JwtHelper {
         return Jwts.builder()
                 .subject(subject)
                 .issuedAt(Date.from(now))
-                .expiration(Date.from(now.plusSeconds(60*60))) //60s * 60m = 1h
+                .expiration(Date.from(now.plusSeconds(86400))) //24h
                 .signWith(getSignKey())
                 .compact();
     }
@@ -62,11 +62,11 @@ public class JwtHelper {
     }
 
     public Boolean extractAdmin(String token) {
-        if (extractSubject(token).split(";")[0] == null){
+        if (extractSubject(token).split(";")[2] == null){
             throw new TokenExpireOrInvalidException();
         }
 
-        return Boolean.getBoolean(extractSubject(token).split(";")[0]);
+        return Boolean.parseBoolean(extractSubject(token).split(";")[2]);
     }
 
     public Boolean validateToken(String token, String email, String uuid) {

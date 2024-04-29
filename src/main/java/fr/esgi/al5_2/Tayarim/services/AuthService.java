@@ -9,6 +9,7 @@ import fr.esgi.al5_2.Tayarim.entities.Proprietaire;
 import fr.esgi.al5_2.Tayarim.exceptions.*;
 import lombok.NonNull;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
@@ -30,18 +31,16 @@ public class AuthService {
         this.tokenCacheService = tokenCacheService;
     }
 
+    @Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
     public AuthLoginResponseDTO login(@NonNull String email, @NonNull String password){
-        System.out.println("1");
         ProprietaireDTO proprietaireDTO = null;
         AdministrateurDTO administrateurDTO = null;
         Long id;
         boolean isAdmin = false;
         try {
-            System.out.println("2.1");
             proprietaireDTO = proprietaireService.getProprietaireByEmail(email);
             id = proprietaireDTO.getId();
         } catch (Exception e){
-            System.out.println("2.2");
             try{
                 administrateurDTO = administrateurService.getAdministrateurByEmail(email);
                 id = administrateurDTO.getId();
@@ -51,32 +50,25 @@ public class AuthService {
             }
 
         }
-        System.out.println("3");
 
         if( proprietaireDTO != null && !proprietaireService.verifyPassword(password, proprietaireDTO.getId())){
-            System.out.println("4.1");
             throw new ProprietaireNotFoundException();
         } else if (administrateurDTO != null && !administrateurService.verifyPassword(password, administrateurDTO.getId())) {
-            System.out.println("4.2");
             throw new AdministrateurNotFoundException();
         }
-        System.out.println("5");
 
         String uuid = tokenCacheService.getFromCache(id);
         if (uuid == null){
             uuid = UUID.randomUUID().toString();
             tokenCacheService.addToCache(id ,uuid);
         }
-        System.out.println("6");
 
         String token = jwtHelper.generateToken(email, uuid, isAdmin);
-        System.out.println("7");
 
         return new AuthLoginResponseDTO(
                 id,
                 token
         );
-
     }
 
     public AuthLoginResponseDTO auth(@NonNull String token){
