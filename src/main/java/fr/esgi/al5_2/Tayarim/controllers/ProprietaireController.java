@@ -73,9 +73,6 @@ public class ProprietaireController {
     @DeleteMapping("/{id}")
     public ResponseEntity<ProprietaireDTO> deleteProprietaire(@RequestHeader("Authorization") String authHeader, @PathVariable Long id){
         Long idToken = authService.verifyToken(getTokenFromHeader(authHeader), true).getKey();
-        if(!idToken.equals(id)){
-            throw new UnauthorizedException();
-        }
 
         return new ResponseEntity<>(
                 proprietaireService.deleteProprietaire(id),
