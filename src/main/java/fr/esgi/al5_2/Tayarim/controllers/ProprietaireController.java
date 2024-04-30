@@ -62,11 +62,7 @@ public class ProprietaireController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ProprietaireDTO> updateProprietaire(@RequestHeader("Authorization") String authHeader, @PathVariable Long id, @RequestBody ProprietaireUpdateDTO proprietaireUpdateDTO){
-        Long idToken = authService.verifyToken(getTokenFromHeader(authHeader), true).getKey();
-
-        if(!idToken.equals(id)){
-            throw new UnauthorizedException();
-        }
+        authService.verifyToken(getTokenFromHeader(authHeader), true);
 
         return new ResponseEntity<>(
                 proprietaireService.updateProprietaire(id, proprietaireUpdateDTO),
