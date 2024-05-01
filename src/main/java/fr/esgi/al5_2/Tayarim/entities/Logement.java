@@ -1,13 +1,7 @@
 package fr.esgi.al5_2.Tayarim.entities;
 
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NonNull;
 
@@ -20,9 +14,8 @@ public class Logement {
     @Column(name="ID")
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "IDPROPRIETAIRE", nullable = false)
-    @NonNull
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "IDPROPRIETAIRE")
     private Proprietaire proprietaire;
 
     // public Logement(@NonNull Proprietaire proprietaire){

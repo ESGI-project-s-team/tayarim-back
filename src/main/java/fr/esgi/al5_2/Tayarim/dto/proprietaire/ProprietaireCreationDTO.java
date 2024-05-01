@@ -1,5 +1,7 @@
 package fr.esgi.al5_2.Tayarim.dto.proprietaire;
 
+import jakarta.validation.constraints.Pattern;
+import lombok.Builder;
 import lombok.Data;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
@@ -10,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 @Data // Generates getters, setters, toString, equals, and hashCode methods
 @RequiredArgsConstructor
 @AllArgsConstructor // Generates an all-args constructor
+@Builder
 public class ProprietaireCreationDTO {
 
     @Valid
@@ -25,6 +28,7 @@ public class ProprietaireCreationDTO {
     private String email;
     
     @NotBlank(message = "error_owner_invalid_phone")
+    @Pattern(regexp = "\\+?[\\d\\s\\-.()]+", message = "error_owner_invalid_phone")
     private String numTel;
     
     @NotBlank(message = "error_owner_invalid_password")

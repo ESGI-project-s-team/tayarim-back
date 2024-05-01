@@ -1,9 +1,9 @@
 package fr.esgi.al5_2.Tayarim.services;
 
-import fr.esgi.al5_2.Tayarim.auth.JwtHelper;
-import fr.esgi.al5_2.Tayarim.auth.TokenCacheService;
-import fr.esgi.al5_2.Tayarim.dto.proprietaire.AuthLoginResponseDTO;
+import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireUpdateDTO;
+import fr.esgi.al5_2.Tayarim.entities.Utilisateur;
 import fr.esgi.al5_2.Tayarim.exceptions.*;
+import fr.esgi.al5_2.Tayarim.mappers.LogementMapper;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
@@ -14,24 +14,19 @@ import fr.esgi.al5_2.Tayarim.mappers.ProprietaireMapper;
 import fr.esgi.al5_2.Tayarim.repositories.ProprietaireRepository;
 import lombok.NonNull;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @Transactional(readOnly = true)
 public class ProprietaireService {
 
     private final ProprietaireRepository proprietaireRepository;
-    private final JwtHelper jwtHelper;
 
-    private final TokenCacheService tokenCacheService;
-
-    public ProprietaireService(ProprietaireRepository proprietaireRepository, JwtHelper jwtHelper, TokenCacheService tokenCacheService) {
+    public ProprietaireService(ProprietaireRepository proprietaireRepository) {
         this.proprietaireRepository = proprietaireRepository;
-        this.jwtHelper = jwtHelper;
-        this.tokenCacheService = tokenCacheService;
     }
 
     @Transactional
@@ -48,9 +43,6 @@ public class ProprietaireService {
         proprietaireCreationDTO.setNumTel(numTel);
 
         String hashedPassword = hashPassword(proprietaireCreationDTO.getMotDePasse());
-        if (hashedPassword == null){
-            throw new PasswordHashNotPossibleException();
-        }
 
         proprietaireCreationDTO.setMotDePasse(hashedPassword);
 
@@ -74,11 +66,65 @@ public class ProprietaireService {
 
     public ProprietaireDTO getProprietaireByEmail(@NonNull String email){
         Optional<Proprietaire> optionalProprietaire = proprietaireRepository.findFirstByEmail(email);
-        if (optionalProprietaire.isEmpty()){
+        if (optionalProprietaire.isEmpty()) {
             throw new ProprietaireNotFoundException();
         }
 
         return ProprietaireMapper.entityToDto(optionalProprietaire.get(), false);
+    }
+
+    @Transactional
+    public ProprietaireDTO updateProprietaire(@NonNull Long id, @NonNull ProprietaireUpdateDTO proprietaireUpdateDTO){
+
+        if(
+                proprietaireUpdateDTO.getNom() == null
+                        && proprietaireUpdateDTO.getPrenom() == null
+                        && proprietaireUpdateDTO.getEmail() == null
+                        && proprietaireUpdateDTO.getNumTel() == null
+                        && proprietaireUpdateDTO.getMotDePasse() == null
+        ){
+            throw new ProprietaireInvalidUpdateBody();
+        }
+
+
+        Optional<Proprietaire> optionalProprietaire = proprietaireRepository.findById(id);
+        if(optionalProprietaire.isEmpty()){
+            throw new ProprietaireNotFoundException();
+        }
+
+        if(proprietaireUpdateDTO.getEmail() != null && proprietaireRepository.findFirstByEmail(proprietaireUpdateDTO.getEmail()).isPresent()){
+            throw new ProprietaireInvalidUpdateBody();
+        }
+
+        if(proprietaireUpdateDTO.getNumTel() != null && proprietaireRepository.findFirstByNumTel(proprietaireUpdateDTO.getNumTel()).isPresent()){
+            throw new ProprietaireInvalidUpdateBody();
+        }
+
+        Proprietaire proprietaire = optionalProprietaire.get();
+
+        proprietaire.setNom(proprietaireUpdateDTO.getNom() != null ? proprietaireUpdateDTO.getNom() : proprietaire.getNom());
+        proprietaire.setPrenom(proprietaireUpdateDTO.getPrenom() != null ? proprietaireUpdateDTO.getPrenom() : proprietaire.getPrenom());
+        proprietaire.setEmail(proprietaireUpdateDTO.getEmail() != null ? proprietaireUpdateDTO.getEmail() : proprietaire.getEmail());
+        proprietaire.setNumTel(proprietaireUpdateDTO.getNumTel() != null ? proprietaireUpdateDTO.getNumTel() : proprietaire.getNumTel());
+        proprietaire.setMotDePasse(proprietaireUpdateDTO.getMotDePasse() != null ? hashPassword(proprietaireUpdateDTO.getMotDePasse()) : proprietaire.getMotDePasse());
+
+        return ProprietaireMapper.entityToDto(proprietaireRepository.save(proprietaire), false);
+    }
+
+    @Transactional
+    public ProprietaireDTO deleteProprietaire(@NonNull Long id){
+
+        Optional<Proprietaire> optionalProprietaire = proprietaireRepository.findById(id);
+        if(optionalProprietaire.isEmpty()){
+            throw new ProprietaireNotFoundException();
+        }
+
+        ProprietaireDTO proprietaireDTO = ProprietaireMapper.entityToDto(optionalProprietaire.get(), false);
+
+        proprietaireRepository.deleteById(id); //voir si supprime aussi les logements dans la table logement
+
+        return proprietaireDTO;
+
     }
 
     public boolean verifyPassword(@NonNull String password, @NonNull Long proprietaireId){
@@ -89,7 +135,7 @@ public class ProprietaireService {
 
         Proprietaire proprietaire = optionalProprietaire.get();
 
-        return BCrypt.checkpw(password, proprietaire.getMotDePasse());
+        return verifyHashedPassword(password, proprietaire.getMotDePasse());
 
     }
 
@@ -97,7 +143,7 @@ public class ProprietaireService {
         String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt(12));
 
         if(!verifyHashedPassword(password, hashedPassword)){
-            return null;
+            throw new PasswordHashNotPossibleException();
         }
 
         return hashedPassword;
