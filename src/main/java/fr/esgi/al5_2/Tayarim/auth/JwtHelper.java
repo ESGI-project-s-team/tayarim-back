@@ -15,6 +15,9 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 
+/**
+ * Composant utilitaire pour la gestion des JWT (JSON Web Tokens).
+ */
 @Component
 public class JwtHelper {
 
@@ -22,9 +25,12 @@ public class JwtHelper {
   private String privateKey;
 
   /**
-   * @param email Addresse email à ajouter dans le token
-   * @param uuid {@link java.util.UUID} au format string à ajouter dans le token
-   * @param isAdmin boolean à ajouter dans le token indiquant s'il appartient à un {@link fr.esgi.al5_2.Tayarim.entities.Administrateur}
+   * Génère un token JWT pour un utilisateur.
+   *
+   * @param email   L'email de l'utilisateur.
+   * @param uuid    L'UUID associé à l'utilisateur.
+   * @param isAdmin Booléen indiquant si l'utilisateur est un administrateur.
+   * @return Le token JWT généré.
    */
   public String generateToken(String email, String uuid, boolean isAdmin) {
     String subject = email.concat(";").concat(uuid).concat(";").concat(Boolean.toString(isAdmin));
@@ -37,6 +43,13 @@ public class JwtHelper {
         .compact();
   }
 
+  /**
+   * Extrait le sujet d'un token JWT.
+   *
+   * @param token Le token JWT.
+   * @return Le sujet du token.
+   * @throws TokenExpireOrInvalidException Si le token est expiré ou invalide.
+   */
   public String extractSubject(String token) {
     try {
       Claims tokenBody = getTokenBody(token);
@@ -50,6 +63,13 @@ public class JwtHelper {
     }
   }
 
+  /**
+   * Extrait l'email de l'utilisateur à partir d'un token JWT.
+   *
+   * @param token Le token JWT.
+   * @return L'email extrait du token.
+   * @throws TokenExpireOrInvalidException Si le token est expiré ou invalide.
+   */
   public String extractEmail(String token) {
     if (extractSubject(token).split(";")[0] == null) {
       throw new TokenExpireOrInvalidException();
@@ -58,6 +78,13 @@ public class JwtHelper {
     return extractSubject(token).split(";")[0];
   }
 
+  /**
+   * Détermine si l'utilisateur associé au token est un administrateur.
+   *
+   * @param token Le token JWT.
+   * @return Booléen indiquant si l'utilisateur est un administrateur.
+   * @throws TokenExpireOrInvalidException Si le token est expiré ou invalide.
+   */
   public String extractUuid(String token) {
     if (extractSubject(token).split(";")[1] == null) {
       throw new TokenExpireOrInvalidException();
@@ -66,6 +93,13 @@ public class JwtHelper {
     return extractSubject(token).split(";")[1];
   }
 
+  /**
+   * Détermine si l'utilisateur associé au token est un administrateur.
+   *
+   * @param token Le token JWT.
+   * @return Booléen indiquant si l'utilisateur est un administrateur.
+   * @throws TokenExpireOrInvalidException Si le token est expiré ou invalide.
+   */
   public Boolean extractAdmin(String token) {
     if (extractSubject(token).split(";")[2] == null) {
       throw new TokenExpireOrInvalidException();
@@ -74,6 +108,13 @@ public class JwtHelper {
     return Boolean.parseBoolean(extractSubject(token).split(";")[2]);
   }
 
+  /**
+   * Valide un token JWT en vérifiant l'email et l'UUID.
+   *
+   * @param token Le token JWT à valider.
+   * @param email L'email à vérifier.
+   * @return Booléen indiquant si le token est valide.
+   */
   public Boolean validateToken(String token, String email, String uuid) {
     String extractedEmail = extractEmail(token);
     String extractedUUID = extractUuid(token);
