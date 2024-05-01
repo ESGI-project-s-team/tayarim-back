@@ -77,11 +77,11 @@ public class ProprietaireService {
     public ProprietaireDTO updateProprietaire(@NonNull Long id, @NonNull ProprietaireUpdateDTO proprietaireUpdateDTO){
 
         if(
-                proprietaireUpdateDTO.getNom() == null
-                        && proprietaireUpdateDTO.getPrenom() == null
-                        && proprietaireUpdateDTO.getEmail() == null
-                        && proprietaireUpdateDTO.getNumTel() == null
-                        && proprietaireUpdateDTO.getMotDePasse() == null
+                (proprietaireUpdateDTO.getNom() == null || proprietaireUpdateDTO.getNom().isBlank())
+                        && (proprietaireUpdateDTO.getPrenom() == null || proprietaireUpdateDTO.getPrenom().isBlank())
+                        && (proprietaireUpdateDTO.getEmail() == null || proprietaireUpdateDTO.getEmail().isBlank())
+                        && (proprietaireUpdateDTO.getNumTel() == null || proprietaireUpdateDTO.getNumTel().isBlank())
+                        && (proprietaireUpdateDTO.getMotDePasse() == null || proprietaireUpdateDTO.getMotDePasse().isBlank())
         ){
             throw new ProprietaireInvalidUpdateBody();
         }
@@ -92,21 +92,21 @@ public class ProprietaireService {
             throw new ProprietaireNotFoundException();
         }
 
-        if(proprietaireUpdateDTO.getEmail() != null && proprietaireRepository.findFirstByEmail(proprietaireUpdateDTO.getEmail()).isPresent()){
+        if((proprietaireUpdateDTO.getEmail() != null && !proprietaireUpdateDTO.getEmail().isBlank()) && proprietaireRepository.findFirstByEmail(proprietaireUpdateDTO.getEmail()).isPresent()){
             throw new ProprietaireInvalidUpdateBody();
         }
 
-        if(proprietaireUpdateDTO.getNumTel() != null && proprietaireRepository.findFirstByNumTel(proprietaireUpdateDTO.getNumTel()).isPresent()){
+        if((proprietaireUpdateDTO.getNumTel() != null && !proprietaireUpdateDTO.getNumTel().isBlank()) && proprietaireRepository.findFirstByNumTel(proprietaireUpdateDTO.getNumTel()).isPresent()){
             throw new ProprietaireInvalidUpdateBody();
         }
 
         Proprietaire proprietaire = optionalProprietaire.get();
 
-        proprietaire.setNom(proprietaireUpdateDTO.getNom() != null ? proprietaireUpdateDTO.getNom() : proprietaire.getNom());
-        proprietaire.setPrenom(proprietaireUpdateDTO.getPrenom() != null ? proprietaireUpdateDTO.getPrenom() : proprietaire.getPrenom());
-        proprietaire.setEmail(proprietaireUpdateDTO.getEmail() != null ? proprietaireUpdateDTO.getEmail() : proprietaire.getEmail());
-        proprietaire.setNumTel(proprietaireUpdateDTO.getNumTel() != null ? proprietaireUpdateDTO.getNumTel() : proprietaire.getNumTel());
-        proprietaire.setMotDePasse(proprietaireUpdateDTO.getMotDePasse() != null ? hashPassword(proprietaireUpdateDTO.getMotDePasse()) : proprietaire.getMotDePasse());
+        proprietaire.setNom((proprietaireUpdateDTO.getNom() != null && !proprietaireUpdateDTO.getNom().isBlank()) ? proprietaireUpdateDTO.getNom() : proprietaire.getNom());
+        proprietaire.setPrenom((proprietaireUpdateDTO.getPrenom() != null && !proprietaireUpdateDTO.getPrenom().isBlank()) ? proprietaireUpdateDTO.getPrenom() : proprietaire.getPrenom());
+        proprietaire.setEmail((proprietaireUpdateDTO.getEmail() != null && !proprietaireUpdateDTO.getEmail().isBlank()) ? proprietaireUpdateDTO.getEmail() : proprietaire.getEmail());
+        proprietaire.setNumTel((proprietaireUpdateDTO.getNumTel() != null && !proprietaireUpdateDTO.getNumTel().isBlank()) ? proprietaireUpdateDTO.getNumTel() : proprietaire.getNumTel());
+        proprietaire.setMotDePasse((proprietaireUpdateDTO.getMotDePasse() != null && !proprietaireUpdateDTO.getMotDePasse().isBlank()) ? hashPassword(proprietaireUpdateDTO.getMotDePasse()) : proprietaire.getMotDePasse());
 
         return ProprietaireMapper.entityToDto(proprietaireRepository.save(proprietaire), false);
     }
