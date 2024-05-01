@@ -29,7 +29,6 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     filterChain.doFilter(request, response);
   }
 
-  @Override
   protected boolean shouldNotFilter(HttpServletRequest request) {
     // Exclure le filtre pour les requêtes POST vers /proprietaire
     return (request.getMethod().equalsIgnoreCase("POST") && request.getServletPath()

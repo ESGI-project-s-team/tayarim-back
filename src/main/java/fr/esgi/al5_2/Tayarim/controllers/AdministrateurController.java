@@ -17,6 +17,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Contrôleur gérant les opérations administratives sur les comptes des administrateurs.
+ */
 @RestController
 @RequestMapping("/admin")
 public class AdministrateurController {
@@ -24,20 +27,24 @@ public class AdministrateurController {
   private final AdministrateurService administrateurService;
   private final AuthService authService;
 
+  /**
+   * Constructeur pour initialiser les services utilisés par ce contrôleur.
+   *
+   * @param administrateurService Le service pour la gestion des administrateurs.
+   * @param authService           Le service pour l'authentification et la vérification des tokens.
+   */
   public AdministrateurController(AdministrateurService administrateurService,
       AuthService authService) {
     this.administrateurService = administrateurService;
     this.authService = authService;
   }
 
-    /*
-    @PostMapping("")
-    public ResponseEntity<AdministrateurDTO> creerAdministrateur(@Valid @RequestBody AdministrateurCreationDTO administrateurCreationDTO) {
-        return new ResponseEntity<>(
-            administrateurService.creerAdministrateur(administrateurCreationDTO),
-            HttpStatus.CREATED);
-    }*/
-
+  /**
+   * Récupère la liste de tous les administrateurs.
+   *
+   * @param authHeader Le token d'authentification fourni dans l'en-tête de la requête.
+   * @return Une réponse contenant la liste des administrateurs et le statut HTTP.
+   */
   @GetMapping("")
   public ResponseEntity<List<AdministrateurDTO>> getAdministrateur(
       @RequestHeader("Authorization") String authHeader) {
@@ -49,6 +56,13 @@ public class AdministrateurController {
     );
   }
 
+  /**
+   * Récupère un administrateur par son identifiant.
+   *
+   * @param authHeader Le token d'authentification fourni dans l'en-tête de la requête.
+   * @param id         L'identifiant de l'administrateur à récupérer.
+   * @return Une réponse contenant les détails de l'administrateur et le statut HTTP.
+   */
   @GetMapping("/{id}")
   public ResponseEntity<AdministrateurDTO> getAdministrateur(
       @RequestHeader("Authorization") String authHeader, @PathVariable Long id) {
@@ -61,6 +75,15 @@ public class AdministrateurController {
     );
   }
 
+  /**
+   * Met à jour les informations d'un administrateur.
+   *
+   * @param authHeader              Le token d'authentification fourni dans l'en-tête de la
+   *                                requête.
+   * @param id                      L'identifiant de l'administrateur à mettre à jour.
+   * @param administrateurUpdateDTO Les nouvelles informations de l'administrateur.
+   * @return Une réponse contenant l'administrateur mis à jour et le statut HTTP.
+   */
   @PutMapping("/{id}")
   public ResponseEntity<AdministrateurDTO> updateAdministrateur(
       @RequestHeader("Authorization") String authHeader, @PathVariable Long id,
@@ -77,6 +100,13 @@ public class AdministrateurController {
     );
   }
 
+  /**
+   * Supprime un administrateur par son identifiant.
+   *
+   * @param authHeader Le token d'authentification fourni dans l'en-tête de la requête.
+   * @param id         L'identifiant de l'administrateur à supprimer.
+   * @return Une réponse avec le statut HTTP indiquant le succès ou l'échec de l'opération.
+   */
   @DeleteMapping("/{id}")
   public ResponseEntity<AdministrateurDTO> deleteAdministrateur(
       @RequestHeader("Authorization") String authHeader, @PathVariable Long id) {
@@ -99,6 +129,12 @@ public class AdministrateurController {
     return authHeader.substring(7);
   }
 
+  /**
+   * Gère les exceptions de validation des arguments de méthode lors de requêtes HTTP.
+   *
+   * @param ex L'exception capturée contenant les erreurs de validation.
+   * @return Une carte des erreurs listant les messages de validation échoués.
+   */
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public Map<String, List<String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
@@ -114,6 +150,12 @@ public class AdministrateurController {
     return errorMapping;
   }
 
+  /**
+   * Gère les exceptions lorsque le corps de mise à jour de l'administrateur est invalide.
+   *
+   * @param ex L'exception capturée.
+   * @return Une carte des erreurs avec le message approprié.
+   */
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ExceptionHandler(AdministrateurInvalidUpdateBody.class)
   public Map<String, List<String>> administrateurInvalidUpdateBody(
@@ -121,6 +163,12 @@ public class AdministrateurController {
     return mapException(ex);
   }
 
+  /**
+   * Gère les exceptions lorsque l'email spécifié pour l'administrateur existe déjà.
+   *
+   * @param ex L'exception capturée.
+   * @return Une carte des erreurs avec le message approprié.
+   */
   @ResponseStatus(HttpStatus.CONFLICT)
   @ExceptionHandler({AdministrateurEmailAlreadyExistException.class})
   public Map<String, List<String>> administrateurEmailAlreadyExistException(
@@ -128,6 +176,12 @@ public class AdministrateurController {
     return mapException(ex);
   }
 
+  /**
+   * Gère les exceptions lorsque le numéro de téléphone spécifié pour l'administrateur existe déjà.
+   *
+   * @param ex L'exception capturée.
+   * @return Une carte des erreurs avec le message approprié.
+   */
   @ResponseStatus(HttpStatus.CONFLICT)
   @ExceptionHandler({AdministrateurNumTelAlreadyExistException.class})
   public Map<String, List<String>> administrateurNumTelAlreadyExistException(
@@ -135,6 +189,12 @@ public class AdministrateurController {
     return mapException(ex);
   }
 
+  /**
+   * Gère les exceptions lorsque l'administrateur recherché n'est pas trouvé.
+   *
+   * @param ex L'exception capturée.
+   * @return Une carte des erreurs avec le message approprié.
+   */
   @ResponseStatus(HttpStatus.NOT_FOUND)
   @ExceptionHandler({AdministrateurNotFoundException.class})
   public Map<String, List<String>> administrateurNotFoundException(
@@ -142,6 +202,12 @@ public class AdministrateurController {
     return mapException(ex);
   }
 
+  /**
+   * Gère les exceptions lorsqu'il n'est pas possible de hasher le mot de passe.
+   *
+   * @param ex L'exception capturée.
+   * @return Une carte des erreurs avec le message approprié.
+   */
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   @ExceptionHandler({PasswordHashNotPossibleException.class})
   public Map<String, List<String>> passwordHashNotPossibleException(
@@ -149,12 +215,24 @@ public class AdministrateurController {
     return mapException(ex);
   }
 
+  /**
+   * Gère les exceptions lorsque le token est expiré ou invalide.
+   *
+   * @param ex L'exception capturée.
+   * @return Une carte des erreurs avec le message approprié.
+   */
   @ResponseStatus(HttpStatus.UNAUTHORIZED)
   @ExceptionHandler({TokenExpireOrInvalidException.class})
   public Map<String, List<String>> tokenExpireOrInvalidException(TokenExpireOrInvalidException ex) {
     return mapException(ex);
   }
 
+  /**
+   * Gère les exceptions d'accès non autorisé.
+   *
+   * @param ex L'exception capturée.
+   * @return Une carte des erreurs avec le message approprié.
+   */
   @ResponseStatus(HttpStatus.UNAUTHORIZED)
   @ExceptionHandler({UnauthorizedException.class})
   public Map<String, List<String>> unauthorizedException(UnauthorizedException ex) {

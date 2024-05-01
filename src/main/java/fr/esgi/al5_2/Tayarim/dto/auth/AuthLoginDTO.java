@@ -6,6 +6,11 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+/**
+ * DTO (Data Transfer Object) pour les données de connexion utilisées lors de l'authentification
+ * d'un utilisateur. Ce DTO capture l'adresse email et le mot de passe fournis par l'utilisateur
+ * lors de la tentative de connexion.
+ */
 @Data
 @AllArgsConstructor
 public class AuthLoginDTO {

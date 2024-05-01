@@ -15,16 +15,30 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Contrôleur responsable de la gestion de l'authentification des utilisateurs.
+ */
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
 
   private final AuthService authService;
 
+  /**
+   * Construit le contrôleur avec le service d'authentification nécessaire.
+   *
+   * @param authProprietaire Le service d'authentification.
+   */
   public AuthController(AuthService authProprietaire) {
     this.authService = authProprietaire;
   }
 
+  /**
+   * Authentifie un utilisateur et renvoie un token JWT.
+   *
+   * @param authLoginDTO Le DTO contenant les informations de connexion de l'utilisateur.
+   * @return Un ResponseEntity contenant le DTO de réponse d'authentification et le statut HTTP.
+   */
   @PostMapping("/login")
   public ResponseEntity<AuthLoginResponseDTO> login(@Valid @RequestBody AuthLoginDTO authLoginDTO) {
     ResponseEntity<AuthLoginResponseDTO> response = new ResponseEntity<>(
@@ -35,6 +49,12 @@ public class AuthController {
     return response;
   }
 
+  /**
+   * Authentifie un utilisateur à partir d'un token JWT fourni.
+   *
+   * @param authHeader L'en-tête d'autorisation contenant le token JWT.
+   * @return Un ResponseEntity contenant le DTO de réponse d'authentification et le statut HTTP.
+   */
   @GetMapping("")
   public ResponseEntity<AuthLoginResponseDTO> auth(
       @RequestHeader("Authorization") String authHeader) {
@@ -47,6 +67,12 @@ public class AuthController {
     );
   }
 
+  /**
+   * Déconnecte un utilisateur en invalidant son token JWT.
+   *
+   * @param authHeader L'en-tête d'autorisation contenant le token JWT.
+   * @return Un ResponseEntity avec le statut HTTP indiquant le succès de l'opération.
+   */
   @GetMapping("/logout")
   public ResponseEntity<Void> logout(@RequestHeader("Authorization") String authHeader) {
 
@@ -58,6 +84,13 @@ public class AuthController {
     );
   }
 
+  /**
+   * Extrait le token JWT de l'en-tête d'autorisation.
+   *
+   * @param authHeader L'en-tête contenant le token.
+   * @return Le token extrait.
+   * @throws TokenExpireOrInvalidException Si le token est expiré ou invalide.
+   */
   private String getTokenFromHeader(String authHeader) {
     if (authHeader == null || !authHeader.startsWith("Bearer ")) {
       throw new TokenExpireOrInvalidException();
@@ -66,6 +99,12 @@ public class AuthController {
     return authHeader.substring(7);
   }
 
+  /**
+   * Gère les exceptions de validation des arguments de méthode.
+   *
+   * @param ex L'exception capturée.
+   * @return Une carte des erreurs.
+   */
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public Map<String, List<String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
@@ -81,18 +120,36 @@ public class AuthController {
     return errorMapping;
   }
 
+  /**
+   * Gère les exceptions lorsque l'utilisateur n'est pas trouvé.
+   *
+   * @param ex L'exception capturée.
+   * @return Une carte des erreurs.
+   */
   @ResponseStatus(HttpStatus.NOT_FOUND)
   @ExceptionHandler({UtilisateurNotFoundException.class})
   public Map<String, List<String>> utilisateurNotFoundException(UtilisateurNotFoundException ex) {
     return mapException(ex);
   }
 
+  /**
+   * Gère les exceptions lorsque le token est expiré ou invalide.
+   *
+   * @param ex L'exception capturée.
+   * @return Une carte des erreurs.
+   */
   @ResponseStatus(HttpStatus.UNAUTHORIZED)
   @ExceptionHandler({TokenExpireOrInvalidException.class})
   public Map<String, List<String>> tokenExpireOrInvalidException(TokenExpireOrInvalidException ex) {
     return mapException(ex);
   }
 
+  /**
+   * Crée une carte d'erreurs à partir d'une exception runtime.
+   *
+   * @param exception L'exception à mapper.
+   * @return Une carte des erreurs associées à l'exception.
+   */
   private Map<String, List<String>> mapException(RuntimeException exception) {
     ArrayList<String> errors = new ArrayList<>();
     Map<String, List<String>> errorMapping = new HashMap<>();
