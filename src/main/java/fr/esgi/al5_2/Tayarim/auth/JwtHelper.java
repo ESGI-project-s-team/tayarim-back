@@ -21,6 +21,11 @@ public class JwtHelper {
   @Value("${PRIVATE_KEY}")
   private String privateKey;
 
+  /**
+   * @param email Addresse email à ajouter dans le token
+   * @param uuid {@link java.util.UUID} au format string à ajouter dans le token
+   * @param isAdmin boolean à ajouter dans le token indiquant s'il appartient à un {@link fr.esgi.al5_2.Tayarim.entities.Administrateur}
+   */
   public String generateToken(String email, String uuid, boolean isAdmin) {
     String subject = email.concat(";").concat(uuid).concat(";").concat(Boolean.toString(isAdmin));
     var now = Instant.now();
