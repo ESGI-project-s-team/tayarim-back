@@ -18,6 +18,9 @@ import java.util.AbstractMap;
 import java.util.Map.Entry;
 import java.util.UUID;
 
+/**
+ * Classe de service gérant l'authentification des utilisateurs.
+ */
 @Service
 @Transactional(readOnly = true)
 public class AuthService {
@@ -28,6 +31,14 @@ public class AuthService {
 
   private final TokenCacheService tokenCacheService;
 
+  /**
+   * Constructeur pour le service d'authentification.
+   *
+   * @param proprietaireService   Le service de gestion des propriétaires.
+   * @param administrateurService Le service de gestion des administrateurs.
+   * @param jwtHelper             L'outil d'assistance JWT.
+   * @param tokenCacheService     Le service de cache des tokens.
+   */
   public AuthService(ProprietaireService proprietaireService,
       AdministrateurService administrateurService, JwtHelper jwtHelper,
       TokenCacheService tokenCacheService) {
@@ -37,6 +48,18 @@ public class AuthService {
     this.tokenCacheService = tokenCacheService;
   }
 
+  /**
+   * Tente de connecter un utilisateur avec son email et mot de passe.
+   *
+   * @param email    L'email de l'utilisateur.
+   * @param password Le mot de passe de l'utilisateur.
+   * @return {@link AuthLoginResponseDTO}
+   * @throws UtilisateurNotFoundException    Si aucun utilisateur n'est trouvé avec cet email.
+   * @throws ProprietaireNotFoundException   Si le propriétaire est trouvé mais le mot de passe est
+   *                                         incorrect.
+   * @throws AdministrateurNotFoundException Si l'administrateur est trouvé mais le mot de passe est
+   *                                         incorrect.
+   */
   @Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
   public AuthLoginResponseDTO login(@NonNull String email, @NonNull String password) {
     ProprietaireDTO proprietaireDTO = null;
@@ -76,6 +99,13 @@ public class AuthService {
     return new AuthLoginResponseDTO(id, token, isAdmin);
   }
 
+  /**
+   * Authentifie un utilisateur à partir d'un token.
+   *
+   * @param token Le token JWT fourni à l'utilisateur après une connexion réussie.
+   * @return {@link AuthLoginResponseDTO}
+   * @throws TokenExpireOrInvalidException Si le token est expiré ou invalide.
+   */
   public AuthLoginResponseDTO auth(@NonNull String token) {
 
     Entry<Long, Boolean> entry = verifyToken(token, false);
@@ -84,6 +114,11 @@ public class AuthService {
 
   }
 
+  /**
+   * Déconnecte un utilisateur en invalidant le token actuel et en générant un nouveau.
+   *
+   * @param token Le token JWT de l'utilisateur à déconnecter.
+   */
   public void logout(@NonNull String token) {
 
     Entry<Long, Boolean> entry = verifyToken(token, false);
@@ -92,6 +127,17 @@ public class AuthService {
 
   }
 
+  /**
+   * Vérifie la validité du token JWT, en vérifiant également si l'utilisateur devrait être un
+   * administrateur.
+   *
+   * @param token         Le token JWT à vérifier.
+   * @param shouldBeAdmin Booléen indiquant si l'utilisateur doit être vérifié en tant
+   *                      qu'administrateur.
+   * @return {@link Entry}
+   * @throws TokenExpireOrInvalidException Si le token est invalide ou expiré, ou si l'utilisateur
+   *                                       n'est pas autorisé comme administrateur lorsque requis.
+   */
   public Entry<Long, Boolean> verifyToken(@NonNull String token, boolean shouldBeAdmin) {
     ProprietaireDTO proprietaireDTO;
     AdministrateurDTO administrateurDTO;
