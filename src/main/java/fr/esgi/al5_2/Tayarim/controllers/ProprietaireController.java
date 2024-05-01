@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireUpdateDTO;
 import fr.esgi.al5_2.Tayarim.exceptions.*;
 import fr.esgi.al5_2.Tayarim.services.AuthService;
