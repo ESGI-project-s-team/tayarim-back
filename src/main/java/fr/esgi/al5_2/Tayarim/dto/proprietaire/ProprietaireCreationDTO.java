@@ -30,9 +30,6 @@ public class ProprietaireCreationDTO {
     @NotBlank(message = "error_owner_invalid_phone")
     @Pattern(regexp = "\\+?[\\d\\s\\-.()]+", message = "error_owner_invalid_phone")
     private String numTel;
-    
-    @NotBlank(message = "error_owner_invalid_password")
-    private String motDePasse;
 
     // No need for explicit getters, setters, or constructors
 }

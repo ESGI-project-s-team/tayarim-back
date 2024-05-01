@@ -39,6 +39,7 @@ public class ProprietaireRepositoryTest {
                 .numTel("0612345678")
                 .motDePasse("password")
                 .dateInscription(dateInscription)
+                .isPasswordUpdated(Boolean.TRUE)
                 .build();
 
         Proprietaire savedProprietaire = proprietaireRepository.save(proprietaire);
@@ -73,6 +74,7 @@ public class ProprietaireRepositoryTest {
                 .numTel("0612345678")
                 .motDePasse("password")
                 .dateInscription(dateInscription)
+                .isPasswordUpdated(Boolean.TRUE)
                 .build();
         proprietaireRepository.save(proprietaire);
 
@@ -93,6 +95,7 @@ public class ProprietaireRepositoryTest {
                 .numTel("0612345678")
                 .motDePasse("password")
                 .dateInscription(dateInscription)
+                .isPasswordUpdated(Boolean.TRUE)
                 .build();
         Proprietaire proprietaire2 = Proprietaire.builder()
                 .nom("Ferreira")
@@ -101,6 +104,7 @@ public class ProprietaireRepositoryTest {
                 .numTel("0612345678")
                 .motDePasse("password")
                 .dateInscription(dateInscription)
+                .isPasswordUpdated(Boolean.TRUE)
                 .build();
         proprietaireRepository.save(proprietaire);
         proprietaireRepository.save(proprietaire2);
@@ -122,6 +126,7 @@ public class ProprietaireRepositoryTest {
                 .numTel("0612345678")
                 .motDePasse("password")
                 .dateInscription(dateInscription)
+                .isPasswordUpdated(Boolean.TRUE)
                 .build();
         proprietaireRepository.save(proprietaire);
 
@@ -148,6 +153,7 @@ public class ProprietaireRepositoryTest {
                 .numTel("0612345678")
                 .motDePasse("password")
                 .dateInscription(dateInscription)
+                .isPasswordUpdated(Boolean.TRUE)
                 .build();
         proprietaireRepository.save(proprietaire);
 
@@ -174,6 +180,7 @@ public class ProprietaireRepositoryTest {
                 .numTel("0612345678")
                 .motDePasse("password")
                 .dateInscription(dateInscription)
+                .isPasswordUpdated(Boolean.TRUE)
                 .build();
         proprietaireRepository.save(proprietaire);
 

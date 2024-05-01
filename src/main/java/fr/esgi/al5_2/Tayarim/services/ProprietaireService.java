@@ -16,6 +16,7 @@ import lombok.NonNull;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,12 +43,18 @@ public class ProprietaireService {
         }
         proprietaireCreationDTO.setNumTel(numTel);
 
-        String hashedPassword = hashPassword(proprietaireCreationDTO.getMotDePasse());
 
-        proprietaireCreationDTO.setMotDePasse(hashedPassword);
+        StringBuilder generatedPassword = new StringBuilder(16);
+        String allowedchar = "abcdefghijklmnopqrstuvwxyz0123456789!@#$%&*()_+-=[]?";
+        SecureRandom random = new SecureRandom();
+        for (int i = 0; i < 16; i++) {
+            int index = random.nextInt(allowedchar.length());
+            generatedPassword.append(allowedchar.charAt(index));
+        }
 
-        Proprietaire proprietaire = ProprietaireMapper.creationDtoToEntity(proprietaireCreationDTO);
+        System.out.println(generatedPassword); // waiting for SMTP
 
+        Proprietaire proprietaire = ProprietaireMapper.creationDtoToEntity(proprietaireCreationDTO, hashPassword(generatedPassword.toString()));
         return ProprietaireMapper.entityToDto(proprietaireRepository.save(proprietaire), false);
     }
 
@@ -107,6 +114,7 @@ public class ProprietaireService {
         proprietaire.setEmail((proprietaireUpdateDTO.getEmail() != null && !proprietaireUpdateDTO.getEmail().isBlank()) ? proprietaireUpdateDTO.getEmail() : proprietaire.getEmail());
         proprietaire.setNumTel((proprietaireUpdateDTO.getNumTel() != null && !proprietaireUpdateDTO.getNumTel().isBlank()) ? proprietaireUpdateDTO.getNumTel() : proprietaire.getNumTel());
         proprietaire.setMotDePasse((proprietaireUpdateDTO.getMotDePasse() != null && !proprietaireUpdateDTO.getMotDePasse().isBlank()) ? hashPassword(proprietaireUpdateDTO.getMotDePasse()) : proprietaire.getMotDePasse());
+        proprietaire.setIsPasswordUpdated(proprietaireUpdateDTO.getMotDePasse() != null && !proprietaireUpdateDTO.getMotDePasse().isBlank() || proprietaire.getIsPasswordUpdated());
 
         return ProprietaireMapper.entityToDto(proprietaireRepository.save(proprietaire), false);
     }

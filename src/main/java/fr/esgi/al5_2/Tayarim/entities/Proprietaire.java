@@ -20,8 +20,12 @@ public class Proprietaire extends Utilisateur{
     @NonNull
     private LocalDateTime dateInscription;
 
+    @Column(name="ISPASSWORDUPDATED", nullable = false)
+    @NonNull
+    private Boolean isPasswordUpdated;
+
     @Builder
-    public Proprietaire(@NonNull String nom, @NonNull String prenom, @NonNull String email, @NonNull String numTel, @NonNull String motDePasse, @NonNull LocalDateTime dateInscription) {
+    public Proprietaire(@NonNull String nom, @NonNull String prenom, @NonNull String email, @NonNull String numTel, @NonNull String motDePasse, @NonNull LocalDateTime dateInscription, @NonNull Boolean isPasswordUpdated) {
         // Utiliser super() pour appeler le constructeur de la classe parente
         super(nom, prenom, email, numTel, motDePasse);
 
@@ -29,6 +33,8 @@ public class Proprietaire extends Utilisateur{
         this.dateInscription = dateInscription;
         // Initialisation de la liste des logements pour éviter NullPointerException lors de l'ajout de logements
         this.logements = List.of();
+
+        this.isPasswordUpdated = isPasswordUpdated;
     }
 
 
