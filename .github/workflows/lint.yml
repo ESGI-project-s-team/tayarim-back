@@ -2,7 +2,7 @@ name: Lint
 on:
   pull_request:
     branches: ["master", "dev"]
-    
+
 jobs:
   checkstyle:
     name: runner / checkstyle
@@ -10,9 +10,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: dbelyaev/action-checkstyle@master
-        env:
-          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          github_token: ${{ secrets.github_token }}
+          github_token: ${{ secrets.REVIEW_DOG_TOKEN }}
           reporter: github-pr-review
           level: error
+          fail_on_error: true

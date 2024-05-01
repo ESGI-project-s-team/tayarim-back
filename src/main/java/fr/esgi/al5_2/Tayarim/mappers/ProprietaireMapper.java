@@ -14,14 +14,15 @@ import lombok.NonNull;
 @Component
 public class ProprietaireMapper {
 
-    public static Proprietaire creationDtoToEntity(@NonNull ProprietaireCreationDTO proprietaireCreationDTO){
+    public static Proprietaire creationDtoToEntity(@NonNull ProprietaireCreationDTO proprietaireCreationDTO, String hashedPassword){
         return Proprietaire.builder()
                 .nom(proprietaireCreationDTO.getNom())
                 .prenom(proprietaireCreationDTO.getPrenom())
                 .email(proprietaireCreationDTO.getEmail())
                 .numTel(proprietaireCreationDTO.getNumTel())
-                .motDePasse(proprietaireCreationDTO.getMotDePasse())
+                .motDePasse(hashedPassword)
                 .dateInscription(LocalDateTime.now())
+                .isPasswordUpdated(false)
                 .build();
     }
 
@@ -41,16 +42,6 @@ public class ProprietaireMapper {
         return proprietaireList.stream()
                 .map(proprietaire -> ProprietaireMapper.entityToDto(proprietaire, isLogement))
                 .collect(Collectors.toList());
-    }
-
-    public static Proprietaire dtoToEntity(@NonNull ProprietaireDTO proprietaireDTO){
-        return new Proprietaire(
-            proprietaireDTO.getNom(), 
-            proprietaireDTO.getPrenom(), 
-            proprietaireDTO.getEmail(), 
-            proprietaireDTO.getNumTel(), 
-            proprietaireDTO.getMotDePasse(), 
-            proprietaireDTO.getDateInscription());
     }
 
 }
