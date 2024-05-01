@@ -19,86 +19,87 @@ import java.util.Map;
 @RequestMapping("/auth")
 public class AuthController {
 
-    private final AuthService authService;
+  private final AuthService authService;
 
-    public AuthController(AuthService authProprietaire) {
-        this.authService = authProprietaire;
+  public AuthController(AuthService authProprietaire) {
+    this.authService = authProprietaire;
+  }
+
+  @PostMapping("/login")
+  public ResponseEntity<AuthLoginResponseDTO> login(@Valid @RequestBody AuthLoginDTO authLoginDTO) {
+    ResponseEntity<AuthLoginResponseDTO> response = new ResponseEntity<>(
+        authService.login(authLoginDTO.getEmail(), authLoginDTO.getMotDePasse()),
+        HttpStatus.OK
+    );
+
+    return response;
+  }
+
+  @GetMapping("")
+  public ResponseEntity<AuthLoginResponseDTO> auth(
+      @RequestHeader("Authorization") String authHeader) {
+
+    String jwtToken = getTokenFromHeader(authHeader);
+
+    return new ResponseEntity<>(
+        authService.auth(jwtToken),
+        HttpStatus.OK
+    );
+  }
+
+  @GetMapping("/logout")
+  public ResponseEntity<Void> logout(@RequestHeader("Authorization") String authHeader) {
+
+    String jwtToken = getTokenFromHeader(authHeader);
+    authService.logout(jwtToken);
+
+    return new ResponseEntity<>(
+        HttpStatus.OK
+    );
+  }
+
+  private String getTokenFromHeader(String authHeader) {
+    if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+      throw new TokenExpireOrInvalidException();
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<AuthLoginResponseDTO> login(@Valid @RequestBody AuthLoginDTO authLoginDTO){
-        ResponseEntity<AuthLoginResponseDTO> response = new ResponseEntity<>(
-                authService.login(authLoginDTO.getEmail(), authLoginDTO.getMotDePasse()),
-                HttpStatus.OK
-        );
+    return authHeader.substring(7);
+  }
 
-        return response;
-    }
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ExceptionHandler(MethodArgumentNotValidException.class)
+  public Map<String, List<String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+    ArrayList<String> errors = new ArrayList<>();
+    Map<String, List<String>> errorMapping = new HashMap<>();
+    ex.getBindingResult().getAllErrors().forEach((error) -> {
+      String errorMessage = error.getDefaultMessage();
+      errors.add(errorMessage);
+    });
 
-    @GetMapping("")
-    public ResponseEntity<AuthLoginResponseDTO> auth(@RequestHeader("Authorization") String authHeader){
+    errorMapping.put("errors", errors);
 
-        String jwtToken = getTokenFromHeader(authHeader);
+    return errorMapping;
+  }
 
-        return new ResponseEntity<>(
-                authService.auth(jwtToken),
-                HttpStatus.OK
-        );
-    }
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  @ExceptionHandler({UtilisateurNotFoundException.class})
+  public Map<String, List<String>> utilisateurNotFoundException(UtilisateurNotFoundException ex) {
+    return mapException(ex);
+  }
 
-    @GetMapping("/logout")
-    public ResponseEntity<Void> logout(@RequestHeader("Authorization") String authHeader){
+  @ResponseStatus(HttpStatus.UNAUTHORIZED)
+  @ExceptionHandler({TokenExpireOrInvalidException.class})
+  public Map<String, List<String>> tokenExpireOrInvalidException(TokenExpireOrInvalidException ex) {
+    return mapException(ex);
+  }
 
-        String jwtToken = getTokenFromHeader(authHeader);
-        authService.logout(jwtToken);
+  private Map<String, List<String>> mapException(RuntimeException exception) {
+    ArrayList<String> errors = new ArrayList<>();
+    Map<String, List<String>> errorMapping = new HashMap<>();
+    errors.add(exception.getMessage());
 
-        return new ResponseEntity<>(
-                HttpStatus.OK
-        );
-    }
+    errorMapping.put("errors", errors);
 
-    private String getTokenFromHeader(String authHeader){
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            throw new TokenExpireOrInvalidException();
-        }
-
-        return authHeader.substring(7);
-    }
-
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public Map<String, List<String>> handleValidationExceptions(MethodArgumentNotValidException ex){
-        ArrayList<String> errors = new ArrayList<>();
-        Map<String, List<String>> errorMapping = new HashMap<>();
-        ex.getBindingResult().getAllErrors().forEach((error) -> {
-            String errorMessage = error.getDefaultMessage();
-            errors.add(errorMessage);
-        });
-
-        errorMapping.put("errors", errors);
-
-        return errorMapping;
-    }
-
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler({UtilisateurNotFoundException.class})
-    public Map<String, List<String>> utilisateurNotFoundException(UtilisateurNotFoundException ex){
-        return mapException(ex);
-    }
-
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    @ExceptionHandler({TokenExpireOrInvalidException.class})
-    public Map<String, List<String>> tokenExpireOrInvalidException(TokenExpireOrInvalidException ex){
-        return mapException(ex);
-    }
-
-    private Map<String, List<String>> mapException(RuntimeException exception){
-        ArrayList<String> errors = new ArrayList<>();
-        Map<String, List<String>> errorMapping = new HashMap<>();
-        errors.add(exception.getMessage());
-
-        errorMapping.put("errors", errors);
-
-        return errorMapping;
-    }
+    return errorMapping;
+  }
 }

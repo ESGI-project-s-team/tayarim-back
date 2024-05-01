@@ -16,31 +16,33 @@ import java.util.stream.Collectors;
 @Component
 public class AdministrateurMapper {
 
-    public static Administrateur creationDtoToEntity(@NonNull AdministrateurCreationDTO administrateurCreationDTO){
-        return Administrateur.builder()
-                .nom(administrateurCreationDTO.getNom())
-                .prenom(administrateurCreationDTO.getPrenom())
-                .email(administrateurCreationDTO.getEmail())
-                .numTel(administrateurCreationDTO.getNumTel())
-                .motDePasse(administrateurCreationDTO.getMotDePasse())
-                .build();
-    }
+  public static Administrateur creationDtoToEntity(
+      @NonNull AdministrateurCreationDTO administrateurCreationDTO) {
+    return Administrateur.builder()
+        .nom(administrateurCreationDTO.getNom())
+        .prenom(administrateurCreationDTO.getPrenom())
+        .email(administrateurCreationDTO.getEmail())
+        .numTel(administrateurCreationDTO.getNumTel())
+        .motDePasse(administrateurCreationDTO.getMotDePasse())
+        .build();
+  }
 
-    public static AdministrateurDTO entityToDto(@NonNull Administrateur administrateur){
+  public static AdministrateurDTO entityToDto(@NonNull Administrateur administrateur) {
 
-        return AdministrateurDTO.builder()
-                .id(administrateur.getId())
-                .nom(administrateur.getNom())
-                .prenom(administrateur.getPrenom())
-                .email(administrateur.getEmail())
-                .numTel(administrateur.getNumTel())
-                .build();
-        }
+    return AdministrateurDTO.builder()
+        .id(administrateur.getId())
+        .nom(administrateur.getNom())
+        .prenom(administrateur.getPrenom())
+        .email(administrateur.getEmail())
+        .numTel(administrateur.getNumTel())
+        .build();
+  }
 
-    public static List<AdministrateurDTO> entityListToDtoList(@NonNull List<Administrateur> administrateurList){
-        return administrateurList.stream()
-                .map(AdministrateurMapper::entityToDto)
-                .collect(Collectors.toList());
-    }
+  public static List<AdministrateurDTO> entityListToDtoList(
+      @NonNull List<Administrateur> administrateurList) {
+    return administrateurList.stream()
+        .map(AdministrateurMapper::entityToDto)
+        .collect(Collectors.toList());
+  }
 
 }

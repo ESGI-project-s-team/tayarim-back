@@ -14,16 +14,16 @@ import java.util.List;
 @Builder
 public class AdministrateurDTO {
 
-    @NonNull
-    private Long id;
-    @NonNull
-    private String nom;
-    @NonNull
-    private String prenom;
-    @NonNull
-    private String email;
-    @NonNull
-    private String numTel;
+  @NonNull
+  private Long id;
+  @NonNull
+  private String nom;
+  @NonNull
+  private String prenom;
+  @NonNull
+  private String email;
+  @NonNull
+  private String numTel;
 
-    // No need for explicit getters, setters, or constructors
+  // No need for explicit getters, setters, or constructors
 }

@@ -9,11 +9,11 @@ import lombok.Data;
 @Builder
 public class AdministrateurUpdateDTO {
 
-    private String nom;
-    private String prenom;
-    private String email;
-    private String numTel;
-    private String motDePasse;
+  private String nom;
+  private String prenom;
+  private String email;
+  private String numTel;
+  private String motDePasse;
 
-    // No need for explicit getters, setters, or constructors
+  // No need for explicit getters, setters, or constructors
 }

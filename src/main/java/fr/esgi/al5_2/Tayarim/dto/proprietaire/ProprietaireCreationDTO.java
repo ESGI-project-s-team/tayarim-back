@@ -15,21 +15,21 @@ import lombok.RequiredArgsConstructor;
 @Builder
 public class ProprietaireCreationDTO {
 
-    @Valid
+  @Valid
 
-    @NotBlank(message = "error_owner_invalid_name")
-    private String nom;
+  @NotBlank(message = "error_owner_invalid_name")
+  private String nom;
 
-    @NotBlank(message = "error_owner_invalid_firstName")
-    private String prenom;
-    
-    @NotBlank(message = "error_owner_invalid_mail")
-    @Email(message = "error_owner_invalid_mail")
-    private String email;
-    
-    @NotBlank(message = "error_owner_invalid_phone")
-    @Pattern(regexp = "\\+?[\\d\\s\\-.()]+", message = "error_owner_invalid_phone")
-    private String numTel;
+  @NotBlank(message = "error_owner_invalid_firstName")
+  private String prenom;
 
-    // No need for explicit getters, setters, or constructors
+  @NotBlank(message = "error_owner_invalid_mail")
+  @Email(message = "error_owner_invalid_mail")
+  private String email;
+
+  @NotBlank(message = "error_owner_invalid_phone")
+  @Pattern(regexp = "\\+?[\\d\\s\\-.()]+", message = "error_owner_invalid_phone")
+  private String numTel;
+
+  // No need for explicit getters, setters, or constructors
 }

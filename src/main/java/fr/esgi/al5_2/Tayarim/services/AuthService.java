@@ -28,7 +28,9 @@ public class AuthService {
 
   private final TokenCacheService tokenCacheService;
 
-  public AuthService(ProprietaireService proprietaireService, AdministrateurService administrateurService, JwtHelper jwtHelper, TokenCacheService tokenCacheService) {
+  public AuthService(ProprietaireService proprietaireService,
+      AdministrateurService administrateurService, JwtHelper jwtHelper,
+      TokenCacheService tokenCacheService) {
     this.proprietaireService = proprietaireService;
     this.administrateurService = administrateurService;
     this.jwtHelper = jwtHelper;
@@ -55,9 +57,11 @@ public class AuthService {
 
     }
 
-    if (proprietaireDTO != null && !proprietaireService.verifyPassword(password, proprietaireDTO.getId())) {
+    if (proprietaireDTO != null && !proprietaireService.verifyPassword(password,
+        proprietaireDTO.getId())) {
       throw new ProprietaireNotFoundException();
-    } else if (administrateurDTO != null && !administrateurService.verifyPassword(password, administrateurDTO.getId())) {
+    } else if (administrateurDTO != null && !administrateurService.verifyPassword(password,
+        administrateurDTO.getId())) {
       throw new AdministrateurNotFoundException();
     }
 
@@ -100,7 +104,8 @@ public class AuthService {
 
     if (isAdmin) {
       try {
-        administrateurDTO = administrateurService.getAdministrateurByEmail(jwtHelper.extractEmail(token));
+        administrateurDTO = administrateurService.getAdministrateurByEmail(
+            jwtHelper.extractEmail(token));
         id = administrateurDTO.getId();
         email = administrateurDTO.getEmail();
       } catch (AdministrateurNotFoundException ex) {

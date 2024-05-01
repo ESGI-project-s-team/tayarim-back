@@ -15,20 +15,20 @@ import lombok.AllArgsConstructor;
 @Builder
 public class ProprietaireDTO {
 
-    @NonNull
-    private Long id;
-    @NonNull
-    private String nom;
-    @NonNull
-    private String prenom;
-    @NonNull
-    private String email;
-    @NonNull
-    private String numTel;
-    @NonNull
-    private LocalDateTime dateInscription;
+  @NonNull
+  private Long id;
+  @NonNull
+  private String nom;
+  @NonNull
+  private String prenom;
+  @NonNull
+  private String email;
+  @NonNull
+  private String numTel;
+  @NonNull
+  private LocalDateTime dateInscription;
 
-    private List<LogementDTO> logements;
+  private List<LogementDTO> logements;
 
-    // No need for explicit getters, setters, or constructors
+  // No need for explicit getters, setters, or constructors
 }

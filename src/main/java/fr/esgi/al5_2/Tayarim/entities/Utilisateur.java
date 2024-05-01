@@ -9,28 +9,29 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @RequiredArgsConstructor
 public abstract class Utilisateur {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID", nullable = false)
-    private Long id;
 
-    @Column(name="NOM", nullable = false)
-    @NonNull
-    private String nom;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "ID", nullable = false)
+  private Long id;
 
-    @Column(name="PRENOM", nullable = false)
-    @NonNull
-    private String prenom;
+  @Column(name = "NOM", nullable = false)
+  @NonNull
+  private String nom;
 
-    @Column(name="EMAIL", nullable = false)
-    @NonNull
-    private String email;
+  @Column(name = "PRENOM", nullable = false)
+  @NonNull
+  private String prenom;
 
-    @Column(name="NUMTEL", nullable = false)
-    @NonNull
-    private String numTel;
+  @Column(name = "EMAIL", nullable = false)
+  @NonNull
+  private String email;
 
-    @Column(name="MOTDEPASSE", nullable = false)
-    @NonNull
-    private String motDePasse;
+  @Column(name = "NUMTEL", nullable = false)
+  @NonNull
+  private String numTel;
+
+  @Column(name = "MOTDEPASSE", nullable = false)
+  @NonNull
+  private String motDePasse;
 }

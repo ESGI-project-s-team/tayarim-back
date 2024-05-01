@@ -14,34 +14,39 @@ import lombok.NonNull;
 @Component
 public class ProprietaireMapper {
 
-    public static Proprietaire creationDtoToEntity(@NonNull ProprietaireCreationDTO proprietaireCreationDTO, String hashedPassword){
-        return Proprietaire.builder()
-                .nom(proprietaireCreationDTO.getNom())
-                .prenom(proprietaireCreationDTO.getPrenom())
-                .email(proprietaireCreationDTO.getEmail())
-                .numTel(proprietaireCreationDTO.getNumTel())
-                .motDePasse(hashedPassword)
-                .dateInscription(LocalDateTime.now())
-                .isPasswordUpdated(false)
-                .build();
-    }
+  public static Proprietaire creationDtoToEntity(
+      @NonNull ProprietaireCreationDTO proprietaireCreationDTO, String hashedPassword) {
+    return Proprietaire.builder()
+        .nom(proprietaireCreationDTO.getNom())
+        .prenom(proprietaireCreationDTO.getPrenom())
+        .email(proprietaireCreationDTO.getEmail())
+        .numTel(proprietaireCreationDTO.getNumTel())
+        .motDePasse(hashedPassword)
+        .dateInscription(LocalDateTime.now())
+        .isPasswordUpdated(false)
+        .build();
+  }
 
-    public static ProprietaireDTO entityToDto(@NonNull Proprietaire proprietaire, boolean isLogement){
+  public static ProprietaireDTO entityToDto(@NonNull Proprietaire proprietaire,
+      boolean isLogement) {
 
-        return ProprietaireDTO.builder()
-                .id(proprietaire.getId())
-                .nom(proprietaire.getNom())
-                .prenom(proprietaire.getPrenom())
-                .email(proprietaire.getEmail())
-                .numTel(proprietaire.getNumTel())
-                .dateInscription(proprietaire.getDateInscription())
-                .logements(isLogement ? LogementMapper.entityListToDtoList(proprietaire.getLogements()) : null).build();
-    }
+    return ProprietaireDTO.builder()
+        .id(proprietaire.getId())
+        .nom(proprietaire.getNom())
+        .prenom(proprietaire.getPrenom())
+        .email(proprietaire.getEmail())
+        .numTel(proprietaire.getNumTel())
+        .dateInscription(proprietaire.getDateInscription())
+        .logements(
+            isLogement ? LogementMapper.entityListToDtoList(proprietaire.getLogements()) : null)
+        .build();
+  }
 
-    public static List<ProprietaireDTO> entityListToDtoList(@NonNull List<Proprietaire> proprietaireList, boolean isLogement){
-        return proprietaireList.stream()
-                .map(proprietaire -> ProprietaireMapper.entityToDto(proprietaire, isLogement))
-                .collect(Collectors.toList());
-    }
+  public static List<ProprietaireDTO> entityListToDtoList(
+      @NonNull List<Proprietaire> proprietaireList, boolean isLogement) {
+    return proprietaireList.stream()
+        .map(proprietaire -> ProprietaireMapper.entityToDto(proprietaire, isLogement))
+        .collect(Collectors.toList());
+  }
 
 }

@@ -8,18 +8,19 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class TokenCacheService {
-    private final Map<Long, String> cache = new ConcurrentHashMap<>();
 
-    public void addToCache(Long key, String value) {
-        cache.put(key, value);
-    }
+  private final Map<Long, String> cache = new ConcurrentHashMap<>();
 
-    public String getFromCache(Long key) {
-        return cache.get(key);
-    }
+  public void addToCache(Long key, String value) {
+    cache.put(key, value);
+  }
 
-    public Map<Long, String> getFullCache() {
-        return cache;
-    }
+  public String getFromCache(Long key) {
+    return cache.get(key);
+  }
+
+  public Map<Long, String> getFullCache() {
+    return cache;
+  }
 
 }

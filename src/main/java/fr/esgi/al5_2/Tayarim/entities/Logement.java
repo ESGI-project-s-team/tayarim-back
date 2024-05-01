@@ -9,21 +9,17 @@ import lombok.NonNull;
 @Entity
 public class Logement {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="ID")
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "ID")
+  private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "IDPROPRIETAIRE")
-    private Proprietaire proprietaire;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "IDPROPRIETAIRE")
+  private Proprietaire proprietaire;
 
-    public Logement() {
-
-    }
-
-    // public Logement(@NonNull Proprietaire proprietaire){
-    //     this.proprietaire = proprietaire;
-    // }
+  // public Logement(@NonNull Proprietaire proprietaire){
+  //     this.proprietaire = proprietaire;
+  // }
 
 }

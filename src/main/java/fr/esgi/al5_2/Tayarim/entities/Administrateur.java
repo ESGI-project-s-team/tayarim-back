@@ -11,13 +11,14 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @PrimaryKeyJoinColumn(name = "IDUSER")
-public class Administrateur extends Utilisateur{
+public class Administrateur extends Utilisateur {
 
-    @Builder
-    public Administrateur(@NonNull String nom, @NonNull String prenom, @NonNull String email, @NonNull String numTel, @NonNull String motDePasse) {
-        // Utiliser super() pour appeler le constructeur de la classe parente
-        super(nom, prenom, email, numTel, motDePasse);
-    }
+  @Builder
+  public Administrateur(@NonNull String nom, @NonNull String prenom, @NonNull String email,
+      @NonNull String numTel, @NonNull String motDePasse) {
+    // Utiliser super() pour appeler le constructeur de la classe parente
+    super(nom, prenom, email, numTel, motDePasse);
+  }
 
 
 }
