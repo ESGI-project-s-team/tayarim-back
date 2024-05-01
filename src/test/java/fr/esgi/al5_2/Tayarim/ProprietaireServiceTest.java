@@ -42,7 +42,6 @@ public class ProprietaireServiceTest {
                 .prenom("Mathieu")
                 .email("test@gmail.com")
                 .numTel("0612345678")
-                .motDePasse("password")
                 .build();
 
         Proprietaire proprietaire = Proprietaire.builder()
@@ -50,8 +49,9 @@ public class ProprietaireServiceTest {
                 .prenom(proprietaireCreationDTO.getPrenom())
                 .email(proprietaireCreationDTO.getEmail())
                 .numTel(proprietaireCreationDTO.getNumTel())
-                .motDePasse(proprietaireCreationDTO.getMotDePasse())
+                .motDePasse("password")
                 .dateInscription(localDateTime)
+                .isPasswordUpdated(Boolean.TRUE)
                 .build();
         proprietaire.setLogements(null);
         proprietaire.setId(1L);
@@ -82,6 +82,7 @@ public class ProprietaireServiceTest {
                 .numTel("0612345678")
                 .motDePasse("password")
                 .dateInscription(localDateTime)
+                .isPasswordUpdated(Boolean.TRUE)
                 .build();
         proprietaire.setLogements(null);
         proprietaire.setId(1L);
@@ -92,6 +93,7 @@ public class ProprietaireServiceTest {
                 .numTel("0612345678")
                 .motDePasse("password")
                 .dateInscription(localDateTime)
+                .isPasswordUpdated(Boolean.TRUE)
                 .build();
         proprietaire2.setLogements(null);
         proprietaire2.setId(2L);
@@ -116,6 +118,7 @@ public class ProprietaireServiceTest {
                 .numTel("0612345678")
                 .motDePasse("password")
                 .dateInscription(localDateTime)
+                .isPasswordUpdated(Boolean.TRUE)
                 .build();
         proprietaire.setLogements(null);
         proprietaire.setId(1L);
@@ -144,6 +147,7 @@ public class ProprietaireServiceTest {
                 .numTel("0612345678")
                 .motDePasse("password")
                 .dateInscription(localDateTime)
+                .isPasswordUpdated(Boolean.TRUE)
                 .build();
         proprietaire.setLogements(null);
         proprietaire.setId(1L);
@@ -170,7 +174,6 @@ public class ProprietaireServiceTest {
                 .prenom("Mathieu")
                 .email("test@gmail.com")
                 .numTel("0612345678")
-                .motDePasse("password")
                 .build();
         Proprietaire proprietaire = Proprietaire.builder()
                 .nom("Ferreira")
@@ -179,11 +182,12 @@ public class ProprietaireServiceTest {
                 .numTel("0612345678")
                 .motDePasse("password")
                 .dateInscription(localDateTime)
+                .isPasswordUpdated(Boolean.TRUE)
                 .build();
         proprietaire.setLogements(null);
         proprietaire.setId(id);
         when(proprietaireRepository.save(Mockito.any(Proprietaire.class))).thenReturn(proprietaire);
-        ProprietaireDTO proprietaireDTO = proprietaireService.creerProprietaire(proprietaireCreationDTO);
+        //ProprietaireDTO proprietaireDTO = proprietaireService.creerProprietaire(proprietaireCreationDTO);
         ProprietaireUpdateDTO proprietaireUpdateDTO = ProprietaireUpdateDTO.builder()
                 .nom("Doe")
                 .build();
@@ -216,6 +220,7 @@ public class ProprietaireServiceTest {
                 .numTel("0612345678")
                 .motDePasse("password")
                 .dateInscription(localDateTime)
+                .isPasswordUpdated(Boolean.TRUE)
                 .build();
         proprietaire.setLogements(null);
         proprietaire.setId(id);
@@ -250,6 +255,7 @@ public class ProprietaireServiceTest {
                 .numTel("0612345678")
                 .motDePasse(hashedPassword)
                 .dateInscription(localDateTime)
+                .isPasswordUpdated(Boolean.TRUE)
                 .build();
         when(proprietaireRepository.findById(id)).thenReturn(Optional.ofNullable(proprietaire));
 
@@ -274,6 +280,7 @@ public class ProprietaireServiceTest {
                 .numTel("0612345678")
                 .motDePasse(hashedPassword)
                 .dateInscription(localDateTime)
+                .isPasswordUpdated(Boolean.TRUE)
                 .build();
         when(proprietaireRepository.findById(id)).thenReturn(Optional.ofNullable(proprietaire));
 

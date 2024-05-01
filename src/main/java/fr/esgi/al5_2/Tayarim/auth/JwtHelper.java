@@ -36,7 +36,7 @@ public class JwtHelper {
         try{
             Claims tokenBody = getTokenBody(token);
             if(tokenBody == null){
-                return null;
+                throw new TokenExpireOrInvalidException();
             }
 
             return tokenBody.getSubject();

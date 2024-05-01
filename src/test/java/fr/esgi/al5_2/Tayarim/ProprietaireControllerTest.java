@@ -71,7 +71,6 @@ public class ProprietaireControllerTest {
                 .prenom("Mathieu")
                 .email("test@gmail.com")
                 .numTel("0612345678")
-                .motDePasse("password")
                 .build();
         proprietaire = Proprietaire.builder()
                 .nom("Ferreira")
@@ -80,6 +79,7 @@ public class ProprietaireControllerTest {
                 .numTel("0612345678")
                 .motDePasse("$2a$12$3hQDUblvPShmuQg/.g0Qk.wHAGjqPL54RMO/lNgsei/HQGo0ZLIYm")
                 .dateInscription(localDateTime)
+                .isPasswordUpdated(Boolean.TRUE)
                 .build();
         proprietaireDTO = ProprietaireDTO.builder()
                 .id(1L)
@@ -228,23 +228,6 @@ public class ProprietaireControllerTest {
                 .content(objectMapper.writeValueAsString(proprietaireCreationDTO)));
 
         List<String> errors = List.of("error_owner_invalid_phone");
-
-        response.andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errors", CoreMatchers.is(errors)));
-    }
-
-    @Test
-    public void ProprietaireController_CreerProprietaire_ReturnErrorOwnerInvalidMotDePasse() throws Exception {
-        proprietaireCreationDTO.setMotDePasse("");
-        given(proprietaireService.creerProprietaire(ArgumentMatchers.any())).willAnswer(invocationOnMock -> proprietaireDTO);
-        when(authService.verifyToken(any(), anyBoolean())).thenReturn(new AbstractMap.SimpleEntry<>(proprietaireDTO.getId(), true)); //skip token verif
-
-        ResultActions response = mockMvc.perform(post("/proprietaires")
-                .header("Authorization", "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqb2huZG9lQGdtYWlsLmNvbTs2MjZjMjlhNS0zZGU0LTQ5Y2YtODI4ZS1hNDkxNWQzMzM5N2EiLCJpYXQiOjE3MTQxMTM1NzcsImV4cCI6MTcxNDExNzE3N30.kbU1pVkUHkRXktX44JBFN_xzDv-ZvSmtPjnjORO0vHPiHd3f2MGfDF15VTFO5icIrU_bV9cTqZ70RDlKdlp0-g")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(proprietaireCreationDTO)));
-
-        List<String> errors = List.of("error_owner_invalid_password");
 
         response.andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errors", CoreMatchers.is(errors)));

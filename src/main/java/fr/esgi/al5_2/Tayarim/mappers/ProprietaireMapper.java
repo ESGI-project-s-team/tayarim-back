@@ -14,14 +14,15 @@ import lombok.NonNull;
 @Component
 public class ProprietaireMapper {
 
-    public static Proprietaire creationDtoToEntity(@NonNull ProprietaireCreationDTO proprietaireCreationDTO){
+    public static Proprietaire creationDtoToEntity(@NonNull ProprietaireCreationDTO proprietaireCreationDTO, String hashedPassword){
         return Proprietaire.builder()
                 .nom(proprietaireCreationDTO.getNom())
                 .prenom(proprietaireCreationDTO.getPrenom())
                 .email(proprietaireCreationDTO.getEmail())
                 .numTel(proprietaireCreationDTO.getNumTel())
-                .motDePasse(proprietaireCreationDTO.getMotDePasse())
+                .motDePasse(hashedPassword)
                 .dateInscription(LocalDateTime.now())
+                .isPasswordUpdated(false)
                 .build();
     }
 

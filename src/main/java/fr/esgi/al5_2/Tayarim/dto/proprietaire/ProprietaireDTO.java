@@ -25,7 +25,6 @@ public class ProprietaireDTO {
     private String email;
     @NonNull
     private String numTel;
-
     @NonNull
     private LocalDateTime dateInscription;
 
