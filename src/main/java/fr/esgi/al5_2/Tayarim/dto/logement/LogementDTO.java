@@ -9,10 +9,10 @@ import lombok.NonNull;
 @AllArgsConstructor // Generates an all-args constructor
 public class LogementDTO {
 
-    @NonNull
-    private Long id;
-    @NonNull
-    private Long idProprietaire;
+  @NonNull
+  private Long id;
+  @NonNull
+  private Long idProprietaire;
 
 
 }

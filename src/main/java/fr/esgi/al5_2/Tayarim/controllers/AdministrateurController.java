@@ -21,12 +21,14 @@ import java.util.Map;
 @RequestMapping("/admin")
 public class AdministrateurController {
 
-    private final AdministrateurService administrateurService;
-    private final AuthService authService;
-    public AdministrateurController(AdministrateurService administrateurService, AuthService authService) {
-        this.administrateurService = administrateurService;
-        this.authService = authService;
-    }
+  private final AdministrateurService administrateurService;
+  private final AuthService authService;
+
+  public AdministrateurController(AdministrateurService administrateurService,
+      AuthService authService) {
+    this.administrateurService = administrateurService;
+    this.authService = authService;
+  }
 
     /*
     @PostMapping("")
@@ -36,126 +38,136 @@ public class AdministrateurController {
             HttpStatus.CREATED);
     }*/
 
-    @GetMapping("")
-    public ResponseEntity<List<AdministrateurDTO>> getAdministrateur(@RequestHeader("Authorization") String authHeader){
-        authService.verifyToken(getTokenFromHeader(authHeader), true);
+  @GetMapping("")
+  public ResponseEntity<List<AdministrateurDTO>> getAdministrateur(
+      @RequestHeader("Authorization") String authHeader) {
+    authService.verifyToken(getTokenFromHeader(authHeader), true);
 
-        return new ResponseEntity<>(
-                administrateurService.getAdministrateur(),
-                HttpStatus.OK
-        );
+    return new ResponseEntity<>(
+        administrateurService.getAdministrateur(),
+        HttpStatus.OK
+    );
+  }
+
+  @GetMapping("/{id}")
+  public ResponseEntity<AdministrateurDTO> getAdministrateur(
+      @RequestHeader("Authorization") String authHeader, @PathVariable Long id) {
+
+    authService.verifyToken(getTokenFromHeader(authHeader), true);
+
+    return new ResponseEntity<>(
+        administrateurService.getAdministrateurById(id),
+        HttpStatus.OK
+    );
+  }
+
+  @PutMapping("/{id}")
+  public ResponseEntity<AdministrateurDTO> updateAdministrateur(
+      @RequestHeader("Authorization") String authHeader, @PathVariable Long id,
+      @RequestBody AdministrateurUpdateDTO administrateurUpdateDTO) {
+    Long idToken = authService.verifyToken(getTokenFromHeader(authHeader), true).getKey();
+
+    if (!idToken.equals(id)) {
+      throw new UnauthorizedException();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<AdministrateurDTO> getAdministrateur(@RequestHeader("Authorization") String authHeader, @PathVariable Long id){
+    return new ResponseEntity<>(
+        administrateurService.updateAdministrateur(id, administrateurUpdateDTO),
+        HttpStatus.OK
+    );
+  }
 
-        authService.verifyToken(getTokenFromHeader(authHeader), true);
-
-        return new ResponseEntity<>(
-                administrateurService.getAdministrateurById(id),
-                HttpStatus.OK
-        );
+  @DeleteMapping("/{id}")
+  public ResponseEntity<AdministrateurDTO> deleteAdministrateur(
+      @RequestHeader("Authorization") String authHeader, @PathVariable Long id) {
+    Long idToken = authService.verifyToken(getTokenFromHeader(authHeader), true).getKey();
+    if (!idToken.equals(id)) {
+      throw new UnauthorizedException();
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<AdministrateurDTO> updateAdministrateur(@RequestHeader("Authorization") String authHeader, @PathVariable Long id, @RequestBody AdministrateurUpdateDTO administrateurUpdateDTO){
-        Long idToken = authService.verifyToken(getTokenFromHeader(authHeader), true).getKey();
+    return new ResponseEntity<>(
+        administrateurService.deleteAdministrateur(id),
+        HttpStatus.OK
+    );
+  }
 
-        if(!idToken.equals(id)){
-            throw new UnauthorizedException();
-        }
-
-        return new ResponseEntity<>(
-                administrateurService.updateAdministrateur(id, administrateurUpdateDTO),
-                HttpStatus.OK
-        );
+  private String getTokenFromHeader(String authHeader) {
+    if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+      throw new TokenExpireOrInvalidException();
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<AdministrateurDTO> deleteAdministrateur(@RequestHeader("Authorization") String authHeader, @PathVariable Long id){
-        Long idToken = authService.verifyToken(getTokenFromHeader(authHeader), true).getKey();
-        if(!idToken.equals(id)){
-            throw new UnauthorizedException();
-        }
+    return authHeader.substring(7);
+  }
 
-        return new ResponseEntity<>(
-                administrateurService.deleteAdministrateur(id),
-                HttpStatus.OK
-        );
-    }
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ExceptionHandler(MethodArgumentNotValidException.class)
+  public Map<String, List<String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+    ArrayList<String> errors = new ArrayList<>();
+    Map<String, List<String>> errorMapping = new HashMap<>();
+    ex.getBindingResult().getAllErrors().forEach((error) -> {
+      String errorMessage = error.getDefaultMessage();
+      errors.add(errorMessage);
+    });
 
-    private String getTokenFromHeader(String authHeader){
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            throw new TokenExpireOrInvalidException();
-        }
+    errorMapping.put("errors", errors);
 
-        return authHeader.substring(7);
-    }
+    return errorMapping;
+  }
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public Map<String, List<String>> handleValidationExceptions(MethodArgumentNotValidException ex){
-        ArrayList<String> errors = new ArrayList<>();
-        Map<String, List<String>> errorMapping = new HashMap<>();
-        ex.getBindingResult().getAllErrors().forEach((error) -> {
-            String errorMessage = error.getDefaultMessage();
-            errors.add(errorMessage);
-        });
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ExceptionHandler(AdministrateurInvalidUpdateBody.class)
+  public Map<String, List<String>> administrateurInvalidUpdateBody(
+      AdministrateurInvalidUpdateBody ex) {
+    return mapException(ex);
+  }
 
-        errorMapping.put("errors", errors);
+  @ResponseStatus(HttpStatus.CONFLICT)
+  @ExceptionHandler({AdministrateurEmailAlreadyExistException.class})
+  public Map<String, List<String>> administrateurEmailAlreadyExistException(
+      AdministrateurEmailAlreadyExistException ex) {
+    return mapException(ex);
+  }
 
-        return errorMapping;
-    }
+  @ResponseStatus(HttpStatus.CONFLICT)
+  @ExceptionHandler({AdministrateurNumTelAlreadyExistException.class})
+  public Map<String, List<String>> administrateurNumTelAlreadyExistException(
+      AdministrateurNumTelAlreadyExistException ex) {
+    return mapException(ex);
+  }
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(AdministrateurInvalidUpdateBody.class)
-    public Map<String, List<String>> administrateurInvalidUpdateBody(AdministrateurInvalidUpdateBody ex){
-        return mapException(ex);
-    }
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  @ExceptionHandler({AdministrateurNotFoundException.class})
+  public Map<String, List<String>> administrateurNotFoundException(
+      AdministrateurNotFoundException ex) {
+    return mapException(ex);
+  }
 
-    @ResponseStatus(HttpStatus.CONFLICT)
-    @ExceptionHandler({AdministrateurEmailAlreadyExistException.class})
-    public Map<String, List<String>> administrateurEmailAlreadyExistException(AdministrateurEmailAlreadyExistException ex){
-        return mapException(ex);
-    }
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  @ExceptionHandler({PasswordHashNotPossibleException.class})
+  public Map<String, List<String>> passwordHashNotPossibleException(
+      PasswordHashNotPossibleException ex) {
+    return mapException(ex);
+  }
 
-    @ResponseStatus(HttpStatus.CONFLICT)
-    @ExceptionHandler({AdministrateurNumTelAlreadyExistException.class})
-    public Map<String, List<String>> administrateurNumTelAlreadyExistException(AdministrateurNumTelAlreadyExistException ex){
-        return mapException(ex);
-    }
+  @ResponseStatus(HttpStatus.UNAUTHORIZED)
+  @ExceptionHandler({TokenExpireOrInvalidException.class})
+  public Map<String, List<String>> tokenExpireOrInvalidException(TokenExpireOrInvalidException ex) {
+    return mapException(ex);
+  }
 
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler({AdministrateurNotFoundException.class})
-    public Map<String, List<String>> administrateurNotFoundException(AdministrateurNotFoundException ex){
-        return mapException(ex);
-    }
+  @ResponseStatus(HttpStatus.UNAUTHORIZED)
+  @ExceptionHandler({UnauthorizedException.class})
+  public Map<String, List<String>> unauthorizedException(UnauthorizedException ex) {
+    return mapException(ex);
+  }
 
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ExceptionHandler({PasswordHashNotPossibleException.class})
-    public Map<String, List<String>> passwordHashNotPossibleException(PasswordHashNotPossibleException ex){
-        return mapException(ex);
-    }
+  private Map<String, List<String>> mapException(RuntimeException exception) {
+    ArrayList<String> errors = new ArrayList<>();
+    Map<String, List<String>> errorMapping = new HashMap<>();
+    errors.add(exception.getMessage());
 
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    @ExceptionHandler({TokenExpireOrInvalidException.class})
-    public Map<String, List<String>> tokenExpireOrInvalidException(TokenExpireOrInvalidException ex){
-        return mapException(ex);
-    }
+    errorMapping.put("errors", errors);
 
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    @ExceptionHandler({UnauthorizedException.class})
-    public Map<String, List<String>> unauthorizedException(UnauthorizedException ex){
-        return mapException(ex);
-    }
-
-    private Map<String, List<String>> mapException(RuntimeException exception){
-        ArrayList<String> errors = new ArrayList<>();
-        Map<String, List<String>> errorMapping = new HashMap<>();
-        errors.add(exception.getMessage());
-
-        errorMapping.put("errors", errors);
-
-        return errorMapping;
-    }
+    return errorMapping;
+  }
 }

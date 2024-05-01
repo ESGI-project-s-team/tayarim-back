@@ -11,31 +11,33 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @PrimaryKeyJoinColumn(name = "IDUSER")
-public class Proprietaire extends Utilisateur{
+public class Proprietaire extends Utilisateur {
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "proprietaire")
-    private List<Logement> logements;
+  @OneToMany(cascade = CascadeType.ALL, mappedBy = "proprietaire")
+  private List<Logement> logements;
 
-    @Column(name="DATEINSCRIPTION", nullable = false)
-    @NonNull
-    private LocalDateTime dateInscription;
+  @Column(name = "DATEINSCRIPTION", nullable = false)
+  @NonNull
+  private LocalDateTime dateInscription;
 
-    @Column(name="ISPASSWORDUPDATED", nullable = false)
-    @NonNull
-    private Boolean isPasswordUpdated;
+  @Column(name = "ISPASSWORDUPDATED", nullable = false)
+  @NonNull
+  private Boolean isPasswordUpdated;
 
-    @Builder
-    public Proprietaire(@NonNull String nom, @NonNull String prenom, @NonNull String email, @NonNull String numTel, @NonNull String motDePasse, @NonNull LocalDateTime dateInscription, @NonNull Boolean isPasswordUpdated) {
-        // Utiliser super() pour appeler le constructeur de la classe parente
-        super(nom, prenom, email, numTel, motDePasse);
+  @Builder
+  public Proprietaire(@NonNull String nom, @NonNull String prenom, @NonNull String email,
+      @NonNull String numTel, @NonNull String motDePasse, @NonNull LocalDateTime dateInscription,
+      @NonNull Boolean isPasswordUpdated) {
+    // Utiliser super() pour appeler le constructeur de la classe parente
+    super(nom, prenom, email, numTel, motDePasse);
 
-        // Initialisation des champs propres à Proprietaire
-        this.dateInscription = dateInscription;
-        // Initialisation de la liste des logements pour éviter NullPointerException lors de l'ajout de logements
-        this.logements = List.of();
+    // Initialisation des champs propres à Proprietaire
+    this.dateInscription = dateInscription;
+    // Initialisation de la liste des logements pour éviter NullPointerException lors de l'ajout de logements
+    this.logements = List.of();
 
-        this.isPasswordUpdated = isPasswordUpdated;
-    }
+    this.isPasswordUpdated = isPasswordUpdated;
+  }
 
 
 }

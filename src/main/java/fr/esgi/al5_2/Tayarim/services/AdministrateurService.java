@@ -20,134 +20,152 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 public class AdministrateurService {
 
-    private final AdministrateurRepository administrateurRepository;
+  private final AdministrateurRepository administrateurRepository;
 
-    public AdministrateurService(AdministrateurRepository administrateurRepository) {
-        this.administrateurRepository = administrateurRepository;
+  public AdministrateurService(AdministrateurRepository administrateurRepository) {
+    this.administrateurRepository = administrateurRepository;
+  }
+
+  @Transactional
+  public AdministrateurDTO creerAdministrateur(
+      @NonNull AdministrateurCreationDTO administrateurCreationDTO) {
+    if (administrateurRepository.findFirstByEmail(administrateurCreationDTO.getEmail())
+        .isPresent()) {
+      throw new AdministrateurEmailAlreadyExistException();
     }
 
-    @Transactional
-    public AdministrateurDTO creerAdministrateur(@NonNull AdministrateurCreationDTO administrateurCreationDTO) {
-        if (administrateurRepository.findFirstByEmail(administrateurCreationDTO.getEmail()).isPresent()){
-            throw new AdministrateurEmailAlreadyExistException();
-        }
+    String numTel = administrateurCreationDTO.getNumTel();
+    numTel = numTel.replaceAll(" ", "");
+    if (administrateurRepository.findFirstByNumTel(numTel).isPresent()) {
+      throw new AdministrateurNumTelAlreadyExistException();
+    }
+    administrateurCreationDTO.setNumTel(numTel);
 
-        String numTel = administrateurCreationDTO.getNumTel();
-        numTel = numTel.replaceAll(" ", "");
-        if (administrateurRepository.findFirstByNumTel(numTel).isPresent()){
-            throw new AdministrateurNumTelAlreadyExistException();
-        }
-        administrateurCreationDTO.setNumTel(numTel);
+    String hashedPassword = hashPassword(administrateurCreationDTO.getMotDePasse());
 
-        String hashedPassword = hashPassword(administrateurCreationDTO.getMotDePasse());
+    administrateurCreationDTO.setMotDePasse(hashedPassword);
 
-        administrateurCreationDTO.setMotDePasse(hashedPassword);
+    Administrateur administrateur = AdministrateurMapper.creationDtoToEntity(
+        administrateurCreationDTO);
 
-        Administrateur administrateur = AdministrateurMapper.creationDtoToEntity(administrateurCreationDTO);
+    return AdministrateurMapper.entityToDto(administrateurRepository.save(administrateur));
+  }
 
-        return AdministrateurMapper.entityToDto(administrateurRepository.save(administrateur));
+  public List<AdministrateurDTO> getAdministrateur() {
+    return AdministrateurMapper.entityListToDtoList(administrateurRepository.findAll());
+  }
+
+  public AdministrateurDTO getAdministrateurById(@NonNull Long id) {
+
+    Optional<Administrateur> optionalAdministrateur = administrateurRepository.findById(id);
+    if (optionalAdministrateur.isEmpty()) {
+      throw new AdministrateurNotFoundException();
+    }
+    return AdministrateurMapper.entityToDto(optionalAdministrateur.get());
+  }
+
+  public AdministrateurDTO getAdministrateurByEmail(@NonNull String email) {
+    Optional<Administrateur> optionalAdministrateur = administrateurRepository.findFirstByEmail(
+        email);
+    if (optionalAdministrateur.isEmpty()) {
+      throw new AdministrateurNotFoundException();
     }
 
-    public List<AdministrateurDTO> getAdministrateur(){
-        return AdministrateurMapper.entityListToDtoList(administrateurRepository.findAll());
+    return AdministrateurMapper.entityToDto(optionalAdministrateur.get());
+  }
+
+  @Transactional
+  public AdministrateurDTO updateAdministrateur(@NonNull Long id,
+      @NonNull AdministrateurUpdateDTO administrateurUpdateDTO) {
+
+    if (
+        administrateurUpdateDTO.getNom() == null
+            && administrateurUpdateDTO.getPrenom() == null
+            && administrateurUpdateDTO.getEmail() == null
+            && administrateurUpdateDTO.getNumTel() == null
+            && administrateurUpdateDTO.getMotDePasse() == null
+    ) {
+      throw new AdministrateurInvalidUpdateBody();
     }
 
-    public AdministrateurDTO getAdministrateurById(@NonNull Long id){
-
-        Optional<Administrateur> optionalAdministrateur = administrateurRepository.findById(id);
-        if(optionalAdministrateur.isEmpty()){
-            throw new AdministrateurNotFoundException();
-        }
-        return AdministrateurMapper.entityToDto(optionalAdministrateur.get());
+    Optional<Administrateur> optionalAdministrateur = administrateurRepository.findById(id);
+    if (optionalAdministrateur.isEmpty()) {
+      throw new AdministrateurNotFoundException();
     }
 
-    public AdministrateurDTO getAdministrateurByEmail(@NonNull String email){
-        Optional<Administrateur> optionalAdministrateur = administrateurRepository.findFirstByEmail(email);
-        if (optionalAdministrateur.isEmpty()) {
-            throw new AdministrateurNotFoundException();
-        }
-
-        return AdministrateurMapper.entityToDto(optionalAdministrateur.get());
+    if (administrateurUpdateDTO.getEmail() != null && administrateurRepository.findFirstByEmail(
+        administrateurUpdateDTO.getEmail()).isPresent()) {
+      throw new ProprietaireInvalidUpdateBody();
     }
 
-    @Transactional
-    public AdministrateurDTO updateAdministrateur(@NonNull Long id, @NonNull AdministrateurUpdateDTO administrateurUpdateDTO){
-
-        if(
-                administrateurUpdateDTO.getNom() == null
-                && administrateurUpdateDTO.getPrenom() == null
-                && administrateurUpdateDTO.getEmail() == null
-                && administrateurUpdateDTO.getNumTel() == null
-                && administrateurUpdateDTO.getMotDePasse() == null
-        ){
-            throw new AdministrateurInvalidUpdateBody();
-        }
-
-
-        Optional<Administrateur> optionalAdministrateur = administrateurRepository.findById(id);
-        if(optionalAdministrateur.isEmpty()){
-            throw new AdministrateurNotFoundException();
-        }
-
-        if(administrateurUpdateDTO.getEmail() != null && administrateurRepository.findFirstByEmail(administrateurUpdateDTO.getEmail()).isPresent()){
-            throw new ProprietaireInvalidUpdateBody();
-        }
-
-        if(administrateurUpdateDTO.getNumTel() != null && administrateurRepository.findFirstByNumTel(administrateurUpdateDTO.getNumTel()).isPresent()){
-            throw new ProprietaireInvalidUpdateBody();
-        }
-
-        Administrateur administrateur = optionalAdministrateur.get();
-
-        administrateur.setNom(administrateurUpdateDTO.getNom() != null ? administrateurUpdateDTO.getNom() : administrateur.getNom());
-        administrateur.setPrenom(administrateurUpdateDTO.getPrenom() != null ? administrateurUpdateDTO.getPrenom() : administrateur.getPrenom());
-        administrateur.setEmail(administrateurUpdateDTO.getEmail() != null ? administrateurUpdateDTO.getEmail() : administrateur.getEmail());
-        administrateur.setNumTel(administrateurUpdateDTO.getNumTel() != null ? administrateurUpdateDTO.getNumTel() : administrateur.getNumTel());
-        administrateur.setMotDePasse(administrateurUpdateDTO.getMotDePasse() != null ? hashPassword(administrateurUpdateDTO.getMotDePasse()) : administrateur.getMotDePasse());
-
-        return AdministrateurMapper.entityToDto(administrateurRepository.save(administrateur));
+    if (administrateurUpdateDTO.getNumTel() != null && administrateurRepository.findFirstByNumTel(
+        administrateurUpdateDTO.getNumTel()).isPresent()) {
+      throw new ProprietaireInvalidUpdateBody();
     }
 
-    @Transactional
-    public AdministrateurDTO deleteAdministrateur(@NonNull Long id){
+    Administrateur administrateur = optionalAdministrateur.get();
 
-        Optional<Administrateur> optionalAdministrateur = administrateurRepository.findById(id);
-        if(optionalAdministrateur.isEmpty()){
-            throw new AdministrateurNotFoundException();
-        }
+    administrateur.setNom(
+        administrateurUpdateDTO.getNom() != null ? administrateurUpdateDTO.getNom()
+            : administrateur.getNom());
+    administrateur.setPrenom(
+        administrateurUpdateDTO.getPrenom() != null ? administrateurUpdateDTO.getPrenom()
+            : administrateur.getPrenom());
+    administrateur.setEmail(
+        administrateurUpdateDTO.getEmail() != null ? administrateurUpdateDTO.getEmail()
+            : administrateur.getEmail());
+    administrateur.setNumTel(
+        administrateurUpdateDTO.getNumTel() != null ? administrateurUpdateDTO.getNumTel()
+            : administrateur.getNumTel());
+    administrateur.setMotDePasse(administrateurUpdateDTO.getMotDePasse() != null ? hashPassword(
+        administrateurUpdateDTO.getMotDePasse()) : administrateur.getMotDePasse());
 
-        AdministrateurDTO administrateurDTO = AdministrateurMapper.entityToDto(optionalAdministrateur.get());
+    return AdministrateurMapper.entityToDto(administrateurRepository.save(administrateur));
+  }
 
-        administrateurRepository.deleteById(id); //voir si supprime aussi les logements dans la table logement
+  @Transactional
+  public AdministrateurDTO deleteAdministrateur(@NonNull Long id) {
 
-        return administrateurDTO;
-
+    Optional<Administrateur> optionalAdministrateur = administrateurRepository.findById(id);
+    if (optionalAdministrateur.isEmpty()) {
+      throw new AdministrateurNotFoundException();
     }
 
-    public boolean verifyPassword(@NonNull String password, @NonNull Long proprietaireId){
-        Optional<Administrateur> optionalAdministrateur = administrateurRepository.findById(proprietaireId);
-        if (optionalAdministrateur.isEmpty()){
-            throw new AdministrateurNotFoundException();
-        }
+    AdministrateurDTO administrateurDTO = AdministrateurMapper.entityToDto(
+        optionalAdministrateur.get());
 
-        Administrateur administrateur = optionalAdministrateur.get();
+    administrateurRepository.deleteById(
+        id); //voir si supprime aussi les logements dans la table logement
 
-        return verifyHashedPassword(password, administrateur.getMotDePasse());
+    return administrateurDTO;
 
+  }
+
+  public boolean verifyPassword(@NonNull String password, @NonNull Long proprietaireId) {
+    Optional<Administrateur> optionalAdministrateur = administrateurRepository.findById(
+        proprietaireId);
+    if (optionalAdministrateur.isEmpty()) {
+      throw new AdministrateurNotFoundException();
     }
 
-    private String hashPassword(@NonNull String password){
-        String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt(12));
+    Administrateur administrateur = optionalAdministrateur.get();
 
-        if(!verifyHashedPassword(password, hashedPassword)){
-            throw new PasswordHashNotPossibleException();
-        }
+    return verifyHashedPassword(password, administrateur.getMotDePasse());
 
-        return hashedPassword;
+  }
+
+  private String hashPassword(@NonNull String password) {
+    String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt(12));
+
+    if (!verifyHashedPassword(password, hashedPassword)) {
+      throw new PasswordHashNotPossibleException();
     }
 
-    private boolean verifyHashedPassword(@NonNull String password, @NonNull String hashedPassword){
-        return BCrypt.checkpw(password, hashedPassword);
+    return hashedPassword;
+  }
 
-    }
+  private boolean verifyHashedPassword(@NonNull String password, @NonNull String hashedPassword) {
+    return BCrypt.checkpw(password, hashedPassword);
+
+  }
 }

@@ -14,18 +14,18 @@ import lombok.NonNull;
 @Component
 public class LogementMapper {
 
-    public static LogementDTO entityToDto(@NonNull Logement logement){
-        return new LogementDTO(
-            logement.getId(), 
-            logement.getProprietaire().getId());
-    }
+  public static LogementDTO entityToDto(@NonNull Logement logement) {
+    return new LogementDTO(
+        logement.getId(),
+        logement.getProprietaire().getId());
+  }
 
-    public static List<LogementDTO> entityListToDtoList(@NonNull List<Logement> logements){
-        ArrayList<LogementDTO> logementDtos = new ArrayList<>();
-        for (Logement logement : logements) {
-            logementDtos.add(entityToDto(logement));
-        }
-        return logementDtos.stream().toList();
+  public static List<LogementDTO> entityListToDtoList(@NonNull List<Logement> logements) {
+    ArrayList<LogementDTO> logementDtos = new ArrayList<>();
+    for (Logement logement : logements) {
+      logementDtos.add(entityToDto(logement));
     }
+    return logementDtos.stream().toList();
+  }
 
 }

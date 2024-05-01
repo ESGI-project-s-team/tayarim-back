@@ -15,24 +15,24 @@ import lombok.RequiredArgsConstructor;
 @Builder
 public class AdministrateurCreationDTO {
 
-    @Valid
+  @Valid
 
-    @NotBlank(message = "error_admin_invalid_name")
-    private String nom;
+  @NotBlank(message = "error_admin_invalid_name")
+  private String nom;
 
-    @NotBlank(message = "error_admin_invalid_firstName")
-    private String prenom;
-    
-    @NotBlank(message = "error_admin_invalid_mail")
-    @Email(message = "error_adminr_invalid_mail")
-    private String email;
-    
-    @NotBlank(message = "error_admin_invalid_phone")
-    @Pattern(regexp = "\\+?[\\d\\s\\-.()]+", message = "error_admin_invalid_phone")
-    private String numTel;
-    
-    @NotBlank(message = "error_admin_invalid_password")
-    private String motDePasse;
+  @NotBlank(message = "error_admin_invalid_firstName")
+  private String prenom;
 
-    // No need for explicit getters, setters, or constructors
+  @NotBlank(message = "error_admin_invalid_mail")
+  @Email(message = "error_adminr_invalid_mail")
+  private String email;
+
+  @NotBlank(message = "error_admin_invalid_phone")
+  @Pattern(regexp = "\\+?[\\d\\s\\-.()]+", message = "error_admin_invalid_phone")
+  private String numTel;
+
+  @NotBlank(message = "error_admin_invalid_password")
+  private String motDePasse;
+
+  // No need for explicit getters, setters, or constructors
 }

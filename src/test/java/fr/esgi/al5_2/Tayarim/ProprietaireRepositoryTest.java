@@ -25,170 +25,173 @@ import java.util.Optional;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class ProprietaireRepositoryTest {
 
-    @Autowired
-    private ProprietaireRepository proprietaireRepository;
+  @Autowired
+  private ProprietaireRepository proprietaireRepository;
 
-    @Test
-    public void ProprietaireRepository_Save_ReturnSavedProprietaire() {
+  @Test
+  public void ProprietaireRepository_Save_ReturnSavedProprietaire() {
 
-        LocalDateTime dateInscription = LocalDateTime.now();
-        Proprietaire proprietaire = Proprietaire.builder()
-                .nom("Ferreira")
-                .prenom("Mathieu")
-                .email("test@gmail.com")
-                .numTel("0612345678")
-                .motDePasse("password")
-                .dateInscription(dateInscription)
-                .isPasswordUpdated(Boolean.TRUE)
-                .build();
+    LocalDateTime dateInscription = LocalDateTime.now();
+    Proprietaire proprietaire = Proprietaire.builder()
+        .nom("Ferreira")
+        .prenom("Mathieu")
+        .email("test@gmail.com")
+        .numTel("0612345678")
+        .motDePasse("password")
+        .dateInscription(dateInscription)
+        .isPasswordUpdated(Boolean.TRUE)
+        .build();
 
-        Proprietaire savedProprietaire = proprietaireRepository.save(proprietaire);
+    Proprietaire savedProprietaire = proprietaireRepository.save(proprietaire);
 
-        assertThat(savedProprietaire).isNotNull();
-        assertThat(savedProprietaire.getId()).isNotNull();
-        assertThat(savedProprietaire.getId()).isEqualTo(1L);
-        assertThat(savedProprietaire.getNom()).isEqualTo(proprietaire.getNom());
-        assertThat(savedProprietaire.getPrenom()).isEqualTo(proprietaire.getPrenom());
-        assertThat(savedProprietaire.getEmail()).isEqualTo(proprietaire.getEmail());
-        assertThat(savedProprietaire.getNumTel()).isEqualTo(proprietaire.getNumTel());
-        assertThat(savedProprietaire.getMotDePasse()).isEqualTo(proprietaire.getMotDePasse());
-        assertThat(savedProprietaire.getDateInscription()).isEqualTo(proprietaire.getDateInscription());
-    }
+    assertThat(savedProprietaire).isNotNull();
+    assertThat(savedProprietaire.getId()).isNotNull();
+    assertThat(savedProprietaire.getId()).isEqualTo(1L);
+    assertThat(savedProprietaire.getNom()).isEqualTo(proprietaire.getNom());
+    assertThat(savedProprietaire.getPrenom()).isEqualTo(proprietaire.getPrenom());
+    assertThat(savedProprietaire.getEmail()).isEqualTo(proprietaire.getEmail());
+    assertThat(savedProprietaire.getNumTel()).isEqualTo(proprietaire.getNumTel());
+    assertThat(savedProprietaire.getMotDePasse()).isEqualTo(proprietaire.getMotDePasse());
+    assertThat(savedProprietaire.getDateInscription()).isEqualTo(proprietaire.getDateInscription());
+  }
 
-    @Test
-    public void ProprietaireRepository_FindAll_ReturnZeroProprietaire() {
+  @Test
+  public void ProprietaireRepository_FindAll_ReturnZeroProprietaire() {
 
-        List<Proprietaire> proprietaires = proprietaireRepository.findAll();
+    List<Proprietaire> proprietaires = proprietaireRepository.findAll();
 
-        assertThat(proprietaires).isNotNull();
-        assertThat(proprietaires).hasSize(0);
-    }
-    @Test
-    public void ProprietaireRepository_FindAll_ReturnOneProprietaire() {
+    assertThat(proprietaires).isNotNull();
+    assertThat(proprietaires).hasSize(0);
+  }
 
-        LocalDateTime dateInscription = LocalDateTime.now();
-        Proprietaire proprietaire = Proprietaire.builder()
-                .nom("Ferreira")
-                .prenom("Mathieu")
-                .email("test@gmail.com")
-                .numTel("0612345678")
-                .motDePasse("password")
-                .dateInscription(dateInscription)
-                .isPasswordUpdated(Boolean.TRUE)
-                .build();
-        proprietaireRepository.save(proprietaire);
+  @Test
+  public void ProprietaireRepository_FindAll_ReturnOneProprietaire() {
 
-        List<Proprietaire> proprietaires = proprietaireRepository.findAll();
+    LocalDateTime dateInscription = LocalDateTime.now();
+    Proprietaire proprietaire = Proprietaire.builder()
+        .nom("Ferreira")
+        .prenom("Mathieu")
+        .email("test@gmail.com")
+        .numTel("0612345678")
+        .motDePasse("password")
+        .dateInscription(dateInscription)
+        .isPasswordUpdated(Boolean.TRUE)
+        .build();
+    proprietaireRepository.save(proprietaire);
 
-        assertThat(proprietaires).isNotNull();
-        assertThat(proprietaires).hasSize(1);
-    }
+    List<Proprietaire> proprietaires = proprietaireRepository.findAll();
 
-    @Test
-    public void ProprietaireRepository_FindAll_ReturnManyProprietaire() {
+    assertThat(proprietaires).isNotNull();
+    assertThat(proprietaires).hasSize(1);
+  }
 
-        LocalDateTime dateInscription = LocalDateTime.now();
-        Proprietaire proprietaire = Proprietaire.builder()
-                .nom("Ferreira")
-                .prenom("Mathieu")
-                .email("test@gmail.com")
-                .numTel("0612345678")
-                .motDePasse("password")
-                .dateInscription(dateInscription)
-                .isPasswordUpdated(Boolean.TRUE)
-                .build();
-        Proprietaire proprietaire2 = Proprietaire.builder()
-                .nom("Ferreira")
-                .prenom("Mathieu")
-                .email("test@gmail.com")
-                .numTel("0612345678")
-                .motDePasse("password")
-                .dateInscription(dateInscription)
-                .isPasswordUpdated(Boolean.TRUE)
-                .build();
-        proprietaireRepository.save(proprietaire);
-        proprietaireRepository.save(proprietaire2);
+  @Test
+  public void ProprietaireRepository_FindAll_ReturnManyProprietaire() {
 
-        List<Proprietaire> proprietaires = proprietaireRepository.findAll();
+    LocalDateTime dateInscription = LocalDateTime.now();
+    Proprietaire proprietaire = Proprietaire.builder()
+        .nom("Ferreira")
+        .prenom("Mathieu")
+        .email("test@gmail.com")
+        .numTel("0612345678")
+        .motDePasse("password")
+        .dateInscription(dateInscription)
+        .isPasswordUpdated(Boolean.TRUE)
+        .build();
+    Proprietaire proprietaire2 = Proprietaire.builder()
+        .nom("Ferreira")
+        .prenom("Mathieu")
+        .email("test@gmail.com")
+        .numTel("0612345678")
+        .motDePasse("password")
+        .dateInscription(dateInscription)
+        .isPasswordUpdated(Boolean.TRUE)
+        .build();
+    proprietaireRepository.save(proprietaire);
+    proprietaireRepository.save(proprietaire2);
 
-        assertThat(proprietaires).isNotNull();
-        assertThat(proprietaires).hasSizeGreaterThan(1);
-    }
+    List<Proprietaire> proprietaires = proprietaireRepository.findAll();
 
-    @Test
-    public void ProprietaireRepository_FindFirstByEmail_ReturnProprietaire() {
+    assertThat(proprietaires).isNotNull();
+    assertThat(proprietaires).hasSizeGreaterThan(1);
+  }
 
-        LocalDateTime dateInscription = LocalDateTime.now();
-        Proprietaire proprietaire = Proprietaire.builder()
-                .nom("Ferreira")
-                .prenom("Mathieu")
-                .email("test@gmail.com")
-                .numTel("0612345678")
-                .motDePasse("password")
-                .dateInscription(dateInscription)
-                .isPasswordUpdated(Boolean.TRUE)
-                .build();
-        proprietaireRepository.save(proprietaire);
+  @Test
+  public void ProprietaireRepository_FindFirstByEmail_ReturnProprietaire() {
 
-        Proprietaire findProprietaire = proprietaireRepository.findFirstByEmail(proprietaire.getEmail()).get();
+    LocalDateTime dateInscription = LocalDateTime.now();
+    Proprietaire proprietaire = Proprietaire.builder()
+        .nom("Ferreira")
+        .prenom("Mathieu")
+        .email("test@gmail.com")
+        .numTel("0612345678")
+        .motDePasse("password")
+        .dateInscription(dateInscription)
+        .isPasswordUpdated(Boolean.TRUE)
+        .build();
+    proprietaireRepository.save(proprietaire);
 
-        assertThat(findProprietaire).isNotNull();
-        assertThat(findProprietaire.getId()).isNotNull();
-        assertThat(findProprietaire.getNom()).isEqualTo(proprietaire.getNom());
-        assertThat(findProprietaire.getPrenom()).isEqualTo(proprietaire.getPrenom());
-        assertThat(findProprietaire.getEmail()).isEqualTo(proprietaire.getEmail());
-        assertThat(findProprietaire.getNumTel()).isEqualTo(proprietaire.getNumTel());
-        assertThat(findProprietaire.getMotDePasse()).isEqualTo(proprietaire.getMotDePasse());
-        assertThat(findProprietaire.getDateInscription()).isEqualTo(proprietaire.getDateInscription());
-    }
+    Proprietaire findProprietaire = proprietaireRepository.findFirstByEmail(proprietaire.getEmail())
+        .get();
 
-    @Test
-    public void ProprietaireRepository_FindFirstByNumTel_ReturnProprietaire() {
+    assertThat(findProprietaire).isNotNull();
+    assertThat(findProprietaire.getId()).isNotNull();
+    assertThat(findProprietaire.getNom()).isEqualTo(proprietaire.getNom());
+    assertThat(findProprietaire.getPrenom()).isEqualTo(proprietaire.getPrenom());
+    assertThat(findProprietaire.getEmail()).isEqualTo(proprietaire.getEmail());
+    assertThat(findProprietaire.getNumTel()).isEqualTo(proprietaire.getNumTel());
+    assertThat(findProprietaire.getMotDePasse()).isEqualTo(proprietaire.getMotDePasse());
+    assertThat(findProprietaire.getDateInscription()).isEqualTo(proprietaire.getDateInscription());
+  }
 
-        LocalDateTime dateInscription = LocalDateTime.now();
-        Proprietaire proprietaire = Proprietaire.builder()
-                .nom("Ferreira")
-                .prenom("Mathieu")
-                .email("test@gmail.com")
-                .numTel("0612345678")
-                .motDePasse("password")
-                .dateInscription(dateInscription)
-                .isPasswordUpdated(Boolean.TRUE)
-                .build();
-        proprietaireRepository.save(proprietaire);
+  @Test
+  public void ProprietaireRepository_FindFirstByNumTel_ReturnProprietaire() {
 
-        Proprietaire findProprietaire = proprietaireRepository.findFirstByNumTel(proprietaire.getNumTel()).get();
+    LocalDateTime dateInscription = LocalDateTime.now();
+    Proprietaire proprietaire = Proprietaire.builder()
+        .nom("Ferreira")
+        .prenom("Mathieu")
+        .email("test@gmail.com")
+        .numTel("0612345678")
+        .motDePasse("password")
+        .dateInscription(dateInscription)
+        .isPasswordUpdated(Boolean.TRUE)
+        .build();
+    proprietaireRepository.save(proprietaire);
 
-        assertThat(findProprietaire).isNotNull();
-        assertThat(findProprietaire.getId()).isNotNull();
-        assertThat(findProprietaire.getNom()).isEqualTo(proprietaire.getNom());
-        assertThat(findProprietaire.getPrenom()).isEqualTo(proprietaire.getPrenom());
-        assertThat(findProprietaire.getEmail()).isEqualTo(proprietaire.getEmail());
-        assertThat(findProprietaire.getNumTel()).isEqualTo(proprietaire.getNumTel());
-        assertThat(findProprietaire.getMotDePasse()).isEqualTo(proprietaire.getMotDePasse());
-        assertThat(findProprietaire.getDateInscription()).isEqualTo(proprietaire.getDateInscription());
-    }
+    Proprietaire findProprietaire = proprietaireRepository.findFirstByNumTel(
+        proprietaire.getNumTel()).get();
 
-    @Test
-    public void ProprietaireRepository_DeleteById_ReturnProprietaire() {
+    assertThat(findProprietaire).isNotNull();
+    assertThat(findProprietaire.getId()).isNotNull();
+    assertThat(findProprietaire.getNom()).isEqualTo(proprietaire.getNom());
+    assertThat(findProprietaire.getPrenom()).isEqualTo(proprietaire.getPrenom());
+    assertThat(findProprietaire.getEmail()).isEqualTo(proprietaire.getEmail());
+    assertThat(findProprietaire.getNumTel()).isEqualTo(proprietaire.getNumTel());
+    assertThat(findProprietaire.getMotDePasse()).isEqualTo(proprietaire.getMotDePasse());
+    assertThat(findProprietaire.getDateInscription()).isEqualTo(proprietaire.getDateInscription());
+  }
 
-        LocalDateTime dateInscription = LocalDateTime.now();
-        Proprietaire proprietaire = Proprietaire.builder()
-                .nom("Ferreira")
-                .prenom("Mathieu")
-                .email("test@gmail.com")
-                .numTel("0612345678")
-                .motDePasse("password")
-                .dateInscription(dateInscription)
-                .isPasswordUpdated(Boolean.TRUE)
-                .build();
-        proprietaireRepository.save(proprietaire);
+  @Test
+  public void ProprietaireRepository_DeleteById_ReturnProprietaire() {
 
-        proprietaireRepository.deleteById(proprietaire.getId());
+    LocalDateTime dateInscription = LocalDateTime.now();
+    Proprietaire proprietaire = Proprietaire.builder()
+        .nom("Ferreira")
+        .prenom("Mathieu")
+        .email("test@gmail.com")
+        .numTel("0612345678")
+        .motDePasse("password")
+        .dateInscription(dateInscription)
+        .isPasswordUpdated(Boolean.TRUE)
+        .build();
+    proprietaireRepository.save(proprietaire);
 
-        List<Proprietaire> proprietaires = proprietaireRepository.findAll();
-        assertThat(proprietaires).isNotNull();
-        assertThat(proprietaires).hasSize(0);
-    }
+    proprietaireRepository.deleteById(proprietaire.getId());
+
+    List<Proprietaire> proprietaires = proprietaireRepository.findAll();
+    assertThat(proprietaires).isNotNull();
+    assertThat(proprietaires).hasSize(0);
+  }
 
 }

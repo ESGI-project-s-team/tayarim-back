@@ -8,13 +8,13 @@ import lombok.NonNull;
 @AllArgsConstructor // Generates an all-args constructor
 public class AuthLoginResponseDTO {
 
-    @NonNull
-    private Long id;
+  @NonNull
+  private Long id;
 
-    @NonNull
-    private String token;
+  @NonNull
+  private String token;
 
-    private boolean admin;
+  private boolean admin;
 
-    // No need for explicit getters, setters, or constructors
+  // No need for explicit getters, setters, or constructors
 }

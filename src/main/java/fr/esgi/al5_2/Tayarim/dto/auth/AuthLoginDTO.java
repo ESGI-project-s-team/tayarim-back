@@ -10,12 +10,12 @@ import lombok.Data;
 @AllArgsConstructor
 public class AuthLoginDTO {
 
-    @Valid
+  @Valid
 
-    @NotBlank(message = "error_owner_invalid_mail")
-    @Email(message = "error_owner_invalid_mail")
-    private String email;
+  @NotBlank(message = "error_owner_invalid_mail")
+  @Email(message = "error_owner_invalid_mail")
+  private String email;
 
-    @NotBlank(message = "error_owner_invalid_password")
-    private String motDePasse;
+  @NotBlank(message = "error_owner_invalid_password")
+  private String motDePasse;
 }

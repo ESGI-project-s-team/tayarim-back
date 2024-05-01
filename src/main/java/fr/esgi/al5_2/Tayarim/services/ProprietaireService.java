@@ -24,141 +24,164 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 public class ProprietaireService {
 
-    private final ProprietaireRepository proprietaireRepository;
+  private final ProprietaireRepository proprietaireRepository;
 
-    public ProprietaireService(ProprietaireRepository proprietaireRepository) {
-        this.proprietaireRepository = proprietaireRepository;
+  public ProprietaireService(ProprietaireRepository proprietaireRepository) {
+    this.proprietaireRepository = proprietaireRepository;
+  }
+
+  @Transactional
+  public ProprietaireDTO creerProprietaire(
+      @NonNull ProprietaireCreationDTO proprietaireCreationDTO) {
+    if (proprietaireRepository.findFirstByEmail(proprietaireCreationDTO.getEmail()).isPresent()) {
+      throw new ProprietaireEmailAlreadyExistException();
     }
 
-    @Transactional
-    public ProprietaireDTO creerProprietaire(@NonNull ProprietaireCreationDTO proprietaireCreationDTO) {
-        if (proprietaireRepository.findFirstByEmail(proprietaireCreationDTO.getEmail()).isPresent()){
-            throw new ProprietaireEmailAlreadyExistException();
-        }
+    String numTel = proprietaireCreationDTO.getNumTel();
+    numTel = numTel.replaceAll(" ", "");
+    if (proprietaireRepository.findFirstByNumTel(numTel).isPresent()) {
+      throw new ProprietaireNumTelAlreadyExistException();
+    }
+    proprietaireCreationDTO.setNumTel(numTel);
 
-        String numTel = proprietaireCreationDTO.getNumTel();
-        numTel = numTel.replaceAll(" ", "");
-        if (proprietaireRepository.findFirstByNumTel(numTel).isPresent()){
-            throw new ProprietaireNumTelAlreadyExistException();
-        }
-        proprietaireCreationDTO.setNumTel(numTel);
-
-
-        StringBuilder generatedPassword = new StringBuilder(16);
-        String allowedchar = "abcdefghijklmnopqrstuvwxyz0123456789!@#$%&*()_+-=[]?";
-        SecureRandom random = new SecureRandom();
-        for (int i = 0; i < 16; i++) {
-            int index = random.nextInt(allowedchar.length());
-            generatedPassword.append(allowedchar.charAt(index));
-        }
-
-        System.out.println(generatedPassword); // waiting for SMTP
-
-        Proprietaire proprietaire = ProprietaireMapper.creationDtoToEntity(proprietaireCreationDTO, hashPassword(generatedPassword.toString()));
-        return ProprietaireMapper.entityToDto(proprietaireRepository.save(proprietaire), false);
+    StringBuilder generatedPassword = new StringBuilder(16);
+    String allowedchar = "abcdefghijklmnopqrstuvwxyz0123456789!@#$%&*()_+-=[]?";
+    SecureRandom random = new SecureRandom();
+    for (int i = 0; i < 16; i++) {
+      int index = random.nextInt(allowedchar.length());
+      generatedPassword.append(allowedchar.charAt(index));
     }
 
-    public List<ProprietaireDTO> getProprietaire(boolean isLogement){
-        return ProprietaireMapper.entityListToDtoList(proprietaireRepository.findAll(), isLogement);
+    System.out.println(generatedPassword); // waiting for SMTP
+
+    Proprietaire proprietaire = ProprietaireMapper.creationDtoToEntity(proprietaireCreationDTO,
+        hashPassword(generatedPassword.toString()));
+    return ProprietaireMapper.entityToDto(proprietaireRepository.save(proprietaire), false);
+  }
+
+  public List<ProprietaireDTO> getProprietaire(boolean isLogement) {
+    return ProprietaireMapper.entityListToDtoList(proprietaireRepository.findAll(), isLogement);
+  }
+
+  public ProprietaireDTO getProprietaireById(@NonNull Long id, boolean isLogement) {
+
+    Optional<Proprietaire> optionalProprietaire = proprietaireRepository.findById(id);
+    if (optionalProprietaire.isEmpty()) {
+      throw new ProprietaireNotFoundException();
+    }
+    return ProprietaireMapper.entityToDto(optionalProprietaire.get(), isLogement);
+  }
+
+  public ProprietaireDTO getProprietaireByEmail(@NonNull String email) {
+    Optional<Proprietaire> optionalProprietaire = proprietaireRepository.findFirstByEmail(email);
+    if (optionalProprietaire.isEmpty()) {
+      throw new ProprietaireNotFoundException();
     }
 
-    public ProprietaireDTO getProprietaireById(@NonNull Long id, boolean isLogement){
+    return ProprietaireMapper.entityToDto(optionalProprietaire.get(), false);
+  }
 
-        Optional<Proprietaire> optionalProprietaire = proprietaireRepository.findById(id);
-        if(optionalProprietaire.isEmpty()){
-            throw new ProprietaireNotFoundException();
-        }
-        return ProprietaireMapper.entityToDto(optionalProprietaire.get(), isLogement);
+  @Transactional
+  public ProprietaireDTO updateProprietaire(@NonNull Long id,
+      @NonNull ProprietaireUpdateDTO proprietaireUpdateDTO) {
+
+    if (
+        (proprietaireUpdateDTO.getNom() == null || proprietaireUpdateDTO.getNom().isBlank())
+            && (proprietaireUpdateDTO.getPrenom() == null || proprietaireUpdateDTO.getPrenom()
+            .isBlank())
+            && (proprietaireUpdateDTO.getEmail() == null || proprietaireUpdateDTO.getEmail()
+            .isBlank())
+            && (proprietaireUpdateDTO.getNumTel() == null || proprietaireUpdateDTO.getNumTel()
+            .isBlank())
+            && (proprietaireUpdateDTO.getMotDePasse() == null
+            || proprietaireUpdateDTO.getMotDePasse().isBlank())
+    ) {
+      throw new ProprietaireInvalidUpdateBody();
     }
 
-    public ProprietaireDTO getProprietaireByEmail(@NonNull String email){
-        Optional<Proprietaire> optionalProprietaire = proprietaireRepository.findFirstByEmail(email);
-        if (optionalProprietaire.isEmpty()) {
-            throw new ProprietaireNotFoundException();
-        }
-
-        return ProprietaireMapper.entityToDto(optionalProprietaire.get(), false);
+    Optional<Proprietaire> optionalProprietaire = proprietaireRepository.findById(id);
+    if (optionalProprietaire.isEmpty()) {
+      throw new ProprietaireNotFoundException();
     }
 
-    @Transactional
-    public ProprietaireDTO updateProprietaire(@NonNull Long id, @NonNull ProprietaireUpdateDTO proprietaireUpdateDTO){
-
-        if(
-                (proprietaireUpdateDTO.getNom() == null || proprietaireUpdateDTO.getNom().isBlank())
-                        && (proprietaireUpdateDTO.getPrenom() == null || proprietaireUpdateDTO.getPrenom().isBlank())
-                        && (proprietaireUpdateDTO.getEmail() == null || proprietaireUpdateDTO.getEmail().isBlank())
-                        && (proprietaireUpdateDTO.getNumTel() == null || proprietaireUpdateDTO.getNumTel().isBlank())
-                        && (proprietaireUpdateDTO.getMotDePasse() == null || proprietaireUpdateDTO.getMotDePasse().isBlank())
-        ){
-            throw new ProprietaireInvalidUpdateBody();
-        }
-
-
-        Optional<Proprietaire> optionalProprietaire = proprietaireRepository.findById(id);
-        if(optionalProprietaire.isEmpty()){
-            throw new ProprietaireNotFoundException();
-        }
-
-        if((proprietaireUpdateDTO.getEmail() != null && !proprietaireUpdateDTO.getEmail().isBlank()) && proprietaireRepository.findFirstByEmail(proprietaireUpdateDTO.getEmail()).isPresent()){
-            throw new ProprietaireInvalidUpdateBody();
-        }
-
-        if((proprietaireUpdateDTO.getNumTel() != null && !proprietaireUpdateDTO.getNumTel().isBlank()) && proprietaireRepository.findFirstByNumTel(proprietaireUpdateDTO.getNumTel()).isPresent()){
-            throw new ProprietaireInvalidUpdateBody();
-        }
-
-        Proprietaire proprietaire = optionalProprietaire.get();
-
-        proprietaire.setNom((proprietaireUpdateDTO.getNom() != null && !proprietaireUpdateDTO.getNom().isBlank()) ? proprietaireUpdateDTO.getNom() : proprietaire.getNom());
-        proprietaire.setPrenom((proprietaireUpdateDTO.getPrenom() != null && !proprietaireUpdateDTO.getPrenom().isBlank()) ? proprietaireUpdateDTO.getPrenom() : proprietaire.getPrenom());
-        proprietaire.setEmail((proprietaireUpdateDTO.getEmail() != null && !proprietaireUpdateDTO.getEmail().isBlank()) ? proprietaireUpdateDTO.getEmail() : proprietaire.getEmail());
-        proprietaire.setNumTel((proprietaireUpdateDTO.getNumTel() != null && !proprietaireUpdateDTO.getNumTel().isBlank()) ? proprietaireUpdateDTO.getNumTel() : proprietaire.getNumTel());
-        proprietaire.setMotDePasse((proprietaireUpdateDTO.getMotDePasse() != null && !proprietaireUpdateDTO.getMotDePasse().isBlank()) ? hashPassword(proprietaireUpdateDTO.getMotDePasse()) : proprietaire.getMotDePasse());
-        proprietaire.setIsPasswordUpdated(proprietaireUpdateDTO.getMotDePasse() != null && !proprietaireUpdateDTO.getMotDePasse().isBlank() || proprietaire.getIsPasswordUpdated());
-
-        return ProprietaireMapper.entityToDto(proprietaireRepository.save(proprietaire), false);
+    if ((proprietaireUpdateDTO.getEmail() != null && !proprietaireUpdateDTO.getEmail().isBlank())
+        && proprietaireRepository.findFirstByEmail(proprietaireUpdateDTO.getEmail()).isPresent()) {
+      throw new ProprietaireInvalidUpdateBody();
     }
 
-    @Transactional
-    public ProprietaireDTO deleteProprietaire(@NonNull Long id){
-
-        Optional<Proprietaire> optionalProprietaire = proprietaireRepository.findById(id);
-        if(optionalProprietaire.isEmpty()){
-            throw new ProprietaireNotFoundException();
-        }
-
-        ProprietaireDTO proprietaireDTO = ProprietaireMapper.entityToDto(optionalProprietaire.get(), false);
-
-        proprietaireRepository.deleteById(id); //voir si supprime aussi les logements dans la table logement
-
-        return proprietaireDTO;
-
+    if ((proprietaireUpdateDTO.getNumTel() != null && !proprietaireUpdateDTO.getNumTel().isBlank())
+        && proprietaireRepository.findFirstByNumTel(proprietaireUpdateDTO.getNumTel())
+        .isPresent()) {
+      throw new ProprietaireInvalidUpdateBody();
     }
 
-    public boolean verifyPassword(@NonNull String password, @NonNull Long proprietaireId){
-        Optional<Proprietaire> optionalProprietaire = proprietaireRepository.findById(proprietaireId);
-        if (optionalProprietaire.isEmpty()){
-            throw new ProprietaireNotFoundException();
-        }
+    Proprietaire proprietaire = optionalProprietaire.get();
 
-        Proprietaire proprietaire = optionalProprietaire.get();
+    proprietaire.setNom(
+        (proprietaireUpdateDTO.getNom() != null && !proprietaireUpdateDTO.getNom().isBlank())
+            ? proprietaireUpdateDTO.getNom() : proprietaire.getNom());
+    proprietaire.setPrenom(
+        (proprietaireUpdateDTO.getPrenom() != null && !proprietaireUpdateDTO.getPrenom().isBlank())
+            ? proprietaireUpdateDTO.getPrenom() : proprietaire.getPrenom());
+    proprietaire.setEmail(
+        (proprietaireUpdateDTO.getEmail() != null && !proprietaireUpdateDTO.getEmail().isBlank())
+            ? proprietaireUpdateDTO.getEmail() : proprietaire.getEmail());
+    proprietaire.setNumTel(
+        (proprietaireUpdateDTO.getNumTel() != null && !proprietaireUpdateDTO.getNumTel().isBlank())
+            ? proprietaireUpdateDTO.getNumTel() : proprietaire.getNumTel());
+    proprietaire.setMotDePasse(
+        (proprietaireUpdateDTO.getMotDePasse() != null && !proprietaireUpdateDTO.getMotDePasse()
+            .isBlank()) ? hashPassword(proprietaireUpdateDTO.getMotDePasse())
+            : proprietaire.getMotDePasse());
+    proprietaire.setIsPasswordUpdated(
+        proprietaireUpdateDTO.getMotDePasse() != null && !proprietaireUpdateDTO.getMotDePasse()
+            .isBlank() || proprietaire.getIsPasswordUpdated());
 
-        return verifyHashedPassword(password, proprietaire.getMotDePasse());
+    return ProprietaireMapper.entityToDto(proprietaireRepository.save(proprietaire), false);
+  }
 
+  @Transactional
+  public ProprietaireDTO deleteProprietaire(@NonNull Long id) {
+
+    Optional<Proprietaire> optionalProprietaire = proprietaireRepository.findById(id);
+    if (optionalProprietaire.isEmpty()) {
+      throw new ProprietaireNotFoundException();
     }
 
-    private String hashPassword(@NonNull String password){
-        String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt(12));
+    ProprietaireDTO proprietaireDTO = ProprietaireMapper.entityToDto(optionalProprietaire.get(),
+        false);
 
-        if(!verifyHashedPassword(password, hashedPassword)){
-            throw new PasswordHashNotPossibleException();
-        }
+    proprietaireRepository.deleteById(
+        id); //voir si supprime aussi les logements dans la table logement
 
-        return hashedPassword;
+    return proprietaireDTO;
+
+  }
+
+  public boolean verifyPassword(@NonNull String password, @NonNull Long proprietaireId) {
+    Optional<Proprietaire> optionalProprietaire = proprietaireRepository.findById(proprietaireId);
+    if (optionalProprietaire.isEmpty()) {
+      throw new ProprietaireNotFoundException();
     }
 
-    private boolean verifyHashedPassword(@NonNull String password, @NonNull String hashedPassword){
-        return BCrypt.checkpw(password, hashedPassword);
+    Proprietaire proprietaire = optionalProprietaire.get();
 
+    return verifyHashedPassword(password, proprietaire.getMotDePasse());
+
+  }
+
+  private String hashPassword(@NonNull String password) {
+    String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt(12));
+
+    if (!verifyHashedPassword(password, hashedPassword)) {
+      throw new PasswordHashNotPossibleException();
     }
+
+    return hashedPassword;
+  }
+
+  private boolean verifyHashedPassword(@NonNull String password, @NonNull String hashedPassword) {
+    return BCrypt.checkpw(password, hashedPassword);
+
+  }
 }

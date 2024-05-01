@@ -9,7 +9,9 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface ProprietaireRepository extends JpaRepository<Proprietaire, Long>{
-    Optional<Proprietaire> findFirstByEmail(@NonNull String email);
-    Optional<Proprietaire> findFirstByNumTel(@NonNull String numTel);
+public interface ProprietaireRepository extends JpaRepository<Proprietaire, Long> {
+
+  Optional<Proprietaire> findFirstByEmail(@NonNull String email);
+
+  Optional<Proprietaire> findFirstByNumTel(@NonNull String numTel);
 }
