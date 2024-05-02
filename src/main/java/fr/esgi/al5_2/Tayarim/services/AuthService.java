@@ -3,6 +3,7 @@ package fr.esgi.al5_2.Tayarim.services;
 import fr.esgi.al5_2.Tayarim.auth.JwtHelper;
 import fr.esgi.al5_2.Tayarim.auth.TokenCacheService;
 import fr.esgi.al5_2.Tayarim.dto.auth.AuthLoginResponseDTO;
+import fr.esgi.al5_2.Tayarim.dto.auth.AuthResponseDTO;
 import fr.esgi.al5_2.Tayarim.dto.proprietaire.AdministrateurDTO;
 import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireDTO;
 import fr.esgi.al5_2.Tayarim.exceptions.AdministrateurNotFoundException;
@@ -103,14 +104,14 @@ public class AuthService {
    * Authentifie un utilisateur à partir d'un token.
    *
    * @param token Le token JWT fourni à l'utilisateur après une connexion réussie.
-   * @return {@link AuthLoginResponseDTO}
+   * @return {@link AuthResponseDTO}
    * @throws TokenExpireOrInvalidException Si le token est expiré ou invalide.
    */
-  public AuthLoginResponseDTO auth(@NonNull String token) {
+  public AuthResponseDTO auth(@NonNull String token) {
 
     Entry<Long, Boolean> entry = verifyToken(token, false);
 
-    return new AuthLoginResponseDTO(entry.getKey(), token, entry.getValue());
+    return new AuthResponseDTO(entry.getKey(), token, entry.getValue());
 
   }
 
