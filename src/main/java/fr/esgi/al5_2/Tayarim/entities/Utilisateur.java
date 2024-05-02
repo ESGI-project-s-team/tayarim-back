@@ -3,6 +3,12 @@ package fr.esgi.al5_2.Tayarim.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
+/**
+ * Classe abstraite de base pour les utilisateurs dans le système. Cette classe définit les
+ * propriétés communes à tous les types d'utilisateurs, telles que nom, prénom, email, numéro de
+ * téléphone et mot de passe. Elle utilise la stratégie de persistance 'JOINED' pour permettre
+ * l'héritage des entités Utilisateur dans la base de données.
+ */
 @Data
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)

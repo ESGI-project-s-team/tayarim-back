@@ -20,6 +20,10 @@ import java.security.SecureRandom;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Service pour la gestion des propriétaires dans le système. Fournit des méthodes pour créer,
+ * récupérer, mettre à jour et supprimer des propriétaires.
+ */
 @Service
 @Transactional(readOnly = true)
 public class ProprietaireService {
@@ -30,6 +34,15 @@ public class ProprietaireService {
     this.proprietaireRepository = proprietaireRepository;
   }
 
+  /**
+   * Crée un nouveau propriétaire dans le système. Vérifie si l'email ou le numéro de téléphone
+   * existe déjà avant de procéder à la création.
+   *
+   * @param proprietaireCreationDTO Les données nécessaires pour créer un propriétaire.
+   * @return Le DTO du propriétaire créé.
+   * @throws ProprietaireEmailAlreadyExistException  si l'email existe déjà.
+   * @throws ProprietaireNumTelAlreadyExistException si le numéro de téléphone existe déjà.
+   */
   @Transactional
   public ProprietaireDTO creerProprietaire(
       @NonNull ProprietaireCreationDTO proprietaireCreationDTO) {
@@ -59,6 +72,12 @@ public class ProprietaireService {
     return ProprietaireMapper.entityToDto(proprietaireRepository.save(proprietaire), false);
   }
 
+  /**
+   * Récupère une liste de tous les propriétaires.
+   *
+   * @param isLogement Indique si les logements associés doivent être inclus.
+   * @return Liste de DTOs des propriétaires.
+   */
   public List<ProprietaireDTO> getProprietaire(boolean isLogement) {
     return ProprietaireMapper.entityListToDtoList(proprietaireRepository.findAll(), isLogement);
   }
@@ -72,6 +91,15 @@ public class ProprietaireService {
     return ProprietaireMapper.entityToDto(optionalProprietaire.get(), isLogement);
   }
 
+  /**
+   * Récupère un propriétaire par son identifiant, avec la possibilité d'inclure les logements
+   * associés.
+   *
+   * @param id         L'identifiant du propriétaire à récupérer.
+   * @param isLogement Indique si les logements associés doivent être inclus.
+   * @return Le DTO du propriétaire.
+   * @throws ProprietaireNotFoundException si le propriétaire n'est pas trouvé.
+   */
   public ProprietaireDTO getProprietaireByEmail(@NonNull String email) {
     Optional<Proprietaire> optionalProprietaire = proprietaireRepository.findFirstByEmail(email);
     if (optionalProprietaire.isEmpty()) {
@@ -81,6 +109,14 @@ public class ProprietaireService {
     return ProprietaireMapper.entityToDto(optionalProprietaire.get(), false);
   }
 
+  /**
+   * Met à jour les informations d'un propriétaire existant.
+   *
+   * @param id                    L'identifiant du propriétaire à mettre à jour.
+   * @param proprietaireUpdateDTO Les nouvelles informations du propriétaire.
+   * @return Le DTO du propriétaire mis à jour.
+   * @throws ProprietaireInvalidUpdateBody si les données de mise à jour sont invalides.
+   */
   @Transactional
   public ProprietaireDTO updateProprietaire(@NonNull Long id,
       @NonNull ProprietaireUpdateDTO proprietaireUpdateDTO) {
@@ -140,6 +176,13 @@ public class ProprietaireService {
     return ProprietaireMapper.entityToDto(proprietaireRepository.save(proprietaire), false);
   }
 
+  /**
+   * Supprime un propriétaire par son identifiant.
+   *
+   * @param id L'identifiant du propriétaire à supprimer.
+   * @return Le DTO du propriétaire supprimé.
+   * @throws ProprietaireNotFoundException si le propriétaire à supprimer n'est pas trouvé.
+   */
   @Transactional
   public ProprietaireDTO deleteProprietaire(@NonNull Long id) {
 
@@ -158,6 +201,13 @@ public class ProprietaireService {
 
   }
 
+  /**
+   * Vérifie si le mot de passe fourni correspond au mot de passe enregistré du propriétaire.
+   *
+   * @param password       Le mot de passe à vérifier.
+   * @param proprietaireId L'identifiant du propriétaire.
+   * @return true si le mot de passe correspond, false sinon.
+   */
   public boolean verifyPassword(@NonNull String password, @NonNull Long proprietaireId) {
     Optional<Proprietaire> optionalProprietaire = proprietaireRepository.findById(proprietaireId);
     if (optionalProprietaire.isEmpty()) {

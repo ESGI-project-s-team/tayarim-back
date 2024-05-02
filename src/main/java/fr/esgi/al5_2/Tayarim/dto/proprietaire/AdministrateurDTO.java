@@ -9,6 +9,10 @@ import lombok.NonNull;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Objet de Transfert de Données (DTO) pour les administrateurs du système. Ce DTO encapsule les
+ * informations essentielles d'un administrateur pour les opérations de récupération.
+ */
 @Data // Generates getters, setters, toString, equals, and hashCode methods
 @AllArgsConstructor // Generates an all-args constructor
 @Builder

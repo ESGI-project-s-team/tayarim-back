@@ -10,6 +10,11 @@ import java.util.List;
 import fr.esgi.al5_2.Tayarim.dto.logement.LogementDTO;
 import lombok.AllArgsConstructor;
 
+/**
+ * DTO pour les informations détaillées d'un propriétaire, incluant ses logements associés. Utilisé
+ * pour afficher les informations complètes d'un propriétaire dans l'interface utilisateur ou les
+ * API.
+ */
 @Data // Generates getters, setters, toString, equals, and hashCode methods
 @AllArgsConstructor // Generates an all-args constructor
 @Builder

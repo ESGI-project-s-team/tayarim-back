@@ -9,6 +9,10 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * DTO pour la création de nouveaux propriétaires dans le système. Contient des champs avec des
+ * validations pour assurer l'intégrité des données lors de l'enregistrement.
+ */
 @Data // Generates getters, setters, toString, equals, and hashCode methods
 @RequiredArgsConstructor
 @AllArgsConstructor // Generates an all-args constructor

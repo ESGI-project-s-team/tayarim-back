@@ -11,9 +11,19 @@ import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireDTO;
 import fr.esgi.al5_2.Tayarim.entities.Proprietaire;
 import lombok.NonNull;
 
+/**
+ * Classe de mapping pour convertir entre les DTOs Proprietaire et les entités Proprietaire.
+ */
 @Component
 public class ProprietaireMapper {
 
+  /**
+   * Convertit un DTO de création de propriétaire en une entité Proprietaire.
+   *
+   * @param proprietaireCreationDTO Le DTO pour la création d'un propriétaire.
+   * @param hashedPassword          Le mot de passe hashé pour le nouveau propriétaire.
+   * @return Une entité Proprietaire nouvellement créée.
+   */
   public static Proprietaire creationDtoToEntity(
       @NonNull ProprietaireCreationDTO proprietaireCreationDTO, String hashedPassword) {
     return Proprietaire.builder()
@@ -27,6 +37,14 @@ public class ProprietaireMapper {
         .build();
   }
 
+  /**
+   * Convertit une entité Proprietaire en un DTO Proprietaire, incluant éventuellement les logements
+   * associés.
+   *
+   * @param proprietaire L'entité propriétaire à convertir.
+   * @param isLogement   Indique si les logements associés doivent être inclus dans le DTO.
+   * @return Le DTO Proprietaire.
+   */
   public static ProprietaireDTO entityToDto(@NonNull Proprietaire proprietaire,
       boolean isLogement) {
 
@@ -42,6 +60,13 @@ public class ProprietaireMapper {
         .build();
   }
 
+  /**
+   * Convertit une liste d'entités Proprietaire en une liste de DTOs Proprietaire.
+   *
+   * @param proprietaireList La liste des propriétaires à convertir.
+   * @param isLogement       Indique si les logements associés doivent être inclus dans les DTOs.
+   * @return Une liste de DTOs Proprietaire.
+   */
   public static List<ProprietaireDTO> entityListToDtoList(
       @NonNull List<Proprietaire> proprietaireList, boolean isLogement) {
     return proprietaireList.stream()

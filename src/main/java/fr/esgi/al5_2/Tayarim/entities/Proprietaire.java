@@ -6,6 +6,12 @@ import java.util.List;
 import jakarta.persistence.*;
 import lombok.*;
 
+/**
+ * Entité représentant un propriétaire dans le système, étendant la classe Utilisateur. Un
+ * propriétaire peut posséder plusieurs logements, gérés par une relation OneToMany. Cette classe
+ * inclut des informations supplémentaires telles que la date d'inscription et un indicateur de mise
+ * à jour du mot de passe.
+ */
 @Data
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
