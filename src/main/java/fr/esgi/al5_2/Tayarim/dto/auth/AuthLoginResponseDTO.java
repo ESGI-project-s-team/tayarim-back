@@ -5,9 +5,10 @@ import lombok.Data;
 import lombok.NonNull;
 
 /**
- * Data Transfer Object (DTO) for the response after a successful login attempt. This class
- * encapsulates the user's ID, authentication token, and administrative status. It uses Lombok
- * annotations to automatically generate constructors, getters, setters, and other methods.
+ * Objet de transfert de données (DTO) pour la réponse après une tentative de connexion réussie. Ce
+ * DTO encapsule les informations essentielles de l'utilisateur authentifié, telles que son
+ * identifiant, son token d'accès et son statut d'administrateur. Les annotations Lombok génèrent
+ * automatiquement les méthodes getteurs, setteurs, toString, equals et hashCode.
  */
 @Data // Generates getters, setters, toString, equals, and hashCode methods
 @AllArgsConstructor // Generates an all-args constructor

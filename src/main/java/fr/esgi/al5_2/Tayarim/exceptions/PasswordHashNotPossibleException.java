@@ -1,5 +1,8 @@
 package fr.esgi.al5_2.Tayarim.exceptions;
 
+/**
+ * Exception lancée lorsque le hashage du mot de passe est impossible à réaliser.
+ */
 public class PasswordHashNotPossibleException extends RuntimeException {
 
   public PasswordHashNotPossibleException() {

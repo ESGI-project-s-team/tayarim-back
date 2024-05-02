@@ -16,6 +16,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Service pour la gestion des administrateurs dans le système. Fournit des méthodes pour créer,
+ * récupérer, mettre à jour et supprimer des administrateurs.
+ */
 @Service
 @Transactional(readOnly = true)
 public class AdministrateurService {
@@ -26,6 +30,15 @@ public class AdministrateurService {
     this.administrateurRepository = administrateurRepository;
   }
 
+  /**
+   * Crée un nouvel administrateur dans le système. Vérifie si l'email ou le numéro de téléphone
+   * existe déjà avant de procéder à la création.
+   *
+   * @param administrateurCreationDTO Les données nécessaires pour créer un administrateur.
+   * @return Le DTO de l'administrateur créé.
+   * @throws AdministrateurEmailAlreadyExistException  si l'email existe déjà.
+   * @throws AdministrateurNumTelAlreadyExistException si le numéro de téléphone existe déjà.
+   */
   @Transactional
   public AdministrateurDTO creerAdministrateur(
       @NonNull AdministrateurCreationDTO administrateurCreationDTO) {
@@ -51,10 +64,22 @@ public class AdministrateurService {
     return AdministrateurMapper.entityToDto(administrateurRepository.save(administrateur));
   }
 
+  /**
+   * Récupère une liste de tous les administrateurs.
+   *
+   * @return Liste de DTOs des administrateurs.
+   */
   public List<AdministrateurDTO> getAdministrateur() {
     return AdministrateurMapper.entityListToDtoList(administrateurRepository.findAll());
   }
 
+  /**
+   * Récupère un administrateur par son identifiant.
+   *
+   * @param id L'identifiant de l'administrateur à récupérer.
+   * @return Le DTO de l'administrateur.
+   * @throws AdministrateurNotFoundException si l'administrateur n'est pas trouvé.
+   */
   public AdministrateurDTO getAdministrateurById(@NonNull Long id) {
 
     Optional<Administrateur> optionalAdministrateur = administrateurRepository.findById(id);
@@ -64,6 +89,13 @@ public class AdministrateurService {
     return AdministrateurMapper.entityToDto(optionalAdministrateur.get());
   }
 
+  /**
+   * Récupère un administrateur par son email.
+   *
+   * @param email L'email de l'administrateur à récupérer.
+   * @return Le DTO de l'administrateur.
+   * @throws AdministrateurNotFoundException si l'administrateur n'est pas trouvé.
+   */
   public AdministrateurDTO getAdministrateurByEmail(@NonNull String email) {
     Optional<Administrateur> optionalAdministrateur = administrateurRepository.findFirstByEmail(
         email);
@@ -74,6 +106,14 @@ public class AdministrateurService {
     return AdministrateurMapper.entityToDto(optionalAdministrateur.get());
   }
 
+  /**
+   * Met à jour les informations d'un administrateur existant.
+   *
+   * @param id                      L'identifiant de l'administrateur à mettre à jour.
+   * @param administrateurUpdateDTO Les nouvelles informations de l'administrateur.
+   * @return Le DTO de l'administrateur mis à jour.
+   * @throws AdministrateurInvalidUpdateBody si les données de mise à jour sont invalides.
+   */
   @Transactional
   public AdministrateurDTO updateAdministrateur(@NonNull Long id,
       @NonNull AdministrateurUpdateDTO administrateurUpdateDTO) {
@@ -123,6 +163,13 @@ public class AdministrateurService {
     return AdministrateurMapper.entityToDto(administrateurRepository.save(administrateur));
   }
 
+  /**
+   * Supprime un administrateur par son identifiant.
+   *
+   * @param id L'identifiant de l'administrateur à supprimer.
+   * @return Le DTO de l'administrateur supprimé.
+   * @throws AdministrateurNotFoundException si l'administrateur à supprimer n'est pas trouvé.
+   */
   @Transactional
   public AdministrateurDTO deleteAdministrateur(@NonNull Long id) {
 
@@ -141,6 +188,13 @@ public class AdministrateurService {
 
   }
 
+  /**
+   * Vérifie si le mot de passe fourni correspond au mot de passe enregistré de l'administrateur.
+   *
+   * @param password       Le mot de passe à vérifier.
+   * @param proprietaireId L'identifiant de l'administrateur.
+   * @return true si le mot de passe correspond, false sinon.
+   */
   public boolean verifyPassword(@NonNull String password, @NonNull Long proprietaireId) {
     Optional<Administrateur> optionalAdministrateur = administrateurRepository.findById(
         proprietaireId);

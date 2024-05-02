@@ -4,6 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
+/**
+ * DTO pour la mise à jour des informations d'un administrateur. Utilisé pour passer les données
+ * modifiées à l'API pour les opérations de mise à jour.
+ */
 @Data // Generates getters, setters, toString, equals, and hashCode methods
 @AllArgsConstructor // Generates an all-args constructor
 @Builder

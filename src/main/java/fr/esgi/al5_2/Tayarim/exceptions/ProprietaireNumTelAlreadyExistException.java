@@ -1,5 +1,9 @@
 package fr.esgi.al5_2.Tayarim.exceptions;
 
+/**
+ * Exception lancée lorsque le numéro de téléphone d'un propriétaire est déjà utilisé dans le
+ * système.
+ */
 public class ProprietaireNumTelAlreadyExistException extends RuntimeException {
 
   public ProprietaireNumTelAlreadyExistException() {

@@ -5,6 +5,11 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NonNull;
 
+/**
+ * Entité représentant un logement dans le système. Chaque logement est associé à un propriétaire,
+ * représenté par l'entité Proprietaire. La gestion des logements est effectuée en liaison avec les
+ * propriétaires à travers une relation ManyToOne.
+ */
 @Data
 @Entity
 public class Logement {

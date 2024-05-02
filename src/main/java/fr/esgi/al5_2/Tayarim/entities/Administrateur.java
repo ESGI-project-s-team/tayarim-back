@@ -6,6 +6,12 @@ import lombok.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Entité représentant un administrateur dans le système, héritant de la classe Utilisateur. Cette
+ * classe utilise la stratégie de jointure pour la persistance et comprend des méthodes
+ * constructeurs spécifiques pour faciliter la création d'instances avec des propriétés initiales
+ * requises.
+ */
 @Data
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

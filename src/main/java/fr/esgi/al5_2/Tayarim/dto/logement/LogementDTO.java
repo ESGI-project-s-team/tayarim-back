@@ -6,9 +6,9 @@ import lombok.Data;
 import lombok.NonNull;
 
 /**
- * Data Transfer Object (DTO) representing a housing unit within the system. This class encapsulates
- * the details necessary for identifying a housing unit and its owner. It uses Lombok annotations to
- * automatically generate constructors, getters, setters, and other methods.
+ * Objet de Transfert de Données (DTO) représentant un logement dans le système. Ce DTO est utilisé
+ * pour encapsuler les informations essentielles d'un logement, y compris son identifiant et
+ * l'identifiant de son propriétaire, facilitant ainsi les opérations de gestion des logements.
  */
 @Data // Generates getters, setters, toString, equals, and hashCode methods
 @AllArgsConstructor // Generates an all-args constructor
