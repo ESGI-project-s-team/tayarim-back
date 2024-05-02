@@ -67,13 +67,22 @@ public class AuthService {
     AdministrateurDTO administrateurDTO = null;
     Long id;
     boolean isAdmin = false;
+    String nom;
+    String prenom;
+    String numTel;
     try {
       proprietaireDTO = proprietaireService.getProprietaireByEmail(email);
       id = proprietaireDTO.getId();
+      nom = proprietaireDTO.getNom();
+      prenom = proprietaireDTO.getPrenom();
+      numTel = proprietaireDTO.getNumTel();
     } catch (Exception e) {
       try {
         administrateurDTO = administrateurService.getAdministrateurByEmail(email);
         id = administrateurDTO.getId();
+        nom = administrateurDTO.getNom();
+        prenom = administrateurDTO.getPrenom();
+        numTel = administrateurDTO.getNumTel();
         isAdmin = true;
       } catch (Exception exception) {
         throw new UtilisateurNotFoundException();
@@ -97,7 +106,7 @@ public class AuthService {
 
     String token = jwtHelper.generateToken(email, uuid, isAdmin);
 
-    return new AuthLoginResponseDTO(id, token, isAdmin);
+    return new AuthLoginResponseDTO(id, token, isAdmin, nom, prenom, email, numTel);
   }
 
   /**
