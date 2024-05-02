@@ -2,6 +2,7 @@ package fr.esgi.al5_2.Tayarim.controllers;
 
 import fr.esgi.al5_2.Tayarim.dto.auth.AuthLoginDTO;
 import fr.esgi.al5_2.Tayarim.dto.auth.AuthLoginResponseDTO;
+import fr.esgi.al5_2.Tayarim.dto.auth.AuthResponseDTO;
 import fr.esgi.al5_2.Tayarim.exceptions.*;
 import fr.esgi.al5_2.Tayarim.services.AuthService;
 import jakarta.validation.Valid;
@@ -56,7 +57,7 @@ public class AuthController {
    * @return Un ResponseEntity contenant le DTO de réponse d'authentification et le statut HTTP.
    */
   @GetMapping("")
-  public ResponseEntity<AuthLoginResponseDTO> auth(
+  public ResponseEntity<AuthResponseDTO> auth(
       @RequestHeader("Authorization") String authHeader) {
 
     String jwtToken = getTokenFromHeader(authHeader);
