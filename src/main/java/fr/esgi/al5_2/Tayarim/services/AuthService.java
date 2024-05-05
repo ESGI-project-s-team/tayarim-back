@@ -149,35 +149,34 @@ public class AuthService {
    *                                       n'est pas autorisé comme administrateur lorsque requis.
    */
   public Entry<Long, Boolean> verifyToken(@NonNull String token, boolean shouldBeAdmin) {
-    ProprietaireDTO proprietaireDTO;
-    AdministrateurDTO administrateurDTO;
-    Long id;
-    String email;
     boolean isAdmin = jwtHelper.extractAdmin(token);
     if (shouldBeAdmin && !isAdmin) {
       throw new TokenExpireOrInvalidException();
     }
-
+    String email;
+    Long id;
+    AdministrateurDTO administrateurDto;
+    ProprietaireDTO proprietaireDto;
     if (isAdmin) {
       try {
-        administrateurDTO = administrateurService.getAdministrateurByEmail(
+        administrateurDto = administrateurService.getAdministrateurByEmail(
             jwtHelper.extractEmail(token));
         /* if the email has been updated and that the user want to re-do an update without re-login,
          * the token will not be valid anymore
          */
-        id = administrateurDTO.getId();
-        email = administrateurDTO.getEmail();
+        id = administrateurDto.getId();
+        email = administrateurDto.getEmail();
       } catch (AdministrateurNotFoundException ex) {
         throw new TokenExpireOrInvalidException();
       }
     } else {
       try {
-        proprietaireDTO = proprietaireService.getProprietaireByEmail(jwtHelper.extractEmail(token));
+        proprietaireDto = proprietaireService.getProprietaireByEmail(jwtHelper.extractEmail(token));
         /* if the email has been updated and that the user want to re-do an update without re-login,
          * the token will not be valid anymore
          */
-        id = proprietaireDTO.getId();
-        email = proprietaireDTO.getEmail();
+        id = proprietaireDto.getId();
+        email = proprietaireDto.getEmail();
       } catch (ProprietaireNotFoundException ex) {
         throw new TokenExpireOrInvalidException();
       }
