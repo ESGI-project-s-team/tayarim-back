@@ -1,25 +1,21 @@
 package fr.esgi.al5_2.Tayarim;
 
-import org.junit.jupiter.api.BeforeEach;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import fr.esgi.al5_2.Tayarim.entities.Proprietaire;
+import fr.esgi.al5_2.Tayarim.repositories.ProprietaireRepository;
+import java.time.LocalDateTime;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import fr.esgi.al5_2.Tayarim.entities.Proprietaire;
-import fr.esgi.al5_2.Tayarim.repositories.ProprietaireRepository;
-import org.springframework.transaction.annotation.Transactional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-
+/**
+ * Classe de test du repository Proprietaire.
+ */
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -29,7 +25,7 @@ public class ProprietaireRepositoryTest {
   private ProprietaireRepository proprietaireRepository;
 
   @Test
-  public void ProprietaireRepository_Save_ReturnSavedProprietaire() {
+  public void save_ReturnSavedProprietaire() {
 
     LocalDateTime dateInscription = LocalDateTime.now();
     Proprietaire proprietaire = Proprietaire.builder()
@@ -56,7 +52,7 @@ public class ProprietaireRepositoryTest {
   }
 
   @Test
-  public void ProprietaireRepository_FindAll_ReturnZeroProprietaire() {
+  public void findAll_ReturnZeroProprietaire() {
 
     List<Proprietaire> proprietaires = proprietaireRepository.findAll();
 
@@ -65,7 +61,7 @@ public class ProprietaireRepositoryTest {
   }
 
   @Test
-  public void ProprietaireRepository_FindAll_ReturnOneProprietaire() {
+  public void findAll_ReturnOneProprietaire() {
 
     LocalDateTime dateInscription = LocalDateTime.now();
     Proprietaire proprietaire = Proprietaire.builder()
@@ -86,7 +82,7 @@ public class ProprietaireRepositoryTest {
   }
 
   @Test
-  public void ProprietaireRepository_FindAll_ReturnManyProprietaire() {
+  public void findAll_ReturnManyProprietaire() {
 
     LocalDateTime dateInscription = LocalDateTime.now();
     Proprietaire proprietaire = Proprietaire.builder()
@@ -117,7 +113,7 @@ public class ProprietaireRepositoryTest {
   }
 
   @Test
-  public void ProprietaireRepository_FindFirstByEmail_ReturnProprietaire() {
+  public void findFirstByEmail_ReturnProprietaire() {
 
     LocalDateTime dateInscription = LocalDateTime.now();
     Proprietaire proprietaire = Proprietaire.builder()
@@ -145,7 +141,7 @@ public class ProprietaireRepositoryTest {
   }
 
   @Test
-  public void ProprietaireRepository_FindFirstByNumTel_ReturnProprietaire() {
+  public void findFirstByNumTel_ReturnProprietaire() {
 
     LocalDateTime dateInscription = LocalDateTime.now();
     Proprietaire proprietaire = Proprietaire.builder()
@@ -173,7 +169,7 @@ public class ProprietaireRepositoryTest {
   }
 
   @Test
-  public void ProprietaireRepository_DeleteById_ReturnProprietaire() {
+  public void deleteById_ReturnProprietaire() {
 
     LocalDateTime dateInscription = LocalDateTime.now();
     Proprietaire proprietaire = Proprietaire.builder()
