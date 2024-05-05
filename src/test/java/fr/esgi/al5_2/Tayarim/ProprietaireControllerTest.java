@@ -1,10 +1,26 @@
 package fr.esgi.al5_2.Tayarim;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+
+import com.fasterxml.jackson.databind.ObjectMapper; // Make sure to import ObjectMapper
+import fr.esgi.al5_2.Tayarim.controllers.ProprietaireController;
 import fr.esgi.al5_2.Tayarim.dto.logement.LogementDto;
+import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireCreationDto;
 import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireDto;
 import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireUpdateDto;
 import fr.esgi.al5_2.Tayarim.entities.Proprietaire;
 import fr.esgi.al5_2.Tayarim.services.AuthService;
+import fr.esgi.al5_2.Tayarim.services.ProprietaireService;
+import java.time.LocalDateTime;
+import java.util.AbstractMap;
+import java.util.List;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,25 +33,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-
-import fr.esgi.al5_2.Tayarim.services.ProprietaireService;
-import fr.esgi.al5_2.Tayarim.controllers.ProprietaireController;
-import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireCreationDto;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-
-import com.fasterxml.jackson.databind.ObjectMapper; // Make sure to import ObjectMapper
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.time.LocalDateTime;
-import java.util.AbstractMap;
-import java.util.List;
-
+/**
+ * Classe de test du controller Proprietaire.
+ */
 @WebMvcTest(controllers = ProprietaireController.class)
 @AutoConfigureMockMvc(addFilters = false)
 @ExtendWith(MockitoExtension.class)
@@ -52,18 +55,27 @@ public class ProprietaireControllerTest {
 
   @Autowired
   private ObjectMapper objectMapper;
-  private ProprietaireCreationDto proprietaireCreationDTO;
+  private ProprietaireCreationDto proprietaireCreationDto;
   private Proprietaire proprietaire;
   private List<ProprietaireDto> proprietaireDtos;
-  private ProprietaireDto proprietaireDTO;
+  private ProprietaireDto proprietaireDto;
   private ProprietaireDto proprietaireDto2;
   private ProprietaireDto proprietaireDtoWithLogement;
-  private ProprietaireUpdateDto proprietaireUpdateDTO;
+  private ProprietaireUpdateDto proprietaireUpdateDto;
+  private String token;
 
+  /**
+   * methode exécuter avant chaque test.
+   */
   @BeforeEach
   public void init() {
+    token = "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqb2huZG9lQ"
+        + "GdtYWlsLmNvbTs2MjZjMjlhNS0zZGU0LTQ5Y2YtODI4ZS1hNDkxNWQzMzM5"
+        + "N2EiLCJpYXQiOjE3MTQxMTM1NzcsImV4cCI6MTcxNDExNzE3N30.kbU1pVkUHkR"
+        + "XktX44JBFN_xzDv-ZvSmtPjnjORO0vHPiHd3f2MGfDF15VTFO5icIrU_bV9cTqZ70"
+        + "RDlKdlp0-g";
     LocalDateTime localDateTime = LocalDateTime.now();
-    proprietaireCreationDTO = ProprietaireCreationDto.builder()
+    proprietaireCreationDto = ProprietaireCreationDto.builder()
         .nom("Ferreira")
         .prenom("Mathieu")
         .email("test@gmail.com")
@@ -78,7 +90,7 @@ public class ProprietaireControllerTest {
         .dateInscription(localDateTime)
         .isPasswordUpdated(Boolean.TRUE)
         .build();
-    proprietaireDTO = ProprietaireDto.builder()
+    proprietaireDto = ProprietaireDto.builder()
         .id(1L)
         .nom("Ferreira")
         .prenom("Mathieu")
@@ -96,7 +108,7 @@ public class ProprietaireControllerTest {
         .dateInscription(localDateTime)
         .logements(null)
         .build();
-    proprietaireDtos = List.of(proprietaireDTO, proprietaireDto2);
+    proprietaireDtos = List.of(proprietaireDto, proprietaireDto2);
     proprietaireDtoWithLogement = ProprietaireDto.builder()
         .id(1L)
         .nom("Ferreira")
@@ -106,49 +118,47 @@ public class ProprietaireControllerTest {
         .dateInscription(localDateTime)
         .logements(List.of(new LogementDto(1L, 1L)))
         .build();
-    proprietaireUpdateDTO = ProprietaireUpdateDto.builder()
+    proprietaireUpdateDto = ProprietaireUpdateDto.builder()
         .prenom("Karl")
         .build();
   }
 
   @Test
-  public void ProprietaireController_CreerProprietaire_ReturnCreated() throws Exception {
+  public void creerProprietaire_ReturnCreated() throws Exception {
     given(proprietaireService.creerProprietaire(ArgumentMatchers.any())).willAnswer(
-        invocationOnMock -> proprietaireDTO);
+        invocationOnMock -> proprietaireDto);
     when(authService.verifyToken(any(), anyBoolean())).thenReturn(
-        new AbstractMap.SimpleEntry<>(proprietaireDTO.getId(), true)); //skip token verif
+        new AbstractMap.SimpleEntry<>(proprietaireDto.getId(), true)); //skip token verif
 
     ResultActions response = mockMvc.perform(post("/proprietaires")
-        .header("Authorization",
-            "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqb2huZG9lQGdtYWlsLmNvbTs2MjZjMjlhNS0zZGU0LTQ5Y2YtODI4ZS1hNDkxNWQzMzM5N2EiLCJpYXQiOjE3MTQxMTM1NzcsImV4cCI6MTcxNDExNzE3N30.kbU1pVkUHkRXktX44JBFN_xzDv-ZvSmtPjnjORO0vHPiHd3f2MGfDF15VTFO5icIrU_bV9cTqZ70RDlKdlp0-g")
+        .header(token)
         .contentType(MediaType.APPLICATION_JSON)
-        .content(objectMapper.writeValueAsString(proprietaireCreationDTO)));
+        .content(objectMapper.writeValueAsString(proprietaireCreationDto)));
 
     response.andExpect(MockMvcResultMatchers.status().isCreated())
         .andExpect(
-            MockMvcResultMatchers.jsonPath("$.nom", CoreMatchers.is(proprietaireDTO.getNom())))
+            MockMvcResultMatchers.jsonPath("$.nom", CoreMatchers.is(proprietaireDto.getNom())))
         .andExpect(MockMvcResultMatchers.jsonPath("$.prenom",
-            CoreMatchers.is(proprietaireDTO.getPrenom())))
+            CoreMatchers.is(proprietaireDto.getPrenom())))
         .andExpect(
-            MockMvcResultMatchers.jsonPath("$.email", CoreMatchers.is(proprietaireDTO.getEmail())))
+            MockMvcResultMatchers.jsonPath("$.email", CoreMatchers.is(proprietaireDto.getEmail())))
         .andExpect(MockMvcResultMatchers.jsonPath("$.numTel",
-            CoreMatchers.is(proprietaireDTO.getNumTel())));
+            CoreMatchers.is(proprietaireDto.getNumTel())));
   }
 
   @Test
-  public void ProprietaireController_CreerProprietaire_ReturnErrorOwnerInvalidName()
+  public void creerProprietaire_ReturnErrorOwnerInvalidName()
       throws Exception {
-    proprietaireCreationDTO.setNom("");
+    proprietaireCreationDto.setNom("");
     given(proprietaireService.creerProprietaire(ArgumentMatchers.any())).willAnswer(
-        invocationOnMock -> proprietaireDTO);
+        invocationOnMock -> proprietaireDto);
     when(authService.verifyToken(any(), anyBoolean())).thenReturn(
-        new AbstractMap.SimpleEntry<>(proprietaireDTO.getId(), true)); //skip token verif
+        new AbstractMap.SimpleEntry<>(proprietaireDto.getId(), true)); //skip token verif
 
     ResultActions response = mockMvc.perform(post("/proprietaires")
-        .header("Authorization",
-            "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqb2huZG9lQGdtYWlsLmNvbTs2MjZjMjlhNS0zZGU0LTQ5Y2YtODI4ZS1hNDkxNWQzMzM5N2EiLCJpYXQiOjE3MTQxMTM1NzcsImV4cCI6MTcxNDExNzE3N30.kbU1pVkUHkRXktX44JBFN_xzDv-ZvSmtPjnjORO0vHPiHd3f2MGfDF15VTFO5icIrU_bV9cTqZ70RDlKdlp0-g")
+        .header(token)
         .contentType(MediaType.APPLICATION_JSON)
-        .content(objectMapper.writeValueAsString(proprietaireCreationDTO)));
+        .content(objectMapper.writeValueAsString(proprietaireCreationDto)));
 
     List<String> errors = List.of("error_owner_invalid_name");
 
@@ -157,19 +167,18 @@ public class ProprietaireControllerTest {
   }
 
   @Test
-  public void ProprietaireController_CreerProprietaire_ReturnErrorOwnerInvalidFirstName()
+  public void creerProprietaire_ReturnErrorOwnerInvalidFirstName()
       throws Exception {
-    proprietaireCreationDTO.setPrenom("");
+    proprietaireCreationDto.setPrenom("");
     given(proprietaireService.creerProprietaire(ArgumentMatchers.any())).willAnswer(
-        invocationOnMock -> proprietaireDTO);
+        invocationOnMock -> proprietaireDto);
     when(authService.verifyToken(any(), anyBoolean())).thenReturn(
-        new AbstractMap.SimpleEntry<>(proprietaireDTO.getId(), true)); //skip token verif
+        new AbstractMap.SimpleEntry<>(proprietaireDto.getId(), true)); //skip token verif
 
     ResultActions response = mockMvc.perform(post("/proprietaires")
-        .header("Authorization",
-            "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqb2huZG9lQGdtYWlsLmNvbTs2MjZjMjlhNS0zZGU0LTQ5Y2YtODI4ZS1hNDkxNWQzMzM5N2EiLCJpYXQiOjE3MTQxMTM1NzcsImV4cCI6MTcxNDExNzE3N30.kbU1pVkUHkRXktX44JBFN_xzDv-ZvSmtPjnjORO0vHPiHd3f2MGfDF15VTFO5icIrU_bV9cTqZ70RDlKdlp0-g")
+        .header(token)
         .contentType(MediaType.APPLICATION_JSON)
-        .content(objectMapper.writeValueAsString(proprietaireCreationDTO)));
+        .content(objectMapper.writeValueAsString(proprietaireCreationDto)));
 
     List<String> errors = List.of("error_owner_invalid_firstName");
 
@@ -178,19 +187,18 @@ public class ProprietaireControllerTest {
   }
 
   @Test
-  public void ProprietaireController_CreerProprietaire_ReturnErrorOwnerInvalidMail_WhenEmailIsEmpty()
+  public void creerProprietaire_ReturnErrorOwnerInvalidMail_WhenEmailIsEmpty()
       throws Exception {
-    proprietaireCreationDTO.setEmail("");
+    proprietaireCreationDto.setEmail("");
     given(proprietaireService.creerProprietaire(ArgumentMatchers.any())).willAnswer(
-        invocationOnMock -> proprietaireDTO);
+        invocationOnMock -> proprietaireDto);
     when(authService.verifyToken(any(), anyBoolean())).thenReturn(
-        new AbstractMap.SimpleEntry<>(proprietaireDTO.getId(), true)); //skip token verif
+        new AbstractMap.SimpleEntry<>(proprietaireDto.getId(), true)); //skip token verif
 
     ResultActions response = mockMvc.perform(post("/proprietaires")
-        .header("Authorization",
-            "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqb2huZG9lQGdtYWlsLmNvbTs2MjZjMjlhNS0zZGU0LTQ5Y2YtODI4ZS1hNDkxNWQzMzM5N2EiLCJpYXQiOjE3MTQxMTM1NzcsImV4cCI6MTcxNDExNzE3N30.kbU1pVkUHkRXktX44JBFN_xzDv-ZvSmtPjnjORO0vHPiHd3f2MGfDF15VTFO5icIrU_bV9cTqZ70RDlKdlp0-g")
+        .header(token)
         .contentType(MediaType.APPLICATION_JSON)
-        .content(objectMapper.writeValueAsString(proprietaireCreationDTO)));
+        .content(objectMapper.writeValueAsString(proprietaireCreationDto)));
 
     List<String> errors = List.of("error_owner_invalid_mail");
 
@@ -199,19 +207,18 @@ public class ProprietaireControllerTest {
   }
 
   @Test
-  public void ProprietaireController_CreerProprietaire_ReturnErrorOwnerInvalidMail_WhenEmailDoesntMatchFormat()
+  public void creerProprietaire_ReturnErrorOwnerInvalidMail_WhenEmailDoesntMatchFormat()
       throws Exception {
-    proprietaireCreationDTO.setEmail("testmailcom");
+    proprietaireCreationDto.setEmail("testmailcom");
     given(proprietaireService.creerProprietaire(ArgumentMatchers.any())).willAnswer(
-        invocationOnMock -> proprietaireDTO);
+        invocationOnMock -> proprietaireDto);
     when(authService.verifyToken(any(), anyBoolean())).thenReturn(
-        new AbstractMap.SimpleEntry<>(proprietaireDTO.getId(), true)); //skip token verif
+        new AbstractMap.SimpleEntry<>(proprietaireDto.getId(), true)); //skip token verif
 
     ResultActions response = mockMvc.perform(post("/proprietaires")
-        .header("Authorization",
-            "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqb2huZG9lQGdtYWlsLmNvbTs2MjZjMjlhNS0zZGU0LTQ5Y2YtODI4ZS1hNDkxNWQzMzM5N2EiLCJpYXQiOjE3MTQxMTM1NzcsImV4cCI6MTcxNDExNzE3N30.kbU1pVkUHkRXktX44JBFN_xzDv-ZvSmtPjnjORO0vHPiHd3f2MGfDF15VTFO5icIrU_bV9cTqZ70RDlKdlp0-g")
+        .header(token)
         .contentType(MediaType.APPLICATION_JSON)
-        .content(objectMapper.writeValueAsString(proprietaireCreationDTO)));
+        .content(objectMapper.writeValueAsString(proprietaireCreationDto)));
 
     List<String> errors = List.of("error_owner_invalid_mail");
 
@@ -220,19 +227,18 @@ public class ProprietaireControllerTest {
   }
 
   @Test
-  public void ProprietaireController_CreerProprietaire_ReturnErrorOwnerInvalidNumTel_WhenNumTelIsEmpty()
+  public void creerProprietaire_ReturnErrorOwnerInvalidNumTel_WhenNumTelIsEmpty()
       throws Exception {
-    proprietaireCreationDTO.setNumTel("");
+    proprietaireCreationDto.setNumTel("");
     given(proprietaireService.creerProprietaire(ArgumentMatchers.any())).willAnswer(
-        invocationOnMock -> proprietaireDTO);
+        invocationOnMock -> proprietaireDto);
     when(authService.verifyToken(any(), anyBoolean())).thenReturn(
-        new AbstractMap.SimpleEntry<>(proprietaireDTO.getId(), true)); //skip token verif
+        new AbstractMap.SimpleEntry<>(proprietaireDto.getId(), true)); //skip token verif
 
     ResultActions response = mockMvc.perform(post("/proprietaires")
-        .header("Authorization",
-            "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqb2huZG9lQGdtYWlsLmNvbTs2MjZjMjlhNS0zZGU0LTQ5Y2YtODI4ZS1hNDkxNWQzMzM5N2EiLCJpYXQiOjE3MTQxMTM1NzcsImV4cCI6MTcxNDExNzE3N30.kbU1pVkUHkRXktX44JBFN_xzDv-ZvSmtPjnjORO0vHPiHd3f2MGfDF15VTFO5icIrU_bV9cTqZ70RDlKdlp0-g")
+        .header(token)
         .contentType(MediaType.APPLICATION_JSON)
-        .content(objectMapper.writeValueAsString(proprietaireCreationDTO)));
+        .content(objectMapper.writeValueAsString(proprietaireCreationDto)));
 
     List<String> errors = List.of("error_owner_invalid_phone",
         "error_owner_invalid_phone"); // 2 error because it also doesnt match Regex
@@ -242,19 +248,18 @@ public class ProprietaireControllerTest {
   }
 
   @Test
-  public void ProprietaireController_CreerProprietaire_ReturnErrorOwnerInvalidNumTel_WhenNumTelDoesntMatchFormat()
+  public void creerProprietaire_ReturnErrorOwnerInvalidNumTel_WhenNumTelDoesntMatchFormat()
       throws Exception {
-    proprietaireCreationDTO.setNumTel("aaaaa");
+    proprietaireCreationDto.setNumTel("aaaaa");
     given(proprietaireService.creerProprietaire(ArgumentMatchers.any())).willAnswer(
-        invocationOnMock -> proprietaireDTO);
+        invocationOnMock -> proprietaireDto);
     when(authService.verifyToken(any(), anyBoolean())).thenReturn(
-        new AbstractMap.SimpleEntry<>(proprietaireDTO.getId(), true)); //skip token verif
+        new AbstractMap.SimpleEntry<>(proprietaireDto.getId(), true)); //skip token verif
 
     ResultActions response = mockMvc.perform(post("/proprietaires")
-        .header("Authorization",
-            "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqb2huZG9lQGdtYWlsLmNvbTs2MjZjMjlhNS0zZGU0LTQ5Y2YtODI4ZS1hNDkxNWQzMzM5N2EiLCJpYXQiOjE3MTQxMTM1NzcsImV4cCI6MTcxNDExNzE3N30.kbU1pVkUHkRXktX44JBFN_xzDv-ZvSmtPjnjORO0vHPiHd3f2MGfDF15VTFO5icIrU_bV9cTqZ70RDlKdlp0-g")
+        .header(token)
         .contentType(MediaType.APPLICATION_JSON)
-        .content(objectMapper.writeValueAsString(proprietaireCreationDTO)));
+        .content(objectMapper.writeValueAsString(proprietaireCreationDto)));
 
     List<String> errors = List.of("error_owner_invalid_phone");
 
@@ -263,29 +268,28 @@ public class ProprietaireControllerTest {
   }
 
   @Test
-  public void ProprietaireController_GetProprietaire_ReturnOk() throws Exception {
+  public void getProprietaire_ReturnOk() throws Exception {
     given(proprietaireService.getProprietaire(false)).willAnswer(
         invocationOnMock -> proprietaireDtos);
 
     when(authService.verifyToken(any(), anyBoolean())).thenReturn(
-        new AbstractMap.SimpleEntry<>(proprietaireDTO.getId(), true)); //skip token verif
+        new AbstractMap.SimpleEntry<>(proprietaireDto.getId(), true)); //skip token verif
 
     ResultActions response = mockMvc.perform(get("/proprietaires")
-        .header("Authorization",
-            "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqb2huZG9lQGdtYWlsLmNvbTs2MjZjMjlhNS0zZGU0LTQ5Y2YtODI4ZS1hNDkxNWQzMzM5N2EiLCJpYXQiOjE3MTQxMTM1NzcsImV4cCI6MTcxNDExNzE3N30.kbU1pVkUHkRXktX44JBFN_xzDv-ZvSmtPjnjORO0vHPiHd3f2MGfDF15VTFO5icIrU_bV9cTqZ70RDlKdlp0-g")
+        .header(token)
         .contentType(MediaType.APPLICATION_JSON));
 
     response.andExpect(MockMvcResultMatchers.status().isOk())
         .andExpect(
-            MockMvcResultMatchers.jsonPath("$[0].nom", CoreMatchers.is(proprietaireDTO.getNom())))
+            MockMvcResultMatchers.jsonPath("$[0].nom", CoreMatchers.is(proprietaireDto.getNom())))
         .andExpect(MockMvcResultMatchers.jsonPath("$[0].prenom",
-            CoreMatchers.is(proprietaireDTO.getPrenom())))
+            CoreMatchers.is(proprietaireDto.getPrenom())))
         .andExpect(MockMvcResultMatchers.jsonPath("$[0].email",
-            CoreMatchers.is(proprietaireDTO.getEmail())))
+            CoreMatchers.is(proprietaireDto.getEmail())))
         .andExpect(MockMvcResultMatchers.jsonPath("$[0].numTel",
-            CoreMatchers.is(proprietaireDTO.getNumTel())))
+            CoreMatchers.is(proprietaireDto.getNumTel())))
         .andExpect(MockMvcResultMatchers.jsonPath("$[0].logements",
-            CoreMatchers.is(proprietaireDTO.getLogements())))
+            CoreMatchers.is(proprietaireDto.getLogements())))
         .andExpect(
             MockMvcResultMatchers.jsonPath("$[1].nom", CoreMatchers.is(proprietaireDto2.getNom())))
         .andExpect(MockMvcResultMatchers.jsonPath("$[1].prenom",
@@ -299,83 +303,80 @@ public class ProprietaireControllerTest {
   }
 
   @Test
-  public void ProprietaireController_GetProprietaire_WithIdInPath_ReturnOk() throws Exception {
+  public void getProprietaire_WithIdInPath_ReturnOk() throws Exception {
     given(proprietaireService.getProprietaireById(1L, false)).willAnswer(
-        invocationOnMock -> proprietaireDTO);
+        invocationOnMock -> proprietaireDto);
 
     when(authService.verifyToken(any(), anyBoolean())).thenReturn(
-        new AbstractMap.SimpleEntry<>(proprietaireDTO.getId(), true)); //skip token verif
+        new AbstractMap.SimpleEntry<>(proprietaireDto.getId(), true)); //skip token verif
 
     ResultActions response = mockMvc.perform(get("/proprietaires/1")
-        .header("Authorization",
-            "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqb2huZG9lQGdtYWlsLmNvbTs2MjZjMjlhNS0zZGU0LTQ5Y2YtODI4ZS1hNDkxNWQzMzM5N2EiLCJpYXQiOjE3MTQxMTM1NzcsImV4cCI6MTcxNDExNzE3N30.kbU1pVkUHkRXktX44JBFN_xzDv-ZvSmtPjnjORO0vHPiHd3f2MGfDF15VTFO5icIrU_bV9cTqZ70RDlKdlp0-g")
+        .header(token)
         .contentType(MediaType.APPLICATION_JSON));
 
     response.andExpect(MockMvcResultMatchers.status().isOk())
         .andExpect(
-            MockMvcResultMatchers.jsonPath("$.nom", CoreMatchers.is(proprietaireDTO.getNom())))
+            MockMvcResultMatchers.jsonPath("$.nom", CoreMatchers.is(proprietaireDto.getNom())))
         .andExpect(MockMvcResultMatchers.jsonPath("$.prenom",
-            CoreMatchers.is(proprietaireDTO.getPrenom())))
+            CoreMatchers.is(proprietaireDto.getPrenom())))
         .andExpect(
-            MockMvcResultMatchers.jsonPath("$.email", CoreMatchers.is(proprietaireDTO.getEmail())))
+            MockMvcResultMatchers.jsonPath("$.email", CoreMatchers.is(proprietaireDto.getEmail())))
         .andExpect(MockMvcResultMatchers.jsonPath("$.numTel",
-            CoreMatchers.is(proprietaireDTO.getNumTel())))
+            CoreMatchers.is(proprietaireDto.getNumTel())))
         .andExpect(MockMvcResultMatchers.jsonPath("$.logements",
-            CoreMatchers.is(proprietaireDTO.getLogements())));
+            CoreMatchers.is(proprietaireDto.getLogements())));
   }
 
   @Test
-  public void ProprietaireController_UpdateProprietaire_ReturnOk() throws Exception {
-    proprietaireDTO.setPrenom(proprietaireUpdateDTO.getPrenom());
-    given(proprietaireService.updateProprietaire(1L, proprietaireUpdateDTO)).willAnswer(
-        invocationOnMock -> proprietaireDTO);
+  public void updateProprietaire_ReturnOk() throws Exception {
+    proprietaireDto.setPrenom(proprietaireUpdateDto.getPrenom());
+    given(proprietaireService.updateProprietaire(1L, proprietaireUpdateDto)).willAnswer(
+        invocationOnMock -> proprietaireDto);
 
     when(authService.verifyToken(any(), anyBoolean())).thenReturn(
-        new AbstractMap.SimpleEntry<>(proprietaireDTO.getId(), true)); //skip token verif
+        new AbstractMap.SimpleEntry<>(proprietaireDto.getId(), true)); //skip token verif
 
     ResultActions response = mockMvc.perform(put("/proprietaires/1")
-        .header("Authorization",
-            "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqb2huZG9lQGdtYWlsLmNvbTs2MjZjMjlhNS0zZGU0LTQ5Y2YtODI4ZS1hNDkxNWQzMzM5N2EiLCJpYXQiOjE3MTQxMTM1NzcsImV4cCI6MTcxNDExNzE3N30.kbU1pVkUHkRXktX44JBFN_xzDv-ZvSmtPjnjORO0vHPiHd3f2MGfDF15VTFO5icIrU_bV9cTqZ70RDlKdlp0-g")
+        .header(token)
         .contentType(MediaType.APPLICATION_JSON)
-        .content(objectMapper.writeValueAsString(proprietaireUpdateDTO)));
+        .content(objectMapper.writeValueAsString(proprietaireUpdateDto)));
 
     response.andExpect(MockMvcResultMatchers.status().isOk())
         .andExpect(
-            MockMvcResultMatchers.jsonPath("$.nom", CoreMatchers.is(proprietaireDTO.getNom())))
+            MockMvcResultMatchers.jsonPath("$.nom", CoreMatchers.is(proprietaireDto.getNom())))
         .andExpect(MockMvcResultMatchers.jsonPath("$.prenom",
-            CoreMatchers.is(proprietaireUpdateDTO.getPrenom())))
+            CoreMatchers.is(proprietaireUpdateDto.getPrenom())))
         .andExpect(
-            MockMvcResultMatchers.jsonPath("$.email", CoreMatchers.is(proprietaireDTO.getEmail())))
+            MockMvcResultMatchers.jsonPath("$.email", CoreMatchers.is(proprietaireDto.getEmail())))
         .andExpect(MockMvcResultMatchers.jsonPath("$.numTel",
-            CoreMatchers.is(proprietaireDTO.getNumTel())))
+            CoreMatchers.is(proprietaireDto.getNumTel())))
         .andExpect(MockMvcResultMatchers.jsonPath("$.logements",
-            CoreMatchers.is(proprietaireDTO.getLogements())));
+            CoreMatchers.is(proprietaireDto.getLogements())));
   }
 
   @Test
-  public void ProprietaireController_DeleteProprietaire_ReturnOk() throws Exception {
+  public void deleteProprietaire_ReturnOk() throws Exception {
     given(proprietaireService.deleteProprietaire(1L)).willAnswer(
-        invocationOnMock -> proprietaireDTO);
+        invocationOnMock -> proprietaireDto);
 
     when(authService.verifyToken(any(), anyBoolean())).thenReturn(
-        new AbstractMap.SimpleEntry<>(proprietaireDTO.getId(), true)); //skip token verif
+        new AbstractMap.SimpleEntry<>(proprietaireDto.getId(), true)); //skip token verif
 
     ResultActions response = mockMvc.perform(delete("/proprietaires/1")
-        .header("Authorization",
-            "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqb2huZG9lQGdtYWlsLmNvbTs2MjZjMjlhNS0zZGU0LTQ5Y2YtODI4ZS1hNDkxNWQzMzM5N2EiLCJpYXQiOjE3MTQxMTM1NzcsImV4cCI6MTcxNDExNzE3N30.kbU1pVkUHkRXktX44JBFN_xzDv-ZvSmtPjnjORO0vHPiHd3f2MGfDF15VTFO5icIrU_bV9cTqZ70RDlKdlp0-g")
+        .header(token)
         .contentType(MediaType.APPLICATION_JSON));
 
     response.andExpect(MockMvcResultMatchers.status().isOk())
         .andExpect(
-            MockMvcResultMatchers.jsonPath("$.nom", CoreMatchers.is(proprietaireDTO.getNom())))
+            MockMvcResultMatchers.jsonPath("$.nom", CoreMatchers.is(proprietaireDto.getNom())))
         .andExpect(MockMvcResultMatchers.jsonPath("$.prenom",
-            CoreMatchers.is(proprietaireDTO.getPrenom())))
+            CoreMatchers.is(proprietaireDto.getPrenom())))
         .andExpect(
-            MockMvcResultMatchers.jsonPath("$.email", CoreMatchers.is(proprietaireDTO.getEmail())))
+            MockMvcResultMatchers.jsonPath("$.email", CoreMatchers.is(proprietaireDto.getEmail())))
         .andExpect(MockMvcResultMatchers.jsonPath("$.numTel",
-            CoreMatchers.is(proprietaireDTO.getNumTel())))
+            CoreMatchers.is(proprietaireDto.getNumTel())))
         .andExpect(MockMvcResultMatchers.jsonPath("$.logements",
-            CoreMatchers.is(proprietaireDTO.getLogements())));
+            CoreMatchers.is(proprietaireDto.getLogements())));
   }
 
 }

@@ -1,11 +1,18 @@
 package fr.esgi.al5_2.Tayarim;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
+
 import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireCreationDto;
 import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireDto;
 import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireUpdateDto;
 import fr.esgi.al5_2.Tayarim.entities.Proprietaire;
 import fr.esgi.al5_2.Tayarim.repositories.ProprietaireRepository;
 import fr.esgi.al5_2.Tayarim.services.ProprietaireService;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,14 +21,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
-
+/**
+ * Classe de test du service Proprietaire.
+ */
 @ExtendWith(SpringExtension.class)
 public class ProprietaireServiceTest {
 
@@ -32,11 +34,11 @@ public class ProprietaireServiceTest {
   private ProprietaireService proprietaireService;
 
   @Test
-  public void ProprietaireService_CreerProprietaire_ReturnsProprietaireDto() {
+  public void creerProprietaire_ReturnsProprietaireDto() {
 
     LocalDateTime localDateTime = LocalDateTime.now();
 
-    ProprietaireCreationDto proprietaireCreationDTO = ProprietaireCreationDto.builder()
+    ProprietaireCreationDto proprietaireCreationDto = ProprietaireCreationDto.builder()
         .nom("Ferreira")
         .prenom("Mathieu")
         .email("test@gmail.com")
@@ -44,10 +46,10 @@ public class ProprietaireServiceTest {
         .build();
 
     Proprietaire proprietaire = Proprietaire.builder()
-        .nom(proprietaireCreationDTO.getNom())
-        .prenom(proprietaireCreationDTO.getPrenom())
-        .email(proprietaireCreationDTO.getEmail())
-        .numTel(proprietaireCreationDTO.getNumTel())
+        .nom(proprietaireCreationDto.getNom())
+        .prenom(proprietaireCreationDto.getPrenom())
+        .email(proprietaireCreationDto.getEmail())
+        .numTel(proprietaireCreationDto.getNumTel())
         .motDePasse("password")
         .dateInscription(localDateTime)
         .isPasswordUpdated(Boolean.TRUE)
@@ -58,22 +60,22 @@ public class ProprietaireServiceTest {
     when(proprietaireRepository.save(Mockito.any(Proprietaire.class))).thenReturn(proprietaire);
 
     ProprietaireDto savedProprietaire = proprietaireService.creerProprietaire(
-        proprietaireCreationDTO);
+        proprietaireCreationDto);
 
     Assertions.assertThat(savedProprietaire).isNotNull();
     Assertions.assertThat(savedProprietaire.getId()).isEqualTo(1L);
-    Assertions.assertThat(savedProprietaire.getNom()).isEqualTo(proprietaireCreationDTO.getNom());
+    Assertions.assertThat(savedProprietaire.getNom()).isEqualTo(proprietaireCreationDto.getNom());
     Assertions.assertThat(savedProprietaire.getPrenom())
-        .isEqualTo(proprietaireCreationDTO.getPrenom());
+        .isEqualTo(proprietaireCreationDto.getPrenom());
     Assertions.assertThat(savedProprietaire.getEmail())
-        .isEqualTo(proprietaireCreationDTO.getEmail());
+        .isEqualTo(proprietaireCreationDto.getEmail());
     Assertions.assertThat(savedProprietaire.getNumTel())
-        .isEqualTo(proprietaireCreationDTO.getNumTel());
+        .isEqualTo(proprietaireCreationDto.getNumTel());
     Assertions.assertThat(savedProprietaire.getDateInscription()).isEqualTo(localDateTime);
   }
 
   @Test
-  public void ProprietaireService_GetProprietaire_ReturnsListProprietaireDto() {
+  public void getProprietaire_ReturnsListProprietaireDto() {
     LocalDateTime localDateTime = LocalDateTime.now();
 
     Proprietaire proprietaire = Proprietaire.builder()
@@ -108,7 +110,7 @@ public class ProprietaireServiceTest {
   }
 
   @Test
-  public void ProprietaireService_GetProprietaireById_ReturnOneProprietaireDto() {
+  public void getProprietaireById_ReturnOneProprietaireDto() {
     LocalDateTime localDateTime = LocalDateTime.now();
 
     Proprietaire proprietaire = Proprietaire.builder()
@@ -125,22 +127,22 @@ public class ProprietaireServiceTest {
     when(proprietaireRepository.findById(proprietaire.getId())).thenReturn(
         Optional.of(proprietaire));
 
-    ProprietaireDto proprietaireDTO = proprietaireService.getProprietaireById(proprietaire.getId(),
+    ProprietaireDto proprietaireDto = proprietaireService.getProprietaireById(proprietaire.getId(),
         false);
 
-    Assertions.assertThat(proprietaireDTO).isNotNull();
-    Assertions.assertThat(proprietaireDTO.getId()).isEqualTo(proprietaire.getId());
-    Assertions.assertThat(proprietaireDTO.getNom()).isEqualTo(proprietaire.getNom());
-    Assertions.assertThat(proprietaireDTO.getPrenom()).isEqualTo(proprietaire.getPrenom());
-    Assertions.assertThat(proprietaireDTO.getEmail()).isEqualTo(proprietaire.getEmail());
-    Assertions.assertThat(proprietaireDTO.getNumTel()).isEqualTo(proprietaire.getNumTel());
-    Assertions.assertThat(proprietaireDTO.getDateInscription())
+    Assertions.assertThat(proprietaireDto).isNotNull();
+    Assertions.assertThat(proprietaireDto.getId()).isEqualTo(proprietaire.getId());
+    Assertions.assertThat(proprietaireDto.getNom()).isEqualTo(proprietaire.getNom());
+    Assertions.assertThat(proprietaireDto.getPrenom()).isEqualTo(proprietaire.getPrenom());
+    Assertions.assertThat(proprietaireDto.getEmail()).isEqualTo(proprietaire.getEmail());
+    Assertions.assertThat(proprietaireDto.getNumTel()).isEqualTo(proprietaire.getNumTel());
+    Assertions.assertThat(proprietaireDto.getDateInscription())
         .isEqualTo(proprietaire.getDateInscription());
 
   }
 
   @Test
-  public void ProprietaireService_GetProprietaireByEmail_ReturnOneProprietaireDto() {
+  public void getProprietaireByEmail_ReturnOneProprietaireDto() {
     LocalDateTime localDateTime = LocalDateTime.now();
 
     Proprietaire proprietaire = Proprietaire.builder()
@@ -157,25 +159,25 @@ public class ProprietaireServiceTest {
     when(proprietaireRepository.findFirstByEmail(proprietaire.getEmail())).thenReturn(
         Optional.of(proprietaire));
 
-    ProprietaireDto proprietaireDTO = proprietaireService.getProprietaireByEmail(
+    ProprietaireDto proprietaireDto = proprietaireService.getProprietaireByEmail(
         proprietaire.getEmail());
 
-    Assertions.assertThat(proprietaireDTO).isNotNull();
-    Assertions.assertThat(proprietaireDTO.getId()).isEqualTo(proprietaire.getId());
-    Assertions.assertThat(proprietaireDTO.getNom()).isEqualTo(proprietaire.getNom());
-    Assertions.assertThat(proprietaireDTO.getPrenom()).isEqualTo(proprietaire.getPrenom());
-    Assertions.assertThat(proprietaireDTO.getEmail()).isEqualTo(proprietaire.getEmail());
-    Assertions.assertThat(proprietaireDTO.getNumTel()).isEqualTo(proprietaire.getNumTel());
-    Assertions.assertThat(proprietaireDTO.getDateInscription())
+    Assertions.assertThat(proprietaireDto).isNotNull();
+    Assertions.assertThat(proprietaireDto.getId()).isEqualTo(proprietaire.getId());
+    Assertions.assertThat(proprietaireDto.getNom()).isEqualTo(proprietaire.getNom());
+    Assertions.assertThat(proprietaireDto.getPrenom()).isEqualTo(proprietaire.getPrenom());
+    Assertions.assertThat(proprietaireDto.getEmail()).isEqualTo(proprietaire.getEmail());
+    Assertions.assertThat(proprietaireDto.getNumTel()).isEqualTo(proprietaire.getNumTel());
+    Assertions.assertThat(proprietaireDto.getDateInscription())
         .isEqualTo(proprietaire.getDateInscription());
 
   }
 
   @Test
-  public void ProprietaireService_UpdateProprietaire_ReturnOneProprietaireDto() {
+  public void updateProprietaire_ReturnOneProprietaireDto() {
     LocalDateTime localDateTime = LocalDateTime.now();
     Long id = 1L;
-    ProprietaireCreationDto proprietaireCreationDTO = ProprietaireCreationDto.builder()
+    final ProprietaireCreationDto proprietaireCreationDto = ProprietaireCreationDto.builder()
         .nom("Ferreira")
         .prenom("Mathieu")
         .email("test@gmail.com")
@@ -193,34 +195,33 @@ public class ProprietaireServiceTest {
     proprietaire.setLogements(null);
     proprietaire.setId(id);
     when(proprietaireRepository.save(Mockito.any(Proprietaire.class))).thenReturn(proprietaire);
-    //ProprietaireDTO proprietaireDTO = proprietaireService.creerProprietaire(proprietaireCreationDTO);
-    ProprietaireUpdateDto proprietaireUpdateDTO = ProprietaireUpdateDto.builder()
+    ProprietaireUpdateDto proprietaireUpdateDto = ProprietaireUpdateDto.builder()
         .nom("Doe")
         .build();
     when(proprietaireRepository.findById(id)).thenReturn(Optional.of(proprietaire));
-    proprietaire.setNom(proprietaireUpdateDTO.getNom());
+    proprietaire.setNom(proprietaireUpdateDto.getNom());
     when(proprietaireRepository.save(any(Proprietaire.class))).thenReturn(proprietaire);
 
     ProprietaireDto proprietaireDtoUpdated = proprietaireService.updateProprietaire(id,
-        proprietaireUpdateDTO);
+        proprietaireUpdateDto);
 
     Assertions.assertThat(proprietaireDtoUpdated).isNotNull();
     Assertions.assertThat(proprietaireDtoUpdated.getId()).isEqualTo(id);
     Assertions.assertThat(proprietaireDtoUpdated.getNom())
-        .isEqualTo(proprietaireUpdateDTO.getNom());
+        .isEqualTo(proprietaireUpdateDto.getNom());
     Assertions.assertThat(proprietaireDtoUpdated.getPrenom())
-        .isEqualTo(proprietaireCreationDTO.getPrenom());
+        .isEqualTo(proprietaireCreationDto.getPrenom());
     Assertions.assertThat(proprietaireDtoUpdated.getEmail())
-        .isEqualTo(proprietaireCreationDTO.getEmail());
+        .isEqualTo(proprietaireCreationDto.getEmail());
     Assertions.assertThat(proprietaireDtoUpdated.getNumTel())
-        .isEqualTo(proprietaireCreationDTO.getNumTel());
+        .isEqualTo(proprietaireCreationDto.getNumTel());
     Assertions.assertThat(proprietaireDtoUpdated.getDateInscription()).isEqualTo(localDateTime);
     Assertions.assertThat(proprietaireDtoUpdated.getLogements()).isNull();
 
   }
 
   @Test
-  public void ProprietaireService_DeleteProprietaire_ReturnOneProprietaireDto() {
+  public void deleteProprietaire_ReturnOneProprietaireDto() {
     LocalDateTime localDateTime = LocalDateTime.now();
     Long id = 1L;
 
@@ -239,21 +240,21 @@ public class ProprietaireServiceTest {
     when(proprietaireRepository.save(any(Proprietaire.class))).thenReturn(proprietaire);
     doNothing().when(proprietaireRepository).deleteById(id);
 
-    ProprietaireDto proprietaireDTO = proprietaireService.deleteProprietaire(id);
+    ProprietaireDto proprietaireDto = proprietaireService.deleteProprietaire(id);
 
-    Assertions.assertThat(proprietaireDTO).isNotNull();
-    Assertions.assertThat(proprietaireDTO.getId()).isEqualTo(id);
-    Assertions.assertThat(proprietaireDTO.getNom()).isEqualTo(proprietaire.getNom());
-    Assertions.assertThat(proprietaireDTO.getPrenom()).isEqualTo(proprietaire.getPrenom());
-    Assertions.assertThat(proprietaireDTO.getEmail()).isEqualTo(proprietaire.getEmail());
-    Assertions.assertThat(proprietaireDTO.getNumTel()).isEqualTo(proprietaire.getNumTel());
-    Assertions.assertThat(proprietaireDTO.getDateInscription()).isEqualTo(localDateTime);
-    Assertions.assertThat(proprietaireDTO.getLogements()).isNull();
+    Assertions.assertThat(proprietaireDto).isNotNull();
+    Assertions.assertThat(proprietaireDto.getId()).isEqualTo(id);
+    Assertions.assertThat(proprietaireDto.getNom()).isEqualTo(proprietaire.getNom());
+    Assertions.assertThat(proprietaireDto.getPrenom()).isEqualTo(proprietaire.getPrenom());
+    Assertions.assertThat(proprietaireDto.getEmail()).isEqualTo(proprietaire.getEmail());
+    Assertions.assertThat(proprietaireDto.getNumTel()).isEqualTo(proprietaire.getNumTel());
+    Assertions.assertThat(proprietaireDto.getDateInscription()).isEqualTo(localDateTime);
+    Assertions.assertThat(proprietaireDto.getLogements()).isNull();
 
   }
 
   @Test
-  public void ProprietaireService_VerifyPassword_ReturnTrue() {
+  public void verifyPassword_ReturnTrue() {
     Long id = 1L;
     LocalDateTime localDateTime = LocalDateTime.now();
     String password = "password";
@@ -278,7 +279,7 @@ public class ProprietaireServiceTest {
   }
 
   @Test
-  public void ProprietaireService_VerifyPassword_ReturnFalse() {
+  public void verifyPassword_ReturnFalse() {
     Long id = 1L;
     LocalDateTime localDateTime = LocalDateTime.now();
     String password = "passwordFalse";
