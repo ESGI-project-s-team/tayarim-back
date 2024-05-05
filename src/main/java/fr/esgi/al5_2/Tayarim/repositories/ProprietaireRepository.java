@@ -1,12 +1,11 @@
 package fr.esgi.al5_2.Tayarim.repositories;
 
+import fr.esgi.al5_2.Tayarim.entities.Proprietaire;
+import java.util.Optional;
 import lombok.NonNull;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import fr.esgi.al5_2.Tayarim.entities.Proprietaire;
-
-import java.util.Optional;
 
 /**
  * Interface de repository pour les opérations de base de données sur les entités Proprietaire.
@@ -20,7 +19,7 @@ public interface ProprietaireRepository extends JpaRepository<Proprietaire, Long
    *
    * @param email L'adresse email utilisée pour la recherche.
    * @return Un Optional contenant le propriétaire trouvé ou un Optional vide si aucun propriétaire
-   * n'est trouvé.
+   *     n'est trouvé.
    */
   Optional<Proprietaire> findFirstByEmail(@NonNull String email);
 
@@ -29,7 +28,7 @@ public interface ProprietaireRepository extends JpaRepository<Proprietaire, Long
    *
    * @param numTel Le numéro de téléphone utilisé pour la recherche.
    * @return Un Optional contenant le propriétaire trouvé ou un Optional vide si aucun propriétaire
-   * n'est trouvé.
+   *     n'est trouvé.
    */
   Optional<Proprietaire> findFirstByNumTel(@NonNull String numTel);
 }

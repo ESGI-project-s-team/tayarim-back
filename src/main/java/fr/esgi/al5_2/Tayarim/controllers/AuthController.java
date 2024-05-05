@@ -1,20 +1,29 @@
 package fr.esgi.al5_2.Tayarim.controllers;
 
-import fr.esgi.al5_2.Tayarim.dto.auth.AuthLoginDTO;
-import fr.esgi.al5_2.Tayarim.dto.auth.AuthLoginResponseDTO;
-import fr.esgi.al5_2.Tayarim.dto.auth.AuthResponseDTO;
-import fr.esgi.al5_2.Tayarim.exceptions.*;
+import fr.esgi.al5_2.Tayarim.dto.auth.AuthLoginDto;
+import fr.esgi.al5_2.Tayarim.dto.auth.AuthLoginResponseDto;
+import fr.esgi.al5_2.Tayarim.dto.auth.AuthResponseDto;
+import fr.esgi.al5_2.Tayarim.exceptions.AdministrateurNotFoundException;
+import fr.esgi.al5_2.Tayarim.exceptions.ProprietaireNotFoundException;
+import fr.esgi.al5_2.Tayarim.exceptions.TokenExpireOrInvalidException;
+import fr.esgi.al5_2.Tayarim.exceptions.UtilisateurNotFoundException;
 import fr.esgi.al5_2.Tayarim.services.AuthService;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Contrôleur responsable de la gestion de l'authentification des utilisateurs.
@@ -37,13 +46,13 @@ public class AuthController {
   /**
    * Authentifie un utilisateur et renvoie un token JWT.
    *
-   * @param authLoginDTO Le DTO contenant les informations de connexion de l'utilisateur.
+   * @param authLoginDto Le DTO contenant les informations de connexion de l'utilisateur.
    * @return Un ResponseEntity contenant le DTO de réponse d'authentification et le statut HTTP.
    */
   @PostMapping("/login")
-  public ResponseEntity<AuthLoginResponseDTO> login(@Valid @RequestBody AuthLoginDTO authLoginDTO) {
-    ResponseEntity<AuthLoginResponseDTO> response = new ResponseEntity<>(
-        authService.login(authLoginDTO.getEmail(), authLoginDTO.getMotDePasse()),
+  public ResponseEntity<AuthLoginResponseDto> login(@Valid @RequestBody AuthLoginDto authLoginDto) {
+    ResponseEntity<AuthLoginResponseDto> response = new ResponseEntity<>(
+        authService.login(authLoginDto.getEmail(), authLoginDto.getMotDePasse()),
         HttpStatus.OK
     );
 
@@ -57,7 +66,7 @@ public class AuthController {
    * @return Un ResponseEntity contenant le DTO de réponse d'authentification et le statut HTTP.
    */
   @GetMapping("")
-  public ResponseEntity<AuthResponseDTO> auth(
+  public ResponseEntity<AuthResponseDto> auth(
       @RequestHeader("Authorization") String authHeader) {
 
     String jwtToken = getTokenFromHeader(authHeader);
@@ -153,7 +162,8 @@ public class AuthController {
    */
   @ResponseStatus(HttpStatus.NOT_FOUND)
   @ExceptionHandler({AdministrateurNotFoundException.class})
-  public Map<String, List<String>> administrateurNotFoundException(AdministrateurNotFoundException ex) {
+  public Map<String, List<String>> administrateurNotFoundException(
+      AdministrateurNotFoundException ex) {
     return mapException(ex);
   }
 

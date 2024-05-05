@@ -1,8 +1,8 @@
 package fr.esgi.al5_2.Tayarim;
 
-import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireCreationDTO;
-import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireDTO;
-import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireUpdateDTO;
+import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireCreationDto;
+import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireDto;
+import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireUpdateDto;
 import fr.esgi.al5_2.Tayarim.entities.Proprietaire;
 import fr.esgi.al5_2.Tayarim.repositories.ProprietaireRepository;
 import fr.esgi.al5_2.Tayarim.services.ProprietaireService;
@@ -12,7 +12,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDateTime;
@@ -37,7 +36,7 @@ public class ProprietaireServiceTest {
 
     LocalDateTime localDateTime = LocalDateTime.now();
 
-    ProprietaireCreationDTO proprietaireCreationDTO = ProprietaireCreationDTO.builder()
+    ProprietaireCreationDto proprietaireCreationDTO = ProprietaireCreationDto.builder()
         .nom("Ferreira")
         .prenom("Mathieu")
         .email("test@gmail.com")
@@ -58,7 +57,7 @@ public class ProprietaireServiceTest {
 
     when(proprietaireRepository.save(Mockito.any(Proprietaire.class))).thenReturn(proprietaire);
 
-    ProprietaireDTO savedProprietaire = proprietaireService.creerProprietaire(
+    ProprietaireDto savedProprietaire = proprietaireService.creerProprietaire(
         proprietaireCreationDTO);
 
     Assertions.assertThat(savedProprietaire).isNotNull();
@@ -101,10 +100,10 @@ public class ProprietaireServiceTest {
     proprietaire2.setId(2L);
     when(proprietaireRepository.findAll()).thenReturn(List.of(proprietaire, proprietaire2));
 
-    List<ProprietaireDTO> proprietaireDTOS = proprietaireService.getProprietaire(false);
+    List<ProprietaireDto> proprietaireDtos = proprietaireService.getProprietaire(false);
 
-    Assertions.assertThat(proprietaireDTOS).isNotNull();
-    Assertions.assertThat(proprietaireDTOS).hasSizeGreaterThan(1);
+    Assertions.assertThat(proprietaireDtos).isNotNull();
+    Assertions.assertThat(proprietaireDtos).hasSizeGreaterThan(1);
 
   }
 
@@ -126,7 +125,7 @@ public class ProprietaireServiceTest {
     when(proprietaireRepository.findById(proprietaire.getId())).thenReturn(
         Optional.of(proprietaire));
 
-    ProprietaireDTO proprietaireDTO = proprietaireService.getProprietaireById(proprietaire.getId(),
+    ProprietaireDto proprietaireDTO = proprietaireService.getProprietaireById(proprietaire.getId(),
         false);
 
     Assertions.assertThat(proprietaireDTO).isNotNull();
@@ -158,7 +157,7 @@ public class ProprietaireServiceTest {
     when(proprietaireRepository.findFirstByEmail(proprietaire.getEmail())).thenReturn(
         Optional.of(proprietaire));
 
-    ProprietaireDTO proprietaireDTO = proprietaireService.getProprietaireByEmail(
+    ProprietaireDto proprietaireDTO = proprietaireService.getProprietaireByEmail(
         proprietaire.getEmail());
 
     Assertions.assertThat(proprietaireDTO).isNotNull();
@@ -176,7 +175,7 @@ public class ProprietaireServiceTest {
   public void ProprietaireService_UpdateProprietaire_ReturnOneProprietaireDto() {
     LocalDateTime localDateTime = LocalDateTime.now();
     Long id = 1L;
-    ProprietaireCreationDTO proprietaireCreationDTO = ProprietaireCreationDTO.builder()
+    ProprietaireCreationDto proprietaireCreationDTO = ProprietaireCreationDto.builder()
         .nom("Ferreira")
         .prenom("Mathieu")
         .email("test@gmail.com")
@@ -195,28 +194,28 @@ public class ProprietaireServiceTest {
     proprietaire.setId(id);
     when(proprietaireRepository.save(Mockito.any(Proprietaire.class))).thenReturn(proprietaire);
     //ProprietaireDTO proprietaireDTO = proprietaireService.creerProprietaire(proprietaireCreationDTO);
-    ProprietaireUpdateDTO proprietaireUpdateDTO = ProprietaireUpdateDTO.builder()
+    ProprietaireUpdateDto proprietaireUpdateDTO = ProprietaireUpdateDto.builder()
         .nom("Doe")
         .build();
     when(proprietaireRepository.findById(id)).thenReturn(Optional.of(proprietaire));
     proprietaire.setNom(proprietaireUpdateDTO.getNom());
     when(proprietaireRepository.save(any(Proprietaire.class))).thenReturn(proprietaire);
 
-    ProprietaireDTO proprietaireDTOUpdated = proprietaireService.updateProprietaire(id,
+    ProprietaireDto proprietaireDtoUpdated = proprietaireService.updateProprietaire(id,
         proprietaireUpdateDTO);
 
-    Assertions.assertThat(proprietaireDTOUpdated).isNotNull();
-    Assertions.assertThat(proprietaireDTOUpdated.getId()).isEqualTo(id);
-    Assertions.assertThat(proprietaireDTOUpdated.getNom())
+    Assertions.assertThat(proprietaireDtoUpdated).isNotNull();
+    Assertions.assertThat(proprietaireDtoUpdated.getId()).isEqualTo(id);
+    Assertions.assertThat(proprietaireDtoUpdated.getNom())
         .isEqualTo(proprietaireUpdateDTO.getNom());
-    Assertions.assertThat(proprietaireDTOUpdated.getPrenom())
+    Assertions.assertThat(proprietaireDtoUpdated.getPrenom())
         .isEqualTo(proprietaireCreationDTO.getPrenom());
-    Assertions.assertThat(proprietaireDTOUpdated.getEmail())
+    Assertions.assertThat(proprietaireDtoUpdated.getEmail())
         .isEqualTo(proprietaireCreationDTO.getEmail());
-    Assertions.assertThat(proprietaireDTOUpdated.getNumTel())
+    Assertions.assertThat(proprietaireDtoUpdated.getNumTel())
         .isEqualTo(proprietaireCreationDTO.getNumTel());
-    Assertions.assertThat(proprietaireDTOUpdated.getDateInscription()).isEqualTo(localDateTime);
-    Assertions.assertThat(proprietaireDTOUpdated.getLogements()).isNull();
+    Assertions.assertThat(proprietaireDtoUpdated.getDateInscription()).isEqualTo(localDateTime);
+    Assertions.assertThat(proprietaireDtoUpdated.getLogements()).isNull();
 
   }
 
@@ -240,7 +239,7 @@ public class ProprietaireServiceTest {
     when(proprietaireRepository.save(any(Proprietaire.class))).thenReturn(proprietaire);
     doNothing().when(proprietaireRepository).deleteById(id);
 
-    ProprietaireDTO proprietaireDTO = proprietaireService.deleteProprietaire(id);
+    ProprietaireDto proprietaireDTO = proprietaireService.deleteProprietaire(id);
 
     Assertions.assertThat(proprietaireDTO).isNotNull();
     Assertions.assertThat(proprietaireDTO.getId()).isEqualTo(id);

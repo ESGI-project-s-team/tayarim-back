@@ -11,7 +11,7 @@ import lombok.Data;
 @Data // Generates getters, setters, toString, equals, and hashCode methods
 @AllArgsConstructor // Generates an all-args constructor
 @Builder
-public class AdministrateurUpdateDTO {
+public class AdministrateurUpdateDto {
 
   private String nom;
   private String prenom;

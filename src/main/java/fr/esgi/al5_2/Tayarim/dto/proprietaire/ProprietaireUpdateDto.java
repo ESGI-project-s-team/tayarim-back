@@ -1,11 +1,8 @@
 package fr.esgi.al5_2.Tayarim.dto.proprietaire;
 
-import lombok.*;
-
-import java.time.LocalDateTime;
-import java.util.List;
-
-import fr.esgi.al5_2.Tayarim.dto.logement.LogementDTO;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 
 /**
  * DTO pour la mise à jour des informations d'un propriétaire. Permet de modifier les détails d'un
@@ -14,7 +11,7 @@ import fr.esgi.al5_2.Tayarim.dto.logement.LogementDTO;
 @Data // Generates getters, setters, toString, equals, and hashCode methods
 @AllArgsConstructor // Generates an all-args constructor
 @Builder
-public class ProprietaireUpdateDTO {
+public class ProprietaireUpdateDto {
 
   private String nom;
   private String prenom;

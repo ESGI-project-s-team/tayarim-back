@@ -1,21 +1,33 @@
 package fr.esgi.al5_2.Tayarim.controllers;
 
-import fr.esgi.al5_2.Tayarim.dto.proprietaire.*;
-import fr.esgi.al5_2.Tayarim.entities.Administrateur;
-import fr.esgi.al5_2.Tayarim.exceptions.*;
+import fr.esgi.al5_2.Tayarim.dto.proprietaire.AdministrateurDto;
+import fr.esgi.al5_2.Tayarim.dto.proprietaire.AdministrateurUpdateDto;
+import fr.esgi.al5_2.Tayarim.exceptions.AdministrateurEmailAlreadyExistException;
+import fr.esgi.al5_2.Tayarim.exceptions.AdministrateurInvalidUpdateBody;
+import fr.esgi.al5_2.Tayarim.exceptions.AdministrateurNotFoundException;
+import fr.esgi.al5_2.Tayarim.exceptions.AdministrateurNumTelAlreadyExistException;
+import fr.esgi.al5_2.Tayarim.exceptions.PasswordHashNotPossibleException;
+import fr.esgi.al5_2.Tayarim.exceptions.TokenExpireOrInvalidException;
+import fr.esgi.al5_2.Tayarim.exceptions.UnauthorizedException;
 import fr.esgi.al5_2.Tayarim.services.AdministrateurService;
 import fr.esgi.al5_2.Tayarim.services.AuthService;
-import fr.esgi.al5_2.Tayarim.services.ProprietaireService;
-import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Contrôleur gérant les opérations administratives sur les comptes des administrateurs.
@@ -46,7 +58,7 @@ public class AdministrateurController {
    * @return Une réponse contenant la liste des administrateurs et le statut HTTP.
    */
   @GetMapping("")
-  public ResponseEntity<List<AdministrateurDTO>> getAdministrateur(
+  public ResponseEntity<List<AdministrateurDto>> getAdministrateur(
       @RequestHeader("Authorization") String authHeader) {
     authService.verifyToken(getTokenFromHeader(authHeader), true);
 
@@ -64,7 +76,7 @@ public class AdministrateurController {
    * @return Une réponse contenant les détails de l'administrateur et le statut HTTP.
    */
   @GetMapping("/{id}")
-  public ResponseEntity<AdministrateurDTO> getAdministrateur(
+  public ResponseEntity<AdministrateurDto> getAdministrateur(
       @RequestHeader("Authorization") String authHeader, @PathVariable Long id) {
 
     authService.verifyToken(getTokenFromHeader(authHeader), true);
@@ -81,13 +93,13 @@ public class AdministrateurController {
    * @param authHeader              Le token d'authentification fourni dans l'en-tête de la
    *                                requête.
    * @param id                      L'identifiant de l'administrateur à mettre à jour.
-   * @param administrateurUpdateDTO Les nouvelles informations de l'administrateur.
+   * @param administrateurUpdateDto Les nouvelles informations de l'administrateur.
    * @return Une réponse contenant l'administrateur mis à jour et le statut HTTP.
    */
   @PutMapping("/{id}")
-  public ResponseEntity<AdministrateurDTO> updateAdministrateur(
+  public ResponseEntity<AdministrateurDto> updateAdministrateur(
       @RequestHeader("Authorization") String authHeader, @PathVariable Long id,
-      @RequestBody AdministrateurUpdateDTO administrateurUpdateDTO) {
+      @RequestBody AdministrateurUpdateDto administrateurUpdateDto) {
     Long idToken = authService.verifyToken(getTokenFromHeader(authHeader), true).getKey();
 
     if (!idToken.equals(id)) {
@@ -95,7 +107,7 @@ public class AdministrateurController {
     }
 
     return new ResponseEntity<>(
-        administrateurService.updateAdministrateur(id, administrateurUpdateDTO),
+        administrateurService.updateAdministrateur(id, administrateurUpdateDto),
         HttpStatus.OK
     );
   }
@@ -108,7 +120,7 @@ public class AdministrateurController {
    * @return Une réponse avec le statut HTTP indiquant le succès ou l'échec de l'opération.
    */
   @DeleteMapping("/{id}")
-  public ResponseEntity<AdministrateurDTO> deleteAdministrateur(
+  public ResponseEntity<AdministrateurDto> deleteAdministrateur(
       @RequestHeader("Authorization") String authHeader, @PathVariable Long id) {
     Long idToken = authService.verifyToken(getTokenFromHeader(authHeader), true).getKey();
     if (!idToken.equals(id)) {

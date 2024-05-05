@@ -1,10 +1,13 @@
 package fr.esgi.al5_2.Tayarim.entities;
 
-import jakarta.persistence.*;
-import lombok.*;
-
-import java.time.LocalDateTime;
-import java.util.List;
+import jakarta.persistence.Entity;
+import jakarta.persistence.PrimaryKeyJoinColumn;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 /**
  * Entité représentant un administrateur dans le système, héritant de la classe Utilisateur. Cette

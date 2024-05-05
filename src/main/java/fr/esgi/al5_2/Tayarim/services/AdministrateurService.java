@@ -1,20 +1,23 @@
 package fr.esgi.al5_2.Tayarim.services;
 
-import fr.esgi.al5_2.Tayarim.dto.proprietaire.*;
+import fr.esgi.al5_2.Tayarim.dto.proprietaire.AdministrateurCreationDto;
+import fr.esgi.al5_2.Tayarim.dto.proprietaire.AdministrateurDto;
+import fr.esgi.al5_2.Tayarim.dto.proprietaire.AdministrateurUpdateDto;
 import fr.esgi.al5_2.Tayarim.entities.Administrateur;
-import fr.esgi.al5_2.Tayarim.entities.Proprietaire;
-import fr.esgi.al5_2.Tayarim.exceptions.*;
+import fr.esgi.al5_2.Tayarim.exceptions.AdministrateurEmailAlreadyExistException;
+import fr.esgi.al5_2.Tayarim.exceptions.AdministrateurInvalidUpdateBody;
+import fr.esgi.al5_2.Tayarim.exceptions.AdministrateurNotFoundException;
+import fr.esgi.al5_2.Tayarim.exceptions.AdministrateurNumTelAlreadyExistException;
+import fr.esgi.al5_2.Tayarim.exceptions.PasswordHashNotPossibleException;
+import fr.esgi.al5_2.Tayarim.exceptions.ProprietaireInvalidUpdateBody;
 import fr.esgi.al5_2.Tayarim.mappers.AdministrateurMapper;
-import fr.esgi.al5_2.Tayarim.mappers.ProprietaireMapper;
 import fr.esgi.al5_2.Tayarim.repositories.AdministrateurRepository;
-import fr.esgi.al5_2.Tayarim.repositories.ProprietaireRepository;
+import java.util.List;
+import java.util.Optional;
 import lombok.NonNull;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Optional;
 
 /**
  * Service pour la gestion des administrateurs dans le système. Fournit des méthodes pour créer,
@@ -34,32 +37,32 @@ public class AdministrateurService {
    * Crée un nouvel administrateur dans le système. Vérifie si l'email ou le numéro de téléphone
    * existe déjà avant de procéder à la création.
    *
-   * @param administrateurCreationDTO Les données nécessaires pour créer un administrateur.
+   * @param administrateurCreationDto Les données nécessaires pour créer un administrateur.
    * @return Le DTO de l'administrateur créé.
    * @throws AdministrateurEmailAlreadyExistException  si l'email existe déjà.
    * @throws AdministrateurNumTelAlreadyExistException si le numéro de téléphone existe déjà.
    */
   @Transactional
-  public AdministrateurDTO creerAdministrateur(
-      @NonNull AdministrateurCreationDTO administrateurCreationDTO) {
-    if (administrateurRepository.findFirstByEmail(administrateurCreationDTO.getEmail())
+  public AdministrateurDto creerAdministrateur(
+      @NonNull AdministrateurCreationDto administrateurCreationDto) {
+    if (administrateurRepository.findFirstByEmail(administrateurCreationDto.getEmail())
         .isPresent()) {
       throw new AdministrateurEmailAlreadyExistException();
     }
 
-    String numTel = administrateurCreationDTO.getNumTel();
+    String numTel = administrateurCreationDto.getNumTel();
     numTel = numTel.replaceAll(" ", "");
     if (administrateurRepository.findFirstByNumTel(numTel).isPresent()) {
       throw new AdministrateurNumTelAlreadyExistException();
     }
-    administrateurCreationDTO.setNumTel(numTel);
+    administrateurCreationDto.setNumTel(numTel);
 
-    String hashedPassword = hashPassword(administrateurCreationDTO.getMotDePasse());
+    String hashedPassword = hashPassword(administrateurCreationDto.getMotDePasse());
 
-    administrateurCreationDTO.setMotDePasse(hashedPassword);
+    administrateurCreationDto.setMotDePasse(hashedPassword);
 
     Administrateur administrateur = AdministrateurMapper.creationDtoToEntity(
-        administrateurCreationDTO);
+        administrateurCreationDto);
 
     return AdministrateurMapper.entityToDto(administrateurRepository.save(administrateur));
   }
@@ -69,7 +72,7 @@ public class AdministrateurService {
    *
    * @return Liste de DTOs des administrateurs.
    */
-  public List<AdministrateurDTO> getAdministrateur() {
+  public List<AdministrateurDto> getAdministrateur() {
     return AdministrateurMapper.entityListToDtoList(administrateurRepository.findAll());
   }
 
@@ -80,7 +83,7 @@ public class AdministrateurService {
    * @return Le DTO de l'administrateur.
    * @throws AdministrateurNotFoundException si l'administrateur n'est pas trouvé.
    */
-  public AdministrateurDTO getAdministrateurById(@NonNull Long id) {
+  public AdministrateurDto getAdministrateurById(@NonNull Long id) {
 
     Optional<Administrateur> optionalAdministrateur = administrateurRepository.findById(id);
     if (optionalAdministrateur.isEmpty()) {
@@ -96,7 +99,7 @@ public class AdministrateurService {
    * @return Le DTO de l'administrateur.
    * @throws AdministrateurNotFoundException si l'administrateur n'est pas trouvé.
    */
-  public AdministrateurDTO getAdministrateurByEmail(@NonNull String email) {
+  public AdministrateurDto getAdministrateurByEmail(@NonNull String email) {
     Optional<Administrateur> optionalAdministrateur = administrateurRepository.findFirstByEmail(
         email);
     if (optionalAdministrateur.isEmpty()) {
@@ -110,20 +113,20 @@ public class AdministrateurService {
    * Met à jour les informations d'un administrateur existant.
    *
    * @param id                      L'identifiant de l'administrateur à mettre à jour.
-   * @param administrateurUpdateDTO Les nouvelles informations de l'administrateur.
+   * @param administrateurUpdateDto Les nouvelles informations de l'administrateur.
    * @return Le DTO de l'administrateur mis à jour.
    * @throws AdministrateurInvalidUpdateBody si les données de mise à jour sont invalides.
    */
   @Transactional
-  public AdministrateurDTO updateAdministrateur(@NonNull Long id,
-      @NonNull AdministrateurUpdateDTO administrateurUpdateDTO) {
+  public AdministrateurDto updateAdministrateur(@NonNull Long id,
+      @NonNull AdministrateurUpdateDto administrateurUpdateDto) {
 
     if (
-        administrateurUpdateDTO.getNom() == null
-            && administrateurUpdateDTO.getPrenom() == null
-            && administrateurUpdateDTO.getEmail() == null
-            && administrateurUpdateDTO.getNumTel() == null
-            && administrateurUpdateDTO.getMotDePasse() == null
+        administrateurUpdateDto.getNom() == null
+            && administrateurUpdateDto.getPrenom() == null
+            && administrateurUpdateDto.getEmail() == null
+            && administrateurUpdateDto.getNumTel() == null
+            && administrateurUpdateDto.getMotDePasse() == null
     ) {
       throw new AdministrateurInvalidUpdateBody();
     }
@@ -133,32 +136,32 @@ public class AdministrateurService {
       throw new AdministrateurNotFoundException();
     }
 
-    if (administrateurUpdateDTO.getEmail() != null && administrateurRepository.findFirstByEmail(
-        administrateurUpdateDTO.getEmail()).isPresent()) {
+    if (administrateurUpdateDto.getEmail() != null && administrateurRepository.findFirstByEmail(
+        administrateurUpdateDto.getEmail()).isPresent()) {
       throw new ProprietaireInvalidUpdateBody();
     }
 
-    if (administrateurUpdateDTO.getNumTel() != null && administrateurRepository.findFirstByNumTel(
-        administrateurUpdateDTO.getNumTel()).isPresent()) {
+    if (administrateurUpdateDto.getNumTel() != null && administrateurRepository.findFirstByNumTel(
+        administrateurUpdateDto.getNumTel()).isPresent()) {
       throw new ProprietaireInvalidUpdateBody();
     }
 
     Administrateur administrateur = optionalAdministrateur.get();
 
     administrateur.setNom(
-        administrateurUpdateDTO.getNom() != null ? administrateurUpdateDTO.getNom()
+        administrateurUpdateDto.getNom() != null ? administrateurUpdateDto.getNom()
             : administrateur.getNom());
     administrateur.setPrenom(
-        administrateurUpdateDTO.getPrenom() != null ? administrateurUpdateDTO.getPrenom()
+        administrateurUpdateDto.getPrenom() != null ? administrateurUpdateDto.getPrenom()
             : administrateur.getPrenom());
     administrateur.setEmail(
-        administrateurUpdateDTO.getEmail() != null ? administrateurUpdateDTO.getEmail()
+        administrateurUpdateDto.getEmail() != null ? administrateurUpdateDto.getEmail()
             : administrateur.getEmail());
     administrateur.setNumTel(
-        administrateurUpdateDTO.getNumTel() != null ? administrateurUpdateDTO.getNumTel()
+        administrateurUpdateDto.getNumTel() != null ? administrateurUpdateDto.getNumTel()
             : administrateur.getNumTel());
-    administrateur.setMotDePasse(administrateurUpdateDTO.getMotDePasse() != null ? hashPassword(
-        administrateurUpdateDTO.getMotDePasse()) : administrateur.getMotDePasse());
+    administrateur.setMotDePasse(administrateurUpdateDto.getMotDePasse() != null ? hashPassword(
+        administrateurUpdateDto.getMotDePasse()) : administrateur.getMotDePasse());
 
     return AdministrateurMapper.entityToDto(administrateurRepository.save(administrateur));
   }
@@ -171,20 +174,20 @@ public class AdministrateurService {
    * @throws AdministrateurNotFoundException si l'administrateur à supprimer n'est pas trouvé.
    */
   @Transactional
-  public AdministrateurDTO deleteAdministrateur(@NonNull Long id) {
+  public AdministrateurDto deleteAdministrateur(@NonNull Long id) {
 
     Optional<Administrateur> optionalAdministrateur = administrateurRepository.findById(id);
     if (optionalAdministrateur.isEmpty()) {
       throw new AdministrateurNotFoundException();
     }
 
-    AdministrateurDTO administrateurDTO = AdministrateurMapper.entityToDto(
+    AdministrateurDto administrateurDto = AdministrateurMapper.entityToDto(
         optionalAdministrateur.get());
 
     administrateurRepository.deleteById(
         id); //voir si supprime aussi les logements dans la table logement
 
-    return administrateurDTO;
+    return administrateurDto;
 
   }
 

@@ -1,11 +1,9 @@
 package fr.esgi.al5_2.Tayarim;
 
-import fr.esgi.al5_2.Tayarim.auth.AuthTokenFilter;
-import fr.esgi.al5_2.Tayarim.dto.logement.LogementDTO;
-import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireDTO;
-import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireUpdateDTO;
+import fr.esgi.al5_2.Tayarim.dto.logement.LogementDto;
+import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireDto;
+import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireUpdateDto;
 import fr.esgi.al5_2.Tayarim.entities.Proprietaire;
-import fr.esgi.al5_2.Tayarim.repositories.ProprietaireRepository;
 import fr.esgi.al5_2.Tayarim.services.AuthService;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,19 +16,17 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import fr.esgi.al5_2.Tayarim.services.ProprietaireService;
 import fr.esgi.al5_2.Tayarim.controllers.ProprietaireController;
-import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireCreationDTO;
+import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireCreationDto;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper; // Make sure to import ObjectMapper
 import org.springframework.test.web.servlet.ResultActions;
@@ -56,18 +52,18 @@ public class ProprietaireControllerTest {
 
   @Autowired
   private ObjectMapper objectMapper;
-  private ProprietaireCreationDTO proprietaireCreationDTO;
+  private ProprietaireCreationDto proprietaireCreationDTO;
   private Proprietaire proprietaire;
-  private List<ProprietaireDTO> proprietaireDTOS;
-  private ProprietaireDTO proprietaireDTO;
-  private ProprietaireDTO proprietaireDTO2;
-  private ProprietaireDTO proprietaireDTOWithLogement;
-  private ProprietaireUpdateDTO proprietaireUpdateDTO;
+  private List<ProprietaireDto> proprietaireDtos;
+  private ProprietaireDto proprietaireDTO;
+  private ProprietaireDto proprietaireDto2;
+  private ProprietaireDto proprietaireDtoWithLogement;
+  private ProprietaireUpdateDto proprietaireUpdateDTO;
 
   @BeforeEach
   public void init() {
     LocalDateTime localDateTime = LocalDateTime.now();
-    proprietaireCreationDTO = ProprietaireCreationDTO.builder()
+    proprietaireCreationDTO = ProprietaireCreationDto.builder()
         .nom("Ferreira")
         .prenom("Mathieu")
         .email("test@gmail.com")
@@ -82,7 +78,7 @@ public class ProprietaireControllerTest {
         .dateInscription(localDateTime)
         .isPasswordUpdated(Boolean.TRUE)
         .build();
-    proprietaireDTO = ProprietaireDTO.builder()
+    proprietaireDTO = ProprietaireDto.builder()
         .id(1L)
         .nom("Ferreira")
         .prenom("Mathieu")
@@ -91,7 +87,7 @@ public class ProprietaireControllerTest {
         .dateInscription(localDateTime)
         .logements(null)
         .build();
-    proprietaireDTO2 = ProprietaireDTO.builder()
+    proprietaireDto2 = ProprietaireDto.builder()
         .id(2L)
         .nom("Jhonny")
         .prenom("Pasdoe")
@@ -100,17 +96,17 @@ public class ProprietaireControllerTest {
         .dateInscription(localDateTime)
         .logements(null)
         .build();
-    proprietaireDTOS = List.of(proprietaireDTO, proprietaireDTO2);
-    proprietaireDTOWithLogement = ProprietaireDTO.builder()
+    proprietaireDtos = List.of(proprietaireDTO, proprietaireDto2);
+    proprietaireDtoWithLogement = ProprietaireDto.builder()
         .id(1L)
         .nom("Ferreira")
         .prenom("Mathieu")
         .email("test@gmail.com")
         .numTel("0612345678")
         .dateInscription(localDateTime)
-        .logements(List.of(new LogementDTO(1L, 1L)))
+        .logements(List.of(new LogementDto(1L, 1L)))
         .build();
-    proprietaireUpdateDTO = ProprietaireUpdateDTO.builder()
+    proprietaireUpdateDTO = ProprietaireUpdateDto.builder()
         .prenom("Karl")
         .build();
   }
@@ -269,7 +265,7 @@ public class ProprietaireControllerTest {
   @Test
   public void ProprietaireController_GetProprietaire_ReturnOk() throws Exception {
     given(proprietaireService.getProprietaire(false)).willAnswer(
-        invocationOnMock -> proprietaireDTOS);
+        invocationOnMock -> proprietaireDtos);
 
     when(authService.verifyToken(any(), anyBoolean())).thenReturn(
         new AbstractMap.SimpleEntry<>(proprietaireDTO.getId(), true)); //skip token verif
@@ -291,15 +287,15 @@ public class ProprietaireControllerTest {
         .andExpect(MockMvcResultMatchers.jsonPath("$[0].logements",
             CoreMatchers.is(proprietaireDTO.getLogements())))
         .andExpect(
-            MockMvcResultMatchers.jsonPath("$[1].nom", CoreMatchers.is(proprietaireDTO2.getNom())))
+            MockMvcResultMatchers.jsonPath("$[1].nom", CoreMatchers.is(proprietaireDto2.getNom())))
         .andExpect(MockMvcResultMatchers.jsonPath("$[1].prenom",
-            CoreMatchers.is(proprietaireDTO2.getPrenom())))
+            CoreMatchers.is(proprietaireDto2.getPrenom())))
         .andExpect(MockMvcResultMatchers.jsonPath("$[1].email",
-            CoreMatchers.is(proprietaireDTO2.getEmail())))
+            CoreMatchers.is(proprietaireDto2.getEmail())))
         .andExpect(MockMvcResultMatchers.jsonPath("$[1].numTel",
-            CoreMatchers.is(proprietaireDTO2.getNumTel())))
+            CoreMatchers.is(proprietaireDto2.getNumTel())))
         .andExpect(MockMvcResultMatchers.jsonPath("$[1].logements",
-            CoreMatchers.is(proprietaireDTO2.getLogements())));
+            CoreMatchers.is(proprietaireDto2.getLogements())));
   }
 
   @Test

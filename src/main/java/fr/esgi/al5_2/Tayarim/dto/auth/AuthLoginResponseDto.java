@@ -13,7 +13,7 @@ import lombok.NonNull;
  */
 @Data // Generates getters, setters, toString, equals, and hashCode methods
 @AllArgsConstructor // Generates an all-args constructor
-public class AuthLoginResponseDTO {
+public class AuthLoginResponseDto {
 
   @NonNull
   private Long id;

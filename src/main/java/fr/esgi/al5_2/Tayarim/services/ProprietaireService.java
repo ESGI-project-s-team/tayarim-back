@@ -1,24 +1,25 @@
 package fr.esgi.al5_2.Tayarim.services;
 
-import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireUpdateDTO;
-import fr.esgi.al5_2.Tayarim.entities.Utilisateur;
-import fr.esgi.al5_2.Tayarim.exceptions.*;
-import fr.esgi.al5_2.Tayarim.mappers.LogementMapper;
-import org.mindrot.jbcrypt.BCrypt;
-import org.springframework.stereotype.Service;
-
-import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireCreationDTO;
-import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireDTO;
+import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireCreationDto;
+import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireDto;
+import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireUpdateDto;
 import fr.esgi.al5_2.Tayarim.entities.Proprietaire;
+import fr.esgi.al5_2.Tayarim.exceptions.PasswordHashNotPossibleException;
+import fr.esgi.al5_2.Tayarim.exceptions.ProprietaireEmailAlreadyExistException;
+import fr.esgi.al5_2.Tayarim.exceptions.ProprietaireInvalidUpdateBody;
+import fr.esgi.al5_2.Tayarim.exceptions.ProprietaireNotFoundException;
+import fr.esgi.al5_2.Tayarim.exceptions.ProprietaireNumTelAlreadyExistException;
 import fr.esgi.al5_2.Tayarim.mappers.ProprietaireMapper;
 import fr.esgi.al5_2.Tayarim.repositories.ProprietaireRepository;
-import lombok.NonNull;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ObjectUtils;
-
 import java.security.SecureRandom;
 import java.util.List;
 import java.util.Optional;
+import lombok.NonNull;
+import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+
 
 /**
  * Service pour la gestion des propriétaires dans le système. Fournit des méthodes pour créer,
@@ -38,24 +39,24 @@ public class ProprietaireService {
    * Crée un nouveau propriétaire dans le système. Vérifie si l'email ou le numéro de téléphone
    * existe déjà avant de procéder à la création.
    *
-   * @param proprietaireCreationDTO Les données nécessaires pour créer un propriétaire.
+   * @param proprietaireCreationDto Les données nécessaires pour créer un propriétaire.
    * @return Le DTO du propriétaire créé.
    * @throws ProprietaireEmailAlreadyExistException  si l'email existe déjà.
    * @throws ProprietaireNumTelAlreadyExistException si le numéro de téléphone existe déjà.
    */
   @Transactional
-  public ProprietaireDTO creerProprietaire(
-      @NonNull ProprietaireCreationDTO proprietaireCreationDTO) {
-    if (proprietaireRepository.findFirstByEmail(proprietaireCreationDTO.getEmail()).isPresent()) {
+  public ProprietaireDto creerProprietaire(
+      @NonNull ProprietaireCreationDto proprietaireCreationDto) {
+    if (proprietaireRepository.findFirstByEmail(proprietaireCreationDto.getEmail()).isPresent()) {
       throw new ProprietaireEmailAlreadyExistException();
     }
 
-    String numTel = proprietaireCreationDTO.getNumTel();
+    String numTel = proprietaireCreationDto.getNumTel();
     numTel = numTel.replaceAll(" ", "");
     if (proprietaireRepository.findFirstByNumTel(numTel).isPresent()) {
       throw new ProprietaireNumTelAlreadyExistException();
     }
-    proprietaireCreationDTO.setNumTel(numTel);
+    proprietaireCreationDto.setNumTel(numTel);
 
     StringBuilder generatedPassword = new StringBuilder(16);
     String allowedchar = "abcdefghijklmnopqrstuvwxyz0123456789!@#$%&*()_+-=[]?";
@@ -67,7 +68,7 @@ public class ProprietaireService {
 
     System.out.println(generatedPassword); // waiting for SMTP
 
-    Proprietaire proprietaire = ProprietaireMapper.creationDtoToEntity(proprietaireCreationDTO,
+    Proprietaire proprietaire = ProprietaireMapper.creationDtoToEntity(proprietaireCreationDto,
         hashPassword(generatedPassword.toString()));
     return ProprietaireMapper.entityToDto(proprietaireRepository.save(proprietaire), false);
   }
@@ -78,7 +79,7 @@ public class ProprietaireService {
    * @param isLogement Indique si les logements associés doivent être inclus.
    * @return Liste de DTOs des propriétaires.
    */
-  public List<ProprietaireDTO> getProprietaire(boolean isLogement) {
+  public List<ProprietaireDto> getProprietaire(boolean isLogement) {
     return ProprietaireMapper.entityListToDtoList(proprietaireRepository.findAll(), isLogement);
   }
 
@@ -91,7 +92,7 @@ public class ProprietaireService {
    * @return Le DTO du propriétaire.
    * @throws ProprietaireNotFoundException si le propriétaire n'est pas trouvé.
    */
-  public ProprietaireDTO getProprietaireById(@NonNull Long id, boolean isLogement) {
+  public ProprietaireDto getProprietaireById(@NonNull Long id, boolean isLogement) {
 
     Optional<Proprietaire> optionalProprietaire = proprietaireRepository.findById(id);
     if (optionalProprietaire.isEmpty()) {
@@ -101,13 +102,13 @@ public class ProprietaireService {
   }
 
   /**
-   * Récupère un propriétaire par son email
+   * Récupère un propriétaire par son email.
    *
    * @param email      L'email du propriétaire à récupérer.
    * @return Le DTO du propriétaire.
    * @throws ProprietaireNotFoundException si le propriétaire n'est pas trouvé.
    */
-  public ProprietaireDTO getProprietaireByEmail(@NonNull String email) {
+  public ProprietaireDto getProprietaireByEmail(@NonNull String email) {
     Optional<Proprietaire> optionalProprietaire = proprietaireRepository.findFirstByEmail(email);
     if (optionalProprietaire.isEmpty()) {
       throw new ProprietaireNotFoundException();
@@ -120,24 +121,24 @@ public class ProprietaireService {
    * Met à jour les informations d'un propriétaire existant.
    *
    * @param id                    L'identifiant du propriétaire à mettre à jour.
-   * @param proprietaireUpdateDTO Les nouvelles informations du propriétaire.
+   * @param proprietaireUpdateDto Les nouvelles informations du propriétaire.
    * @return Le DTO du propriétaire mis à jour.
    * @throws ProprietaireInvalidUpdateBody si les données de mise à jour sont invalides.
    */
   @Transactional
-  public ProprietaireDTO updateProprietaire(@NonNull Long id,
-      @NonNull ProprietaireUpdateDTO proprietaireUpdateDTO) {
+  public ProprietaireDto updateProprietaire(@NonNull Long id,
+      @NonNull ProprietaireUpdateDto proprietaireUpdateDto) {
 
     if (
-        (proprietaireUpdateDTO.getNom() == null || proprietaireUpdateDTO.getNom().isBlank())
-            && (proprietaireUpdateDTO.getPrenom() == null || proprietaireUpdateDTO.getPrenom()
+        (proprietaireUpdateDto.getNom() == null || proprietaireUpdateDto.getNom().isBlank())
+            && (proprietaireUpdateDto.getPrenom() == null || proprietaireUpdateDto.getPrenom()
             .isBlank())
-            && (proprietaireUpdateDTO.getEmail() == null || proprietaireUpdateDTO.getEmail()
+            && (proprietaireUpdateDto.getEmail() == null || proprietaireUpdateDto.getEmail()
             .isBlank())
-            && (proprietaireUpdateDTO.getNumTel() == null || proprietaireUpdateDTO.getNumTel()
+            && (proprietaireUpdateDto.getNumTel() == null || proprietaireUpdateDto.getNumTel()
             .isBlank())
-            && (proprietaireUpdateDTO.getMotDePasse() == null
-            || proprietaireUpdateDTO.getMotDePasse().isBlank())
+            && (proprietaireUpdateDto.getMotDePasse() == null
+            || proprietaireUpdateDto.getMotDePasse().isBlank())
     ) {
       throw new ProprietaireInvalidUpdateBody();
     }
@@ -147,13 +148,13 @@ public class ProprietaireService {
       throw new ProprietaireNotFoundException();
     }
 
-    if ((proprietaireUpdateDTO.getEmail() != null && !proprietaireUpdateDTO.getEmail().isBlank())
-        && proprietaireRepository.findFirstByEmail(proprietaireUpdateDTO.getEmail()).isPresent()) {
+    if ((proprietaireUpdateDto.getEmail() != null && !proprietaireUpdateDto.getEmail().isBlank())
+        && proprietaireRepository.findFirstByEmail(proprietaireUpdateDto.getEmail()).isPresent()) {
       throw new ProprietaireInvalidUpdateBody();
     }
 
-    if ((proprietaireUpdateDTO.getNumTel() != null && !proprietaireUpdateDTO.getNumTel().isBlank())
-        && proprietaireRepository.findFirstByNumTel(proprietaireUpdateDTO.getNumTel())
+    if ((proprietaireUpdateDto.getNumTel() != null && !proprietaireUpdateDto.getNumTel().isBlank())
+        && proprietaireRepository.findFirstByNumTel(proprietaireUpdateDto.getNumTel())
         .isPresent()) {
       throw new ProprietaireInvalidUpdateBody();
     }
@@ -161,23 +162,23 @@ public class ProprietaireService {
     Proprietaire proprietaire = optionalProprietaire.get();
 
     proprietaire.setNom(
-        (proprietaireUpdateDTO.getNom() != null && !proprietaireUpdateDTO.getNom().isBlank())
-            ? proprietaireUpdateDTO.getNom() : proprietaire.getNom());
+        (proprietaireUpdateDto.getNom() != null && !proprietaireUpdateDto.getNom().isBlank())
+            ? proprietaireUpdateDto.getNom() : proprietaire.getNom());
     proprietaire.setPrenom(
-        (proprietaireUpdateDTO.getPrenom() != null && !proprietaireUpdateDTO.getPrenom().isBlank())
-            ? proprietaireUpdateDTO.getPrenom() : proprietaire.getPrenom());
+        (proprietaireUpdateDto.getPrenom() != null && !proprietaireUpdateDto.getPrenom().isBlank())
+            ? proprietaireUpdateDto.getPrenom() : proprietaire.getPrenom());
     proprietaire.setEmail(
-        (proprietaireUpdateDTO.getEmail() != null && !proprietaireUpdateDTO.getEmail().isBlank())
-            ? proprietaireUpdateDTO.getEmail() : proprietaire.getEmail());
+        (proprietaireUpdateDto.getEmail() != null && !proprietaireUpdateDto.getEmail().isBlank())
+            ? proprietaireUpdateDto.getEmail() : proprietaire.getEmail());
     proprietaire.setNumTel(
-        (proprietaireUpdateDTO.getNumTel() != null && !proprietaireUpdateDTO.getNumTel().isBlank())
-            ? proprietaireUpdateDTO.getNumTel() : proprietaire.getNumTel());
+        (proprietaireUpdateDto.getNumTel() != null && !proprietaireUpdateDto.getNumTel().isBlank())
+            ? proprietaireUpdateDto.getNumTel() : proprietaire.getNumTel());
     proprietaire.setMotDePasse(
-        (proprietaireUpdateDTO.getMotDePasse() != null && !proprietaireUpdateDTO.getMotDePasse()
-            .isBlank()) ? hashPassword(proprietaireUpdateDTO.getMotDePasse())
+        (proprietaireUpdateDto.getMotDePasse() != null && !proprietaireUpdateDto.getMotDePasse()
+            .isBlank()) ? hashPassword(proprietaireUpdateDto.getMotDePasse())
             : proprietaire.getMotDePasse());
     proprietaire.setIsPasswordUpdated(
-        proprietaireUpdateDTO.getMotDePasse() != null && !proprietaireUpdateDTO.getMotDePasse()
+        proprietaireUpdateDto.getMotDePasse() != null && !proprietaireUpdateDto.getMotDePasse()
             .isBlank() || proprietaire.getIsPasswordUpdated());
 
     return ProprietaireMapper.entityToDto(proprietaireRepository.save(proprietaire), false);
@@ -191,20 +192,20 @@ public class ProprietaireService {
    * @throws ProprietaireNotFoundException si le propriétaire à supprimer n'est pas trouvé.
    */
   @Transactional
-  public ProprietaireDTO deleteProprietaire(@NonNull Long id) {
+  public ProprietaireDto deleteProprietaire(@NonNull Long id) {
 
     Optional<Proprietaire> optionalProprietaire = proprietaireRepository.findById(id);
     if (optionalProprietaire.isEmpty()) {
       throw new ProprietaireNotFoundException();
     }
 
-    ProprietaireDTO proprietaireDTO = ProprietaireMapper.entityToDto(optionalProprietaire.get(),
+    ProprietaireDto proprietaireDto = ProprietaireMapper.entityToDto(optionalProprietaire.get(),
         false);
 
     proprietaireRepository.deleteById(
         id); //voir si supprime aussi les logements dans la table logement
 
-    return proprietaireDTO;
+    return proprietaireDto;
 
   }
 

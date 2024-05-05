@@ -18,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @AllArgsConstructor // Generates an all-args constructor
 @Builder
-public class AdministrateurCreationDTO {
+public class AdministrateurCreationDto {
 
   @Valid
 

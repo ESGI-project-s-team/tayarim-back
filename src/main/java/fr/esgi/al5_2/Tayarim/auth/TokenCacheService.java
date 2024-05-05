@@ -1,10 +1,8 @@
 package fr.esgi.al5_2.Tayarim.auth;
 
-import org.springframework.stereotype.Service;
-
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import org.springframework.stereotype.Service;
 
 /**
  * Service pour gérer le cache des tokens utilisateurs.
