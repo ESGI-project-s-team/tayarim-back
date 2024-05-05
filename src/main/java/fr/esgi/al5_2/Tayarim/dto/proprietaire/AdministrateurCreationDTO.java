@@ -29,7 +29,7 @@ public class AdministrateurCreationDTO {
   private String prenom;
 
   @NotBlank(message = "error_admin_invalid_mail")
-  @Email(message = "error_adminr_invalid_mail")
+  @Email(message = "error_admin_invalid_mail")
   private String email;
 
   @NotBlank(message = "error_admin_invalid_phone")

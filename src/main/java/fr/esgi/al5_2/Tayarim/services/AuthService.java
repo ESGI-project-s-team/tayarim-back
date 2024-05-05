@@ -162,6 +162,9 @@ public class AuthService {
       try {
         administrateurDTO = administrateurService.getAdministrateurByEmail(
             jwtHelper.extractEmail(token));
+        /* if the email has been updated and that the user want to re-do an update without re-login,
+         * the token will not be valid anymore
+         */
         id = administrateurDTO.getId();
         email = administrateurDTO.getEmail();
       } catch (AdministrateurNotFoundException ex) {
@@ -170,6 +173,9 @@ public class AuthService {
     } else {
       try {
         proprietaireDTO = proprietaireService.getProprietaireByEmail(jwtHelper.extractEmail(token));
+        /* if the email has been updated and that the user want to re-do an update without re-login,
+         * the token will not be valid anymore
+         */
         id = proprietaireDTO.getId();
         email = proprietaireDTO.getEmail();
       } catch (ProprietaireNotFoundException ex) {

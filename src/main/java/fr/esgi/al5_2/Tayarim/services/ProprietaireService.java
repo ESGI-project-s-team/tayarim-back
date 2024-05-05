@@ -82,6 +82,15 @@ public class ProprietaireService {
     return ProprietaireMapper.entityListToDtoList(proprietaireRepository.findAll(), isLogement);
   }
 
+  /**
+   * Récupère un propriétaire par son identifiant, avec la possibilité d'inclure les logements
+   * associés.
+   *
+   * @param id         L'identifiant du propriétaire à récupérer.
+   * @param isLogement Indique si les logements associés doivent être inclus.
+   * @return Le DTO du propriétaire.
+   * @throws ProprietaireNotFoundException si le propriétaire n'est pas trouvé.
+   */
   public ProprietaireDTO getProprietaireById(@NonNull Long id, boolean isLogement) {
 
     Optional<Proprietaire> optionalProprietaire = proprietaireRepository.findById(id);
@@ -92,11 +101,9 @@ public class ProprietaireService {
   }
 
   /**
-   * Récupère un propriétaire par son identifiant, avec la possibilité d'inclure les logements
-   * associés.
+   * Récupère un propriétaire par son email
    *
-   * @param id         L'identifiant du propriétaire à récupérer.
-   * @param isLogement Indique si les logements associés doivent être inclus.
+   * @param email      L'email du propriétaire à récupérer.
    * @return Le DTO du propriétaire.
    * @throws ProprietaireNotFoundException si le propriétaire n'est pas trouvé.
    */

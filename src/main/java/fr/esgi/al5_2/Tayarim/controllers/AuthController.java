@@ -134,6 +134,30 @@ public class AuthController {
   }
 
   /**
+   * Gère les exceptions lorsque le proprietaire n'est pas trouvé.
+   *
+   * @param ex L'exception capturée.
+   * @return Une carte des erreurs.
+   */
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  @ExceptionHandler({ProprietaireNotFoundException.class})
+  public Map<String, List<String>> proprietaireNotFoundException(ProprietaireNotFoundException ex) {
+    return mapException(ex);
+  }
+
+  /**
+   * Gère les exceptions lorsque l'administrateur n'est pas trouvé.
+   *
+   * @param ex L'exception capturée.
+   * @return Une carte des erreurs.
+   */
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  @ExceptionHandler({AdministrateurNotFoundException.class})
+  public Map<String, List<String>> administrateurNotFoundException(AdministrateurNotFoundException ex) {
+    return mapException(ex);
+  }
+
+  /**
    * Gère les exceptions lorsque le token est expiré ou invalide.
    *
    * @param ex L'exception capturée.

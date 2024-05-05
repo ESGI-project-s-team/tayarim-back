@@ -10,6 +10,7 @@ import fr.esgi.al5_2.Tayarim.exceptions.*;
 import fr.esgi.al5_2.Tayarim.services.AuthService;
 import fr.esgi.al5_2.Tayarim.services.ProprietaireService;
 import jakarta.validation.constraints.NotNull;
+import java.util.Map.Entry;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.ObjectUtils;
@@ -112,7 +113,10 @@ public class ProprietaireController {
   public ResponseEntity<ProprietaireDTO> updateProprietaire(
       @RequestHeader("Authorization") String authHeader, @PathVariable Long id,
       @RequestBody ProprietaireUpdateDTO proprietaireUpdateDTO) {
-    authService.verifyToken(getTokenFromHeader(authHeader), true);
+    Entry<Long, Boolean> tokenInfo = authService.verifyToken(getTokenFromHeader(authHeader), false);
+    if(!tokenInfo.getKey().equals(id) && !tokenInfo.getValue()){
+      throw new UnauthorizedException();
+    }
 
     return new ResponseEntity<>(
         proprietaireService.updateProprietaire(id, proprietaireUpdateDTO),
