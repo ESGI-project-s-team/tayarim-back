@@ -1,12 +1,10 @@
 package fr.esgi.al5_2.Tayarim.repositories;
 
 import fr.esgi.al5_2.Tayarim.entities.Administrateur;
-import fr.esgi.al5_2.Tayarim.entities.Proprietaire;
+import java.util.Optional;
 import lombok.NonNull;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
-import java.util.Optional;
 
 /**
  * Interface de repository pour les opérations de base de données sur les entités Administrateur.
@@ -19,8 +17,7 @@ public interface AdministrateurRepository extends JpaRepository<Administrateur, 
    * Recherche le premier administrateur correspondant à l'adresse email spécifiée.
    *
    * @param email L'adresse email utilisée pour la recherche.
-   * @return Un Optional contenant l'administrateur trouvé ou un Optional vide si aucun
-   * administrateur n'est trouvé.
+   * @return Un Optional contenant l'administrateur trouvé ou un Optional vide
    */
   Optional<Administrateur> findFirstByEmail(@NonNull String email);
 
@@ -28,8 +25,7 @@ public interface AdministrateurRepository extends JpaRepository<Administrateur, 
    * Recherche le premier administrateur correspondant au numéro de téléphone spécifié.
    *
    * @param numTel Le numéro de téléphone utilisé pour la recherche.
-   * @return Un Optional contenant l'administrateur trouvé ou un Optional vide si aucun
-   * administrateur n'est trouvé.
+   * @return Un Optional contenant l'administrateur trouvé ou un Optional vide
    */
   Optional<Administrateur> findFirstByNumTel(@NonNull String numTel);
 }

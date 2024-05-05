@@ -1,15 +1,18 @@
 package fr.esgi.al5_2.Tayarim.auth;
 
-import fr.esgi.al5_2.Tayarim.exceptions.TokenExpireOrInvalidException;
-import org.springframework.stereotype.Component;
-import org.springframework.web.filter.OncePerRequestFilter;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
 
+/**
+ * Classe intervenant à la reception de la requête afin d'y appliquer une verification de la
+ * présence du header "Authorization".
+ */
 @Component
 public class AuthTokenFilter extends OncePerRequestFilter {
 

@@ -2,22 +2,22 @@ package fr.esgi.al5_2.Tayarim.services;
 
 import fr.esgi.al5_2.Tayarim.auth.JwtHelper;
 import fr.esgi.al5_2.Tayarim.auth.TokenCacheService;
-import fr.esgi.al5_2.Tayarim.dto.auth.AuthLoginResponseDTO;
-import fr.esgi.al5_2.Tayarim.dto.auth.AuthResponseDTO;
-import fr.esgi.al5_2.Tayarim.dto.proprietaire.AdministrateurDTO;
-import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireDTO;
+import fr.esgi.al5_2.Tayarim.dto.auth.AuthLoginResponseDto;
+import fr.esgi.al5_2.Tayarim.dto.auth.AuthResponseDto;
+import fr.esgi.al5_2.Tayarim.dto.proprietaire.AdministrateurDto;
+import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireDto;
 import fr.esgi.al5_2.Tayarim.exceptions.AdministrateurNotFoundException;
 import fr.esgi.al5_2.Tayarim.exceptions.ProprietaireNotFoundException;
 import fr.esgi.al5_2.Tayarim.exceptions.TokenExpireOrInvalidException;
 import fr.esgi.al5_2.Tayarim.exceptions.UtilisateurNotFoundException;
+import java.util.AbstractMap;
+import java.util.Map.Entry;
+import java.util.UUID;
 import lombok.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.AbstractMap;
-import java.util.Map.Entry;
-import java.util.UUID;
 
 /**
  * Classe de service gérant l'authentification des utilisateurs.
@@ -54,7 +54,7 @@ public class AuthService {
    *
    * @param email    L'email de l'utilisateur.
    * @param password Le mot de passe de l'utilisateur.
-   * @return {@link AuthLoginResponseDTO}
+   * @return {@link AuthLoginResponseDto}
    * @throws UtilisateurNotFoundException    Si aucun utilisateur n'est trouvé avec cet email.
    * @throws ProprietaireNotFoundException   Si le propriétaire est trouvé mais le mot de passe est
    *                                         incorrect.
@@ -62,27 +62,27 @@ public class AuthService {
    *                                         incorrect.
    */
   @Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
-  public AuthLoginResponseDTO login(@NonNull String email, @NonNull String password) {
-    ProprietaireDTO proprietaireDTO = null;
-    AdministrateurDTO administrateurDTO = null;
+  public AuthLoginResponseDto login(@NonNull String email, @NonNull String password) {
+    ProprietaireDto proprietaireDto = null;
+    AdministrateurDto administrateurDto = null;
     Long id;
     boolean isAdmin = false;
     String nom;
     String prenom;
     String numTel;
     try {
-      proprietaireDTO = proprietaireService.getProprietaireByEmail(email);
-      id = proprietaireDTO.getId();
-      nom = proprietaireDTO.getNom();
-      prenom = proprietaireDTO.getPrenom();
-      numTel = proprietaireDTO.getNumTel();
+      proprietaireDto = proprietaireService.getProprietaireByEmail(email);
+      id = proprietaireDto.getId();
+      nom = proprietaireDto.getNom();
+      prenom = proprietaireDto.getPrenom();
+      numTel = proprietaireDto.getNumTel();
     } catch (Exception e) {
       try {
-        administrateurDTO = administrateurService.getAdministrateurByEmail(email);
-        id = administrateurDTO.getId();
-        nom = administrateurDTO.getNom();
-        prenom = administrateurDTO.getPrenom();
-        numTel = administrateurDTO.getNumTel();
+        administrateurDto = administrateurService.getAdministrateurByEmail(email);
+        id = administrateurDto.getId();
+        nom = administrateurDto.getNom();
+        prenom = administrateurDto.getPrenom();
+        numTel = administrateurDto.getNumTel();
         isAdmin = true;
       } catch (Exception exception) {
         throw new UtilisateurNotFoundException();
@@ -90,11 +90,11 @@ public class AuthService {
 
     }
 
-    if (proprietaireDTO != null && !proprietaireService.verifyPassword(password,
-        proprietaireDTO.getId())) {
+    if (proprietaireDto != null && !proprietaireService.verifyPassword(password,
+        proprietaireDto.getId())) {
       throw new ProprietaireNotFoundException();
-    } else if (administrateurDTO != null && !administrateurService.verifyPassword(password,
-        administrateurDTO.getId())) {
+    } else if (administrateurDto != null && !administrateurService.verifyPassword(password,
+        administrateurDto.getId())) {
       throw new AdministrateurNotFoundException();
     }
 
@@ -106,21 +106,21 @@ public class AuthService {
 
     String token = jwtHelper.generateToken(email, uuid, isAdmin);
 
-    return new AuthLoginResponseDTO(id, token, isAdmin, nom, prenom, email, numTel);
+    return new AuthLoginResponseDto(id, token, isAdmin, nom, prenom, email, numTel);
   }
 
   /**
    * Authentifie un utilisateur à partir d'un token.
    *
    * @param token Le token JWT fourni à l'utilisateur après une connexion réussie.
-   * @return {@link AuthResponseDTO}
+   * @return {@link AuthResponseDto}
    * @throws TokenExpireOrInvalidException Si le token est expiré ou invalide.
    */
-  public AuthResponseDTO auth(@NonNull String token) {
+  public AuthResponseDto auth(@NonNull String token) {
 
     Entry<Long, Boolean> entry = verifyToken(token, false);
 
-    return new AuthResponseDTO(entry.getKey(), token, entry.getValue());
+    return new AuthResponseDto(entry.getKey(), token, entry.getValue());
 
   }
 
@@ -155,8 +155,8 @@ public class AuthService {
     }
     String email;
     Long id;
-    AdministrateurDTO administrateurDto;
-    ProprietaireDTO proprietaireDto;
+    AdministrateurDto administrateurDto;
+    ProprietaireDto proprietaireDto;
     if (isAdmin) {
       try {
         administrateurDto = administrateurService.getAdministrateurByEmail(

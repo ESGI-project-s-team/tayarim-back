@@ -1,15 +1,11 @@
 package fr.esgi.al5_2.Tayarim.mappers;
 
+import fr.esgi.al5_2.Tayarim.dto.logement.LogementDto;
+import fr.esgi.al5_2.Tayarim.entities.Logement;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.springframework.stereotype.Component;
-
-import fr.esgi.al5_2.Tayarim.dto.logement.LogementDTO;
-import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireDTO;
-import fr.esgi.al5_2.Tayarim.entities.Logement;
-import fr.esgi.al5_2.Tayarim.entities.Proprietaire;
 import lombok.NonNull;
+import org.springframework.stereotype.Component;
 
 /**
  * Classe pour mapper les entités Logement en DTOs Logement et vice versa.
@@ -23,8 +19,8 @@ public class LogementMapper {
    * @param logement L'entité logement à convertir.
    * @return Le DTO Logement correspondant.
    */
-  public static LogementDTO entityToDto(@NonNull Logement logement) {
-    return new LogementDTO(
+  public static LogementDto entityToDto(@NonNull Logement logement) {
+    return new LogementDto(
         logement.getId(),
         logement.getProprietaire().getId());
   }
@@ -35,8 +31,8 @@ public class LogementMapper {
    * @param logements La liste des logements à convertir.
    * @return Une liste de DTOs Logement.
    */
-  public static List<LogementDTO> entityListToDtoList(@NonNull List<Logement> logements) {
-    ArrayList<LogementDTO> logementDtos = new ArrayList<>();
+  public static List<LogementDto> entityListToDtoList(@NonNull List<Logement> logements) {
+    ArrayList<LogementDto> logementDtos = new ArrayList<>();
     for (Logement logement : logements) {
       logementDtos.add(entityToDto(logement));
     }

@@ -1,25 +1,38 @@
 package fr.esgi.al5_2.Tayarim.controllers;
 
+import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireCreationDto;
+import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireDto;
+import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireUpdateDto;
+import fr.esgi.al5_2.Tayarim.exceptions.PasswordHashNotPossibleException;
+import fr.esgi.al5_2.Tayarim.exceptions.ProprietaireEmailAlreadyExistException;
+import fr.esgi.al5_2.Tayarim.exceptions.ProprietaireInvalidUpdateBody;
+import fr.esgi.al5_2.Tayarim.exceptions.ProprietaireNotFoundException;
+import fr.esgi.al5_2.Tayarim.exceptions.ProprietaireNumTelAlreadyExistException;
+import fr.esgi.al5_2.Tayarim.exceptions.TokenExpireOrInvalidException;
+import fr.esgi.al5_2.Tayarim.exceptions.UnauthorizedException;
+import fr.esgi.al5_2.Tayarim.services.AuthService;
+import fr.esgi.al5_2.Tayarim.services.ProprietaireService;
+import jakarta.validation.Valid;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireUpdateDTO;
-import fr.esgi.al5_2.Tayarim.exceptions.*;
-import fr.esgi.al5_2.Tayarim.services.AuthService;
-import fr.esgi.al5_2.Tayarim.services.ProprietaireService;
-import jakarta.validation.constraints.NotNull;
 import java.util.Map.Entry;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.*;
-
-import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireCreationDTO;
-import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireDTO;
-import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Contrôleur pour la gestion des propriétaires.
@@ -46,16 +59,16 @@ public class ProprietaireController {
    * Crée un nouveau propriétaire.
    *
    * @param authHeader              L'en-tête d'autorisation contenant le token JWT.
-   * @param proprietaireCreationDTO Les données pour la création d'un propriétaire.
+   * @param proprietaireCreationDto Les données pour la création d'un propriétaire.
    * @return Une ResponseEntity contenant le propriétaire créé et le statut HTTP.
    */
   @PostMapping("")
-  public ResponseEntity<ProprietaireDTO> creerProprietaire(
+  public ResponseEntity<ProprietaireDto> creerProprietaire(
       @RequestHeader("Authorization") String authHeader,
-      @Valid @RequestBody ProprietaireCreationDTO proprietaireCreationDTO) {
+      @Valid @RequestBody ProprietaireCreationDto proprietaireCreationDto) {
     authService.verifyToken(getTokenFromHeader(authHeader), true);
     return new ResponseEntity<>(
-        proprietaireService.creerProprietaire(proprietaireCreationDTO),
+        proprietaireService.creerProprietaire(proprietaireCreationDto),
         HttpStatus.CREATED);
   }
 
@@ -68,7 +81,7 @@ public class ProprietaireController {
    * @return Une ResponseEntity contenant la liste des propriétaires et le statut HTTP.
    */
   @GetMapping("")
-  public ResponseEntity<List<ProprietaireDTO>> getProprietaire(
+  public ResponseEntity<List<ProprietaireDto>> getProprietaire(
       @RequestHeader("Authorization") String authHeader,
       @RequestParam(name = "logement", defaultValue = "false") Boolean isLogement) {
     authService.verifyToken(getTokenFromHeader(authHeader), true);
@@ -89,7 +102,7 @@ public class ProprietaireController {
    * @return Une ResponseEntity contenant les détails du propriétaire et le statut HTTP.
    */
   @GetMapping("/{id}")
-  public ResponseEntity<ProprietaireDTO> getProprietaire(
+  public ResponseEntity<ProprietaireDto> getProprietaire(
       @RequestHeader("Authorization") String authHeader, @PathVariable Long id,
       @RequestParam(name = "logement", defaultValue = "false") Boolean isLogement) {
 
@@ -106,20 +119,20 @@ public class ProprietaireController {
    *
    * @param authHeader            L'en-tête d'autorisation contenant le token JWT.
    * @param id                    L'identifiant du propriétaire à mettre à jour.
-   * @param proprietaireUpdateDTO Les données de mise à jour du propriétaire.
+   * @param proprietaireUpdateDto Les données de mise à jour du propriétaire.
    * @return Une ResponseEntity contenant le propriétaire mis à jour et le statut HTTP.
    */
   @PutMapping("/{id}")
-  public ResponseEntity<ProprietaireDTO> updateProprietaire(
+  public ResponseEntity<ProprietaireDto> updateProprietaire(
       @RequestHeader("Authorization") String authHeader, @PathVariable Long id,
-      @RequestBody ProprietaireUpdateDTO proprietaireUpdateDTO) {
+      @RequestBody ProprietaireUpdateDto proprietaireUpdateDto) {
     Entry<Long, Boolean> tokenInfo = authService.verifyToken(getTokenFromHeader(authHeader), false);
-    if(!tokenInfo.getKey().equals(id) && !tokenInfo.getValue()){
+    if (!tokenInfo.getKey().equals(id) && !tokenInfo.getValue()) {
       throw new UnauthorizedException();
     }
 
     return new ResponseEntity<>(
-        proprietaireService.updateProprietaire(id, proprietaireUpdateDTO),
+        proprietaireService.updateProprietaire(id, proprietaireUpdateDto),
         HttpStatus.OK
     );
   }
@@ -132,7 +145,7 @@ public class ProprietaireController {
    * @return Une ResponseEntity avec le statut HTTP indiquant le succès de l'opération.
    */
   @DeleteMapping("/{id}")
-  public ResponseEntity<ProprietaireDTO> deleteProprietaire(
+  public ResponseEntity<ProprietaireDto> deleteProprietaire(
       @RequestHeader("Authorization") String authHeader, @PathVariable Long id) {
     authService.verifyToken(getTokenFromHeader(authHeader), true);
 

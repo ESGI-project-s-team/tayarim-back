@@ -9,11 +9,10 @@ import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import java.time.Instant;
 import java.util.Date;
-
+import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.crypto.SecretKey;
 
 /**
  * Composant utilitaire pour la gestion des JWT (JSON Web Tokens).
@@ -117,13 +116,13 @@ public class JwtHelper {
    */
   public Boolean validateToken(String token, String email, String uuid) {
     String extractedEmail = extractEmail(token);
-    String extractedUUID = extractUuid(token);
+    String extractedUuid = extractUuid(token);
 
-    return extractedEmail != null &&
-        extractedUUID != null &&
-        extractedEmail.equals(email) &&
-        extractedUUID.equals(uuid) &&
-        !isTokenExpired(token);
+    return extractedEmail != null
+        && extractedUuid != null
+        && extractedEmail.equals(email)
+        && extractedUuid.equals(uuid)
+        && !isTokenExpired(token);
   }
 
   private Claims getTokenBody(String token) {

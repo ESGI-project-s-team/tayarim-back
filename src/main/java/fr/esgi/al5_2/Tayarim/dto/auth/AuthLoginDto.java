@@ -13,7 +13,7 @@ import lombok.Data;
  */
 @Data
 @AllArgsConstructor
-public class AuthLoginDTO {
+public class AuthLoginDto {
 
   @Valid
 

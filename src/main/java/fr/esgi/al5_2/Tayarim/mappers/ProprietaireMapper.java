@@ -1,15 +1,15 @@
 package fr.esgi.al5_2.Tayarim.mappers;
 
+import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireCreationDto;
+import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireDto;
+import fr.esgi.al5_2.Tayarim.entities.Proprietaire;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
-
+import lombok.NonNull;
 import org.springframework.stereotype.Component;
 
-import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireCreationDTO;
-import fr.esgi.al5_2.Tayarim.dto.proprietaire.ProprietaireDTO;
-import fr.esgi.al5_2.Tayarim.entities.Proprietaire;
-import lombok.NonNull;
+
 
 /**
  * Classe de mapping pour convertir entre les DTOs Proprietaire et les entités Proprietaire.
@@ -20,17 +20,17 @@ public class ProprietaireMapper {
   /**
    * Convertit un DTO de création de propriétaire en une entité Proprietaire.
    *
-   * @param proprietaireCreationDTO Le DTO pour la création d'un propriétaire.
+   * @param proprietaireCreationDto Le DTO pour la création d'un propriétaire.
    * @param hashedPassword          Le mot de passe hashé pour le nouveau propriétaire.
    * @return Une entité Proprietaire nouvellement créée.
    */
   public static Proprietaire creationDtoToEntity(
-      @NonNull ProprietaireCreationDTO proprietaireCreationDTO, String hashedPassword) {
+      @NonNull ProprietaireCreationDto proprietaireCreationDto, String hashedPassword) {
     return Proprietaire.builder()
-        .nom(proprietaireCreationDTO.getNom())
-        .prenom(proprietaireCreationDTO.getPrenom())
-        .email(proprietaireCreationDTO.getEmail())
-        .numTel(proprietaireCreationDTO.getNumTel())
+        .nom(proprietaireCreationDto.getNom())
+        .prenom(proprietaireCreationDto.getPrenom())
+        .email(proprietaireCreationDto.getEmail())
+        .numTel(proprietaireCreationDto.getNumTel())
         .motDePasse(hashedPassword)
         .dateInscription(LocalDateTime.now())
         .isPasswordUpdated(false)
@@ -45,10 +45,10 @@ public class ProprietaireMapper {
    * @param isLogement   Indique si les logements associés doivent être inclus dans le DTO.
    * @return Le DTO Proprietaire.
    */
-  public static ProprietaireDTO entityToDto(@NonNull Proprietaire proprietaire,
+  public static ProprietaireDto entityToDto(@NonNull Proprietaire proprietaire,
       boolean isLogement) {
 
-    return ProprietaireDTO.builder()
+    return ProprietaireDto.builder()
         .id(proprietaire.getId())
         .nom(proprietaire.getNom())
         .prenom(proprietaire.getPrenom())
@@ -67,7 +67,7 @@ public class ProprietaireMapper {
    * @param isLogement       Indique si les logements associés doivent être inclus dans les DTOs.
    * @return Une liste de DTOs Proprietaire.
    */
-  public static List<ProprietaireDTO> entityListToDtoList(
+  public static List<ProprietaireDto> entityListToDtoList(
       @NonNull List<Proprietaire> proprietaireList, boolean isLogement) {
     return proprietaireList.stream()
         .map(proprietaire -> ProprietaireMapper.entityToDto(proprietaire, isLogement))

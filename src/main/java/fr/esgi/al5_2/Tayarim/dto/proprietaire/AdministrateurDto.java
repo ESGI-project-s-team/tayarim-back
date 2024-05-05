@@ -1,13 +1,9 @@
 package fr.esgi.al5_2.Tayarim.dto.proprietaire;
 
-import fr.esgi.al5_2.Tayarim.dto.logement.LogementDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NonNull;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 /**
  * Objet de Transfert de Données (DTO) pour les administrateurs du système. Ce DTO encapsule les
@@ -16,7 +12,7 @@ import java.util.List;
 @Data // Generates getters, setters, toString, equals, and hashCode methods
 @AllArgsConstructor // Generates an all-args constructor
 @Builder
-public class AdministrateurDTO {
+public class AdministrateurDto {
 
   @NonNull
   private Long id;
