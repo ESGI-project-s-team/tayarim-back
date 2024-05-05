@@ -62,7 +62,7 @@ public class ProprietaireControllerTest {
   private ProprietaireDto proprietaireDto2;
   private ProprietaireDto proprietaireDtoWithLogement;
   private ProprietaireUpdateDto proprietaireUpdateDto;
-  private String token;
+  private String token = "";
 
   /**
    * methode exécuter avant chaque test.
@@ -131,7 +131,7 @@ public class ProprietaireControllerTest {
         new AbstractMap.SimpleEntry<>(proprietaireDto.getId(), true)); //skip token verif
 
     ResultActions response = mockMvc.perform(post("/proprietaires")
-        .header(token)
+        .header("Authorization", token)
         .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(proprietaireCreationDto)));
 
@@ -156,7 +156,7 @@ public class ProprietaireControllerTest {
         new AbstractMap.SimpleEntry<>(proprietaireDto.getId(), true)); //skip token verif
 
     ResultActions response = mockMvc.perform(post("/proprietaires")
-        .header(token)
+        .header("Authorization", token)
         .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(proprietaireCreationDto)));
 
@@ -176,7 +176,7 @@ public class ProprietaireControllerTest {
         new AbstractMap.SimpleEntry<>(proprietaireDto.getId(), true)); //skip token verif
 
     ResultActions response = mockMvc.perform(post("/proprietaires")
-        .header(token)
+        .header("Authorization", token)
         .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(proprietaireCreationDto)));
 
@@ -196,7 +196,7 @@ public class ProprietaireControllerTest {
         new AbstractMap.SimpleEntry<>(proprietaireDto.getId(), true)); //skip token verif
 
     ResultActions response = mockMvc.perform(post("/proprietaires")
-        .header(token)
+        .header("Authorization", token)
         .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(proprietaireCreationDto)));
 
@@ -216,7 +216,7 @@ public class ProprietaireControllerTest {
         new AbstractMap.SimpleEntry<>(proprietaireDto.getId(), true)); //skip token verif
 
     ResultActions response = mockMvc.perform(post("/proprietaires")
-        .header(token)
+        .header("Authorization", token)
         .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(proprietaireCreationDto)));
 
@@ -236,7 +236,7 @@ public class ProprietaireControllerTest {
         new AbstractMap.SimpleEntry<>(proprietaireDto.getId(), true)); //skip token verif
 
     ResultActions response = mockMvc.perform(post("/proprietaires")
-        .header(token)
+        .header("Authorization", token)
         .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(proprietaireCreationDto)));
 
@@ -257,7 +257,7 @@ public class ProprietaireControllerTest {
         new AbstractMap.SimpleEntry<>(proprietaireDto.getId(), true)); //skip token verif
 
     ResultActions response = mockMvc.perform(post("/proprietaires")
-        .header(token)
+        .header("Authorization", token)
         .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(proprietaireCreationDto)));
 
@@ -276,7 +276,7 @@ public class ProprietaireControllerTest {
         new AbstractMap.SimpleEntry<>(proprietaireDto.getId(), true)); //skip token verif
 
     ResultActions response = mockMvc.perform(get("/proprietaires")
-        .header(token)
+        .header("Authorization", token)
         .contentType(MediaType.APPLICATION_JSON));
 
     response.andExpect(MockMvcResultMatchers.status().isOk())
@@ -311,7 +311,7 @@ public class ProprietaireControllerTest {
         new AbstractMap.SimpleEntry<>(proprietaireDto.getId(), true)); //skip token verif
 
     ResultActions response = mockMvc.perform(get("/proprietaires/1")
-        .header(token)
+        .header("Authorization", token)
         .contentType(MediaType.APPLICATION_JSON));
 
     response.andExpect(MockMvcResultMatchers.status().isOk())
@@ -337,7 +337,7 @@ public class ProprietaireControllerTest {
         new AbstractMap.SimpleEntry<>(proprietaireDto.getId(), true)); //skip token verif
 
     ResultActions response = mockMvc.perform(put("/proprietaires/1")
-        .header(token)
+        .header("Authorization", token)
         .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(proprietaireUpdateDto)));
 
@@ -363,7 +363,7 @@ public class ProprietaireControllerTest {
         new AbstractMap.SimpleEntry<>(proprietaireDto.getId(), true)); //skip token verif
 
     ResultActions response = mockMvc.perform(delete("/proprietaires/1")
-        .header(token)
+        .header("Authorization", token)
         .contentType(MediaType.APPLICATION_JSON));
 
     response.andExpect(MockMvcResultMatchers.status().isOk())
