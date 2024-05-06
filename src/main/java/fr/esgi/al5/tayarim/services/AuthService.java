@@ -106,7 +106,7 @@ public class AuthService {
       tokenCacheService.addToCache(id, uuid);
     }
 
-    String token = jwtHelper.generateToken(email, uuid, isAdmin);
+    String token = jwtHelper.generateToken(id, uuid, isAdmin);
 
     return new AuthLoginResponseDto(id, token, isAdmin, nom, prenom, email, numTel);
   }
@@ -155,30 +155,27 @@ public class AuthService {
     if (shouldBeAdmin && !isAdmin) {
       throw new TokenExpireOrInvalidException();
     }
-    String email;
     Long id;
     AdministrateurDto administrateurDto;
     ProprietaireDto proprietaireDto;
     if (isAdmin) {
       try {
-        administrateurDto = administrateurService.getAdministrateurByEmail(
-            jwtHelper.extractEmail(token));
+        administrateurDto = administrateurService.getAdministrateurById(
+            jwtHelper.extractId(token));
         /* if the email has been updated and that the user want to re-do an update without re-login,
          * the token will not be valid anymore
          */
         id = administrateurDto.getId();
-        email = administrateurDto.getEmail();
       } catch (AdministrateurNotFoundException ex) {
         throw new TokenExpireOrInvalidException();
       }
     } else {
       try {
-        proprietaireDto = proprietaireService.getProprietaireByEmail(jwtHelper.extractEmail(token));
+        proprietaireDto = proprietaireService.getProprietaireById(jwtHelper.extractId(token), false);
         /* if the email has been updated and that the user want to re-do an update without re-login,
          * the token will not be valid anymore
          */
         id = proprietaireDto.getId();
-        email = proprietaireDto.getEmail();
       } catch (ProprietaireNotFoundException ex) {
         throw new TokenExpireOrInvalidException();
       }
@@ -189,7 +186,7 @@ public class AuthService {
       throw new TokenExpireOrInvalidException();
     }
 
-    if (!jwtHelper.validateToken(token, email, uuid)) {
+    if (!jwtHelper.validateToken(token, id, uuid)) {
       throw new TokenExpireOrInvalidException();
     }
     return new AbstractMap.SimpleEntry<>(id, isAdmin);

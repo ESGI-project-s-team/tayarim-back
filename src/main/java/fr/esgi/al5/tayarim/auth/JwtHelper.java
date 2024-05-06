@@ -26,13 +26,13 @@ public class JwtHelper {
   /**
    * Génère un token JWT pour un utilisateur.
    *
-   * @param email   L'email de l'utilisateur.
+   * @param id      L'id de l'utilisateur.
    * @param uuid    L'UUID associé à l'utilisateur.
    * @param isAdmin Booléen indiquant si l'utilisateur est un administrateur.
    * @return Le token JWT généré.
    */
-  public String generateToken(String email, String uuid, boolean isAdmin) {
-    String subject = email.concat(";").concat(uuid).concat(";").concat(Boolean.toString(isAdmin));
+  public String generateToken(Long id, String uuid, boolean isAdmin) {
+    String subject = id.toString().concat(";").concat(uuid).concat(";").concat(Boolean.toString(isAdmin));
     var now = Instant.now();
     return Jwts.builder()
         .subject(subject)
@@ -63,18 +63,30 @@ public class JwtHelper {
   }
 
   /**
-   * Extrait l'email de l'utilisateur à partir d'un token JWT.
+   * Extrait l'id de l'utilisateur à partir d'un token JWT.
    *
    * @param token Le token JWT.
-   * @return L'email extrait du token.
+   * @return L'id extrait du token.
    * @throws TokenExpireOrInvalidException Si le token est expiré ou invalide.
    */
-  public String extractEmail(String token) {
+  public Long extractId(String token) {
     if (extractSubject(token).split(";")[0] == null) {
       throw new TokenExpireOrInvalidException();
     }
 
-    return extractSubject(token).split(";")[0];
+    long id = -1L;
+
+    try{
+      id = Long.parseLong(extractSubject(token).split(";")[0]);
+    } catch (Exception e){
+      throw new TokenExpireOrInvalidException();
+    }
+
+    if (id == -1L){
+      throw new TokenExpireOrInvalidException();
+    }
+
+    return id;
   }
 
   /**
@@ -108,19 +120,19 @@ public class JwtHelper {
   }
 
   /**
-   * Valide un token JWT en vérifiant l'email et l'UUID.
+   * Valide un token JWT en vérifiant l'id' et l'UUID.
    *
    * @param token Le token JWT à valider.
-   * @param email L'email à vérifier.
+   * @param id    L'id à vérifier.
    * @return Booléen indiquant si le token est valide.
    */
-  public Boolean validateToken(String token, String email, String uuid) {
-    String extractedEmail = extractEmail(token);
+  public Boolean validateToken(String token, Long id, String uuid) {
+    Long extractedId = extractId(token);
     String extractedUuid = extractUuid(token);
 
-    return extractedEmail != null
+    return extractedId != null
         && extractedUuid != null
-        && extractedEmail.equals(email)
+        && extractedId.equals(id)
         && extractedUuid.equals(uuid)
         && !isTokenExpired(token);
   }
