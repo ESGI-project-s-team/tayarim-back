@@ -159,10 +159,6 @@ public class ProprietaireService {
       throw new ProprietaireInvalidUpdateBody();
     }
 
-    if(proprietaireUpdateDto.getEmail() != null){
-
-    }
-
     Proprietaire proprietaire = optionalProprietaire.get();
 
     proprietaire.setNom(
