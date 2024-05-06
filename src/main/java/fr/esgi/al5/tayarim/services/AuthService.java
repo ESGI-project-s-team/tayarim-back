@@ -1,7 +1,6 @@
 package fr.esgi.al5.tayarim.services;
 
 
-
 import fr.esgi.al5.tayarim.auth.JwtHelper;
 import fr.esgi.al5.tayarim.auth.TokenCacheService;
 import fr.esgi.al5.tayarim.dto.auth.AuthLoginResponseDto;
@@ -171,7 +170,8 @@ public class AuthService {
       }
     } else {
       try {
-        proprietaireDto = proprietaireService.getProprietaireById(jwtHelper.extractId(token), false);
+        proprietaireDto = proprietaireService.getProprietaireById(jwtHelper.extractId(token),
+            false);
         /* if the email has been updated and that the user want to re-do an update without re-login,
          * the token will not be valid anymore
          */

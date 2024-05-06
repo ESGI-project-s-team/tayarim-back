@@ -32,7 +32,8 @@ public class JwtHelper {
    * @return Le token JWT généré.
    */
   public String generateToken(Long id, String uuid, boolean isAdmin) {
-    String subject = id.toString().concat(";").concat(uuid).concat(";").concat(Boolean.toString(isAdmin));
+    String subject = id.toString().concat(";").concat(uuid).concat(";")
+        .concat(Boolean.toString(isAdmin));
     var now = Instant.now();
     return Jwts.builder()
         .subject(subject)
@@ -76,13 +77,13 @@ public class JwtHelper {
 
     long id = -1L;
 
-    try{
+    try {
       id = Long.parseLong(extractSubject(token).split(";")[0]);
-    } catch (Exception e){
+    } catch (Exception e) {
       throw new TokenExpireOrInvalidException();
     }
 
-    if (id == -1L){
+    if (id == -1L) {
       throw new TokenExpireOrInvalidException();
     }
 
