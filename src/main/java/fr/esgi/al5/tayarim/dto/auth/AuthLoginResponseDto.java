@@ -3,7 +3,6 @@ package fr.esgi.al5.tayarim.dto.auth;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 
 /**
  * Objet de transfert de données (DTO) pour la réponse après une tentative de connexion réussie. Ce
@@ -18,9 +17,6 @@ public class AuthLoginResponseDto {
 
   @NonNull
   private Long id;
-
-  @NonNull
-  private String token;
 
   @NonNull
   private Boolean admin;
@@ -40,5 +36,10 @@ public class AuthLoginResponseDto {
   @NonNull
   private Boolean isPasswordUpdated;
 
+  @NonNull
+  private String access_token;
+
+  @NonNull
+  private String refresh_token;
   // No need for explicit getters, setters, or constructors
 }

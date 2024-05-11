@@ -4,10 +4,10 @@ package fr.esgi.al5.tayarim.services;
 import fr.esgi.al5.tayarim.auth.JwtHelper;
 import fr.esgi.al5.tayarim.auth.TokenCacheService;
 import fr.esgi.al5.tayarim.dto.auth.AuthLoginResponseDto;
+import fr.esgi.al5.tayarim.dto.auth.AuthRefreshResponseDto;
 import fr.esgi.al5.tayarim.dto.auth.AuthResponseDto;
 import fr.esgi.al5.tayarim.dto.proprietaire.AdministrateurDto;
 import fr.esgi.al5.tayarim.dto.proprietaire.ProprietaireDto;
-import fr.esgi.al5.tayarim.entities.Utilisateur;
 import fr.esgi.al5.tayarim.exceptions.AdministrateurNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.TokenExpireOrInvalidException;
@@ -109,10 +109,11 @@ public class AuthService {
       tokenCacheService.addToCache(id, uuid);
     }
 
-    String token = jwtHelper.generateToken(id, uuid, isAdmin);
+    String accessToken = jwtHelper.generateToken(id, uuid, isAdmin, false);
+    String refreshToken = jwtHelper.generateToken(id, uuid, isAdmin, true);
 
-    return new AuthLoginResponseDto(id, token, isAdmin, nom, prenom, email, numTel,
-        isPasswordUpdated);
+
+    return new AuthLoginResponseDto(id, isAdmin, nom, prenom, email, numTel, isPasswordUpdated, accessToken, refreshToken);
   }
 
   /**
@@ -138,7 +139,25 @@ public class AuthService {
   }
 
   /**
-   * Déconnecte un utilisateur en invalidant le token actuel et en générant un nouveau.
+   * Actualise le token de l'utilisateur à partir de son token et dur efresh token.
+   *
+   * @param refreshToken Le refreshToken JWT de l'utilisateur
+   * @return {@link AuthResponseDto}
+   * @throws TokenExpireOrInvalidException Si le token est expiré ou invalide.
+   */
+  public AuthRefreshResponseDto refresh(@NonNull String refreshToken) {
+
+    Entry<Long, Boolean> entry = verifyToken(refreshToken, false);
+
+    String token = jwtHelper.generateToken(entry.getKey(), jwtHelper.extractUuid(refreshToken),
+        entry.getValue(), false);
+
+    return new AuthRefreshResponseDto(token, refreshToken, "Bearer");
+
+  }
+
+  /**
+   * Déconnecte un utilisateur en invalidant l'Uuid' actuel et en générant un nouveau.
    *
    * @param token Le token JWT de l'utilisateur à déconnecter.
    */

@@ -2,6 +2,8 @@ package fr.esgi.al5.tayarim.controllers;
 
 import fr.esgi.al5.tayarim.dto.auth.AuthLoginDto;
 import fr.esgi.al5.tayarim.dto.auth.AuthLoginResponseDto;
+import fr.esgi.al5.tayarim.dto.auth.AuthRefreshDto;
+import fr.esgi.al5.tayarim.dto.auth.AuthRefreshResponseDto;
 import fr.esgi.al5.tayarim.dto.auth.AuthResponseDto;
 import fr.esgi.al5.tayarim.exceptions.AdministrateurNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireNotFoundException;
@@ -77,6 +79,22 @@ public class AuthController {
 
     return new ResponseEntity<>(
         authService.auth(jwtToken),
+        HttpStatus.OK
+    );
+  }
+
+  /**
+   * Actualise le token de l'utilisateur à partir de son token JWT et du refresh token.
+   *
+   * @param authRefreshDto Corps de la requêtes contenant le refresh token.
+   * @return Un ResponseEntity contenant le DTO de réponse de refresh et le statut HTTP.
+   */
+  @GetMapping("/refresh")
+  public ResponseEntity<AuthRefreshResponseDto> refresh(
+      @Valid @RequestBody AuthRefreshDto authRefreshDto) {
+
+    return new ResponseEntity<>(
+        authService.refresh(authRefreshDto.getRefreshToken()),
         HttpStatus.OK
     );
   }
