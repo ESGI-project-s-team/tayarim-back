@@ -103,17 +103,36 @@ public class AuthService {
       throw new AdministrateurNotFoundException();
     }
 
+    /*
     String uuid = tokenCacheService.getFromCache(id);
     if (uuid == null) {
       uuid = UUID.randomUUID().toString();
       tokenCacheService.addToCache(id, uuid);
     }
+    */
 
-    String accessToken = jwtHelper.generateToken(id, uuid, isAdmin, false);
-    String refreshToken = jwtHelper.generateToken(id, uuid, isAdmin, true);
+    String refreshToken = "";
+    String foundToken = tokenCacheService.getFromCache(id);
+    if (foundToken == null) {
+      String uuid = UUID.randomUUID().toString();
+      refreshToken = jwtHelper.generateToken(id, uuid, isAdmin, true);
+      tokenCacheService.addToCache(id, refreshToken);
+    } else {
+      refreshToken = foundToken;
+      try {
+        verifyToken(refreshToken, false);
+      } catch (TokenExpireOrInvalidException e) {
+        refreshToken = jwtHelper.generateToken(id, jwtHelper.extractUuid(refreshToken), isAdmin,
+            true);
+        tokenCacheService.addToCache(id, refreshToken);
+      }
+    }
 
+    String accessToken = jwtHelper.generateToken(id, jwtHelper.extractUuid(refreshToken), isAdmin,
+        false);
 
-    return new AuthLoginResponseDto(id, isAdmin, nom, prenom, email, numTel, isPasswordUpdated, accessToken, refreshToken);
+    return new AuthLoginResponseDto(id, isAdmin, nom, prenom, email, numTel, isPasswordUpdated, accessToken,
+        refreshToken);
   }
 
   /**
@@ -165,7 +184,7 @@ public class AuthService {
 
     Entry<Long, Boolean> entry = verifyToken(token, false);
 
-    tokenCacheService.addToCache(entry.getKey(), UUID.randomUUID().toString());
+    //tokenCacheService.addToCache(entry.getKey(), UUID.randomUUID().toString());
 
   }
 
@@ -212,12 +231,12 @@ public class AuthService {
       }
     }
 
-    String uuid = tokenCacheService.getFromCache(id);
-    if (uuid == null) {
+    String foundToken = tokenCacheService.getFromCache(id);
+    if (foundToken == null) {
       throw new TokenExpireOrInvalidException();
     }
 
-    if (!jwtHelper.validateToken(token, id, uuid)) {
+    if (!jwtHelper.validateToken(token, id, jwtHelper.extractUuid(foundToken))) {
       throw new TokenExpireOrInvalidException();
     }
     return new AbstractMap.SimpleEntry<>(id, isAdmin);

@@ -37,9 +37,9 @@ public class AuthLoginResponseDto {
   private Boolean isPasswordUpdated;
 
   @NonNull
-  private String access_token;
+  private String accessToken;
 
   @NonNull
-  private String refresh_token;
+  private String refreshToken;
   // No need for explicit getters, setters, or constructors
 }

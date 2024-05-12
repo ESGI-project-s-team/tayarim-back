@@ -89,7 +89,7 @@ public class AuthController {
    * @param authRefreshDto Corps de la requêtes contenant le refresh token.
    * @return Un ResponseEntity contenant le DTO de réponse de refresh et le statut HTTP.
    */
-  @GetMapping("/refresh")
+  @PostMapping("/refresh")
   public ResponseEntity<AuthRefreshResponseDto> refresh(
       @Valid @RequestBody AuthRefreshDto authRefreshDto) {
 
