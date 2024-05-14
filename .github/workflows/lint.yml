@@ -1,0 +1,17 @@
+name: Lint
+on:
+  pull_request:
+    branches: ["master", "dev", "prod"]
+    
+jobs:
+  checkstyle:
+    name: runner / checkstyle
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dbelyaev/action-checkstyle@master
+        with:
+          github_token: ${{ secrets.REVIEW_DOG_TOKEN }}
+          reporter: github-pr-review
+          level: error
+          fail_on_error: true
