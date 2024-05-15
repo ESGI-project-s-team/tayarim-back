@@ -177,7 +177,7 @@ public class ProprietaireController {
     Map<String, List<String>> errorMapping = new HashMap<>();
     ex.getBindingResult().getAllErrors().forEach((error) -> {
       String errorMessage = error.getDefaultMessage();
-      if(!errors.contains(errorMessage)) {
+      if (!errors.contains(errorMessage)) {
         errors.add(errorMessage);
       }
     });
