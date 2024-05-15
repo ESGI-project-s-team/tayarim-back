@@ -98,6 +98,7 @@ public class ProprietaireControllerTest {
         .numTel("0612345678")
         .dateInscription(localDateTime)
         .logements(null)
+        .isPasswordUpdated(Boolean.TRUE)
         .build();
     proprietaireDto2 = ProprietaireDto.builder()
         .id(2L)
@@ -107,6 +108,7 @@ public class ProprietaireControllerTest {
         .numTel("0612345679")
         .dateInscription(localDateTime)
         .logements(null)
+        .isPasswordUpdated(Boolean.TRUE)
         .build();
     proprietaireDtos = List.of(proprietaireDto, proprietaireDto2);
     proprietaireDtoWithLogement = ProprietaireDto.builder()
@@ -116,6 +118,7 @@ public class ProprietaireControllerTest {
         .email("test@gmail.com")
         .numTel("0612345678")
         .dateInscription(localDateTime)
+        .isPasswordUpdated(Boolean.TRUE)
         .logements(List.of(new LogementDto(1L, 1L)))
         .build();
     proprietaireUpdateDto = ProprietaireUpdateDto.builder()

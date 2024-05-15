@@ -22,5 +22,8 @@ public class AuthResponseDto {
   @NonNull
   private Boolean admin;
 
+  @NonNull
+  private Boolean isPasswordUpdated;
+
   // No need for explicit getters, setters, or constructors
 }
