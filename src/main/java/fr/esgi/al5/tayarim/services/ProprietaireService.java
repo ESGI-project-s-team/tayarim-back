@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
-
 /**
  * Service pour la gestion des propriétaires dans le système. Fournit des méthodes pour créer,
  * récupérer, mettre à jour et supprimer des propriétaires.
@@ -58,12 +57,33 @@ public class ProprietaireService {
     }
     proprietaireCreationDto.setNumTel(numTel);
 
-    StringBuilder generatedPassword = new StringBuilder(16);
-    String allowedchar = "abcdefghijklmnopqrstuvwxyz0123456789!@#$%&*()_+-=[]?";
+    String allowedchar = "abcdefghijklmnopqrstuvwxyz"
+        + "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        + "0123456789"
+        + "!@#$%&*()_+-=[]?";
     SecureRandom random = new SecureRandom();
-    for (int i = 0; i < 16; i++) {
-      int index = random.nextInt(allowedchar.length());
-      generatedPassword.append(allowedchar.charAt(index));
+    StringBuilder generatedPassword = null;
+    boolean result = false;
+    while (!result) {
+      boolean hasLowerCase = false;
+      boolean hasUpperCase = false;
+      boolean hasDigit = false;
+      boolean hasSpecialChar = false;
+      generatedPassword = new StringBuilder(16);
+      for (int i = 0; i < 16; i++) {
+        int index = random.nextInt(allowedchar.length());
+        if (index > 61) {
+          hasSpecialChar = true;
+        } else if (index > 51) {
+          hasDigit = true;
+        } else if (index > 25) {
+          hasUpperCase = true;
+        } else {
+          hasLowerCase = true;
+        }
+        generatedPassword.append(allowedchar.charAt(index));
+      }
+      result = hasLowerCase && hasUpperCase && hasDigit && hasSpecialChar;
     }
 
     System.out.println(generatedPassword); // waiting for SMTP
@@ -104,7 +124,7 @@ public class ProprietaireService {
   /**
    * Récupère un propriétaire par son email.
    *
-   * @param email      L'email du propriétaire à récupérer.
+   * @param email L'email du propriétaire à récupérer.
    * @return Le DTO du propriétaire.
    * @throws ProprietaireNotFoundException si le propriétaire n'est pas trouvé.
    */

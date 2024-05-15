@@ -125,7 +125,7 @@ public class ProprietaireController {
   @PutMapping("/{id}")
   public ResponseEntity<ProprietaireDto> updateProprietaire(
       @RequestHeader("Authorization") String authHeader, @PathVariable Long id,
-      @RequestBody ProprietaireUpdateDto proprietaireUpdateDto) {
+      @Valid @RequestBody ProprietaireUpdateDto proprietaireUpdateDto) {
     Entry<Long, Boolean> tokenInfo = authService.verifyToken(getTokenFromHeader(authHeader), false);
     if (!tokenInfo.getKey().equals(id) && !tokenInfo.getValue()) {
       throw new UnauthorizedException();
@@ -177,7 +177,9 @@ public class ProprietaireController {
     Map<String, List<String>> errorMapping = new HashMap<>();
     ex.getBindingResult().getAllErrors().forEach((error) -> {
       String errorMessage = error.getDefaultMessage();
-      errors.add(errorMessage);
+      if(!errors.contains(errorMessage)) {
+        errors.add(errorMessage);
+      }
     });
 
     errorMapping.put("errors", errors);

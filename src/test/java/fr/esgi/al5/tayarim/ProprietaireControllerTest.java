@@ -240,8 +240,7 @@ public class ProprietaireControllerTest {
         .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(proprietaireCreationDto)));
 
-    List<String> errors = List.of("error_owner_invalid_phone",
-        "error_owner_invalid_phone"); // 2 error because it also doesnt match Regex
+    List<String> errors = List.of("error_owner_invalid_phone");
 
     response.andExpect(MockMvcResultMatchers.status().isBadRequest())
         .andExpect(MockMvcResultMatchers.jsonPath("$.errors", CoreMatchers.is(errors)));
