@@ -31,9 +31,15 @@ public class JwtHelper {
    * @param isAdmin Booléen indiquant si l'utilisateur est un administrateur.
    * @return Le token JWT généré.
    */
-  public String generateToken(Long id, String uuid, boolean isAdmin) {
-    String subject = id.toString().concat(";").concat(uuid).concat(";")
-        .concat(Boolean.toString(isAdmin));
+  public String generateToken(Long id, String uuid, boolean isAdmin, boolean isSuperAdmin) {
+    String subject = id.toString().concat(";").concat(uuid).concat(";");
+
+    if (isAdmin) {
+      subject = subject.concat(Boolean.toString(true)).concat(";")
+          .concat(Boolean.toString(isSuperAdmin));
+    } else {
+      subject = subject.concat(Boolean.toString(false));
+    }
     var now = Instant.now();
     return Jwts.builder()
         .subject(subject)
@@ -118,6 +124,25 @@ public class JwtHelper {
     }
 
     return Boolean.parseBoolean(extractSubject(token).split(";")[2]);
+  }
+
+  /**
+   * Détermine si l'utilisateur associé au token est un SuperAdministrateur.
+   *
+   * @param token Le token JWT.
+   * @return Booléen indiquant si l'utilisateur est un administrateur.
+   * @throws TokenExpireOrInvalidException Si le token est expiré ou invalide.
+   */
+  public Boolean extractSuperAdmin(String token) {
+    if (!extractAdmin(token)) {
+      return false;
+    }
+
+    if (extractSubject(token).split(";")[3] == null) {
+      throw new TokenExpireOrInvalidException();
+    }
+
+    return Boolean.parseBoolean(extractSubject(token).split(";")[3]);
   }
 
   /**

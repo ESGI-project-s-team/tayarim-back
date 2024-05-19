@@ -3,6 +3,7 @@ package fr.esgi.al5.tayarim.services;
 
 import fr.esgi.al5.tayarim.auth.JwtHelper;
 import fr.esgi.al5.tayarim.auth.TokenCacheService;
+import fr.esgi.al5.tayarim.auth.VerifyTokenResult;
 import fr.esgi.al5.tayarim.dto.auth.AuthAdminResponseDto;
 import fr.esgi.al5.tayarim.dto.auth.AuthLoginAdminResponseDto;
 import fr.esgi.al5.tayarim.dto.auth.AuthLoginProprietaireResponseDto;
@@ -87,18 +88,14 @@ public class AuthService {
       isPasswordUpdated = proprietaireDto.getIsPasswordUpdated();
     } catch (Exception e) {
       try {
-        System.out.println("1, email: ".concat(email));
         administrateurDto = administrateurService.getAdministrateurByEmail(email);
-        System.out.println("2");
         id = administrateurDto.getId();
         nom = administrateurDto.getNom();
         prenom = administrateurDto.getPrenom();
         numTel = administrateurDto.getNumTel();
         isAdmin = true;
         isSuperAdmin = administrateurDto.getIsSuperAdmin();
-        System.out.println("3");
       } catch (Exception exception) {
-        System.out.println("error 1");
         throw new UtilisateurNotFoundException();
       }
 
@@ -109,7 +106,6 @@ public class AuthService {
       throw new ProprietaireNotFoundException();
     } else if (administrateurDto != null && !administrateurService.verifyPassword(password,
         administrateurDto.getId())) {
-      System.out.println("error 2");
       throw new AdministrateurNotFoundException();
     }
 
@@ -119,10 +115,9 @@ public class AuthService {
       tokenCacheService.addToCache(id, uuid);
     }
 
-    String token = jwtHelper.generateToken(id, uuid, isAdmin);
+    String token = jwtHelper.generateToken(id, uuid, isAdmin, isSuperAdmin);
 
     if (isAdmin) {
-      System.out.println("4");
       return new AuthLoginAdminResponseDto(id, token, true, nom, prenom, email, numTel,
           isSuperAdmin);
     } else {
@@ -141,19 +136,17 @@ public class AuthService {
    */
   public AuthResponseDto auth(@NonNull String token) {
 
-    Entry<Long, Boolean> entry = verifyToken(token, false);
+    VerifyTokenResult verifyTokenResult = verifyToken(token, false);
 
-    Long id = entry.getKey();
-    Boolean isAdmin = entry.getValue();
-
+    Long id = verifyTokenResult.getId();
+    Boolean isAdmin = verifyTokenResult.getIsAdmin();
 
     if (!isAdmin) {
       Boolean isPasswordUpdated = proprietaireService.getProprietaireById(id, false)
           .getIsPasswordUpdated();
       return new AuthProprietaireResponseDto(id, token, false, isPasswordUpdated);
     } else {
-      Boolean isSuperAdmin = administrateurService.getAdministrateurById(id).getIsSuperAdmin();
-      return new AuthAdminResponseDto(id, token, true, isSuperAdmin);
+      return new AuthAdminResponseDto(id, token, true, verifyTokenResult.getIsSuperAdmin());
     }
   }
 
@@ -164,9 +157,9 @@ public class AuthService {
    */
   public void logout(@NonNull String token) {
 
-    Entry<Long, Boolean> entry = verifyToken(token, false);
+    VerifyTokenResult verifyTokenResult = verifyToken(token, false);
 
-    tokenCacheService.addToCache(entry.getKey(), UUID.randomUUID().toString());
+    tokenCacheService.addToCache(verifyTokenResult.getId(), UUID.randomUUID().toString());
 
   }
 
@@ -181,8 +174,9 @@ public class AuthService {
    * @throws TokenExpireOrInvalidException Si le token est invalide ou expiré, ou si l'utilisateur
    *                                       n'est pas autorisé comme administrateur lorsque requis.
    */
-  public Entry<Long, Boolean> verifyToken(@NonNull String token, boolean shouldBeAdmin) {
+  public VerifyTokenResult verifyToken(@NonNull String token, boolean shouldBeAdmin) {
     boolean isAdmin = jwtHelper.extractAdmin(token);
+    boolean isSuperAdmin = jwtHelper.extractSuperAdmin(token);
     if (shouldBeAdmin && !isAdmin) {
       throw new TokenExpireOrInvalidException();
     }
@@ -193,11 +187,17 @@ public class AuthService {
       try {
         administrateurDto = administrateurService.getAdministrateurById(
             jwtHelper.extractId(token));
+
         /* if the email has been updated and that the user want to re-do an update without re-login,
          * the token will not be valid anymore
          */
         id = administrateurDto.getId();
+        if (administrateurDto.getIsSuperAdmin() != isSuperAdmin) {
+
+          throw new TokenExpireOrInvalidException();
+        }
       } catch (AdministrateurNotFoundException ex) {
+
         throw new TokenExpireOrInvalidException();
       }
     } else {
@@ -221,6 +221,6 @@ public class AuthService {
     if (!jwtHelper.validateToken(token, id, uuid)) {
       throw new TokenExpireOrInvalidException();
     }
-    return new AbstractMap.SimpleEntry<>(id, isAdmin);
+    return new VerifyTokenResult(id, isAdmin, isSuperAdmin);
   }
 }

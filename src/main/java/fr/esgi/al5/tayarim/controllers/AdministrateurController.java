@@ -1,5 +1,6 @@
 package fr.esgi.al5.tayarim.controllers;
 
+import fr.esgi.al5.tayarim.auth.VerifyTokenResult;
 import fr.esgi.al5.tayarim.dto.proprietaire.AdministrateurDto;
 import fr.esgi.al5.tayarim.dto.proprietaire.AdministrateurUpdateDto;
 import fr.esgi.al5.tayarim.exceptions.AdministrateurEmailAlreadyExistException;
@@ -100,9 +101,12 @@ public class AdministrateurController {
   public ResponseEntity<AdministrateurDto> updateAdministrateur(
       @RequestHeader("Authorization") String authHeader, @PathVariable Long id,
       @RequestBody AdministrateurUpdateDto administrateurUpdateDto) {
-    Long idToken = authService.verifyToken(getTokenFromHeader(authHeader), true).getKey();
+    VerifyTokenResult verifyTokenResult = authService.verifyToken(getTokenFromHeader(authHeader),
+        true);
 
-    if (!idToken.equals(id)) {
+    if (!verifyTokenResult.getIsAdmin()
+        || (!verifyTokenResult.getId().equals(id) && !verifyTokenResult.getIsSuperAdmin())) {
+
       throw new UnauthorizedException();
     }
 
@@ -122,8 +126,9 @@ public class AdministrateurController {
   @DeleteMapping("/{id}")
   public ResponseEntity<AdministrateurDto> deleteAdministrateur(
       @RequestHeader("Authorization") String authHeader, @PathVariable Long id) {
-    Long idToken = authService.verifyToken(getTokenFromHeader(authHeader), true).getKey();
-    if (!idToken.equals(id)) {
+    VerifyTokenResult verifyTokenResult = authService.verifyToken(getTokenFromHeader(authHeader),
+        true);
+    if (!verifyTokenResult.getId().equals(id)) {
       throw new UnauthorizedException();
     }
 
