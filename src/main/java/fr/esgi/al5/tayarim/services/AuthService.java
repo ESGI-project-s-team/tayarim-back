@@ -3,7 +3,11 @@ package fr.esgi.al5.tayarim.services;
 
 import fr.esgi.al5.tayarim.auth.JwtHelper;
 import fr.esgi.al5.tayarim.auth.TokenCacheService;
+import fr.esgi.al5.tayarim.dto.auth.AuthAdminResponseDto;
+import fr.esgi.al5.tayarim.dto.auth.AuthLoginAdminResponseDto;
+import fr.esgi.al5.tayarim.dto.auth.AuthLoginProprietaireResponseDto;
 import fr.esgi.al5.tayarim.dto.auth.AuthLoginResponseDto;
+import fr.esgi.al5.tayarim.dto.auth.AuthProprietaireResponseDto;
 import fr.esgi.al5.tayarim.dto.auth.AuthResponseDto;
 import fr.esgi.al5.tayarim.dto.proprietaire.AdministrateurDto;
 import fr.esgi.al5.tayarim.dto.proprietaire.ProprietaireDto;
@@ -72,7 +76,8 @@ public class AuthService {
     String nom;
     String prenom;
     String numTel;
-    boolean isPasswordUpdated;
+    boolean isPasswordUpdated = false;
+    boolean isSuperAdmin = false;
     try {
       proprietaireDto = proprietaireService.getProprietaireByEmail(email);
       id = proprietaireDto.getId();
@@ -82,14 +87,18 @@ public class AuthService {
       isPasswordUpdated = proprietaireDto.getIsPasswordUpdated();
     } catch (Exception e) {
       try {
-        isPasswordUpdated = true;
+        System.out.println("1, email: ".concat(email));
         administrateurDto = administrateurService.getAdministrateurByEmail(email);
+        System.out.println("2");
         id = administrateurDto.getId();
         nom = administrateurDto.getNom();
         prenom = administrateurDto.getPrenom();
         numTel = administrateurDto.getNumTel();
         isAdmin = true;
+        isSuperAdmin = administrateurDto.getIsSuperAdmin();
+        System.out.println("3");
       } catch (Exception exception) {
+        System.out.println("error 1");
         throw new UtilisateurNotFoundException();
       }
 
@@ -100,6 +109,7 @@ public class AuthService {
       throw new ProprietaireNotFoundException();
     } else if (administrateurDto != null && !administrateurService.verifyPassword(password,
         administrateurDto.getId())) {
+      System.out.println("error 2");
       throw new AdministrateurNotFoundException();
     }
 
@@ -111,8 +121,15 @@ public class AuthService {
 
     String token = jwtHelper.generateToken(id, uuid, isAdmin);
 
-    return new AuthLoginResponseDto(id, token, isAdmin, nom, prenom, email, numTel,
-        isPasswordUpdated);
+    if (isAdmin) {
+      System.out.println("4");
+      return new AuthLoginAdminResponseDto(id, token, true, nom, prenom, email, numTel,
+          isSuperAdmin);
+    } else {
+      return new AuthLoginProprietaireResponseDto(id, token, false, nom, prenom, email, numTel,
+          isPasswordUpdated);
+    }
+
   }
 
   /**
@@ -126,15 +143,18 @@ public class AuthService {
 
     Entry<Long, Boolean> entry = verifyToken(token, false);
 
-    Boolean isPasswordUpdated = true;
+    Long id = entry.getKey();
+    Boolean isAdmin = entry.getValue();
 
-    if (!entry.getValue()) {
-      isPasswordUpdated = proprietaireService.getProprietaireById(entry.getKey(), false)
+
+    if (!isAdmin) {
+      Boolean isPasswordUpdated = proprietaireService.getProprietaireById(id, false)
           .getIsPasswordUpdated();
+      return new AuthProprietaireResponseDto(id, token, false, isPasswordUpdated);
+    } else {
+      Boolean isSuperAdmin = administrateurService.getAdministrateurById(id).getIsSuperAdmin();
+      return new AuthAdminResponseDto(id, token, true, isSuperAdmin);
     }
-
-    return new AuthResponseDto(entry.getKey(), token, entry.getValue(), isPasswordUpdated);
-
   }
 
   /**

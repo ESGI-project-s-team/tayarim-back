@@ -103,6 +103,7 @@ public class AdministrateurService {
     Optional<Administrateur> optionalAdministrateur = administrateurRepository.findFirstByEmail(
         email);
     if (optionalAdministrateur.isEmpty()) {
+      System.out.println("is empty");
       throw new AdministrateurNotFoundException();
     }
 

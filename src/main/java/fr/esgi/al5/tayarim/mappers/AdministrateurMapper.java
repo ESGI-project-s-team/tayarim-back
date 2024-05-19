@@ -32,6 +32,7 @@ public class AdministrateurMapper {
         .email(administrateurCreationDto.getEmail())
         .numTel(administrateurCreationDto.getNumTel())
         .motDePasse(administrateurCreationDto.getMotDePasse())
+        .isSuperAdmin(false)
         .build();
   }
 
@@ -49,6 +50,7 @@ public class AdministrateurMapper {
         .prenom(administrateur.getPrenom())
         .email(administrateur.getEmail())
         .numTel(administrateur.getNumTel())
+        .isSuperAdmin(administrateur.getIsSuperAdmin())
         .build();
   }
 

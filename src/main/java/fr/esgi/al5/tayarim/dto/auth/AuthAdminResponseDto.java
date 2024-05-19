@@ -1,8 +1,9 @@
 package fr.esgi.al5.tayarim.dto.auth;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
@@ -11,19 +12,20 @@ import lombok.NonNull;
  * informations de réponse après une tentative de connexion, notamment l'identifiant de
  * l'utilisateur, son token et son statut administratif.
  */
-@Data // Generates getters, setters, toString, equals, and hashCode methods
+@Data
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor// Generates an all-args constructor
-public abstract class AuthResponseDto {
+public class AuthAdminResponseDto extends AuthResponseDto {
 
   @NonNull
-  private Long id;
+  private Boolean isSuperAdmin;
 
-  @NonNull
-  private String token;
-
-  @NonNull
-  private Boolean admin;
-
+  @Builder
+  public AuthAdminResponseDto(@NonNull Long id, @NonNull String token,
+      @NonNull Boolean admin,
+      @NonNull Boolean isSuperAdmin) {
+    super(id, token, admin);
+    this.isSuperAdmin = isSuperAdmin;
+  }
   // No need for explicit getters, setters, or constructors
 }

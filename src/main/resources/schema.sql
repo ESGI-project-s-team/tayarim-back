@@ -31,7 +31,8 @@ CREATE TABLE IF NOT EXISTS Proprietaire (
 );
 
 CREATE TABLE IF NOT EXISTS Administrateur (
-    idUser INT PRIMARY KEY
+    idUser INT PRIMARY KEY,
+    isSuperAdmin BOOLEAN
 );
 
 CREATE TABLE IF NOT EXISTS Logement (

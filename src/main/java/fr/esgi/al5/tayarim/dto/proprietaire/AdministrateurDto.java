@@ -24,6 +24,8 @@ public class AdministrateurDto {
   private String email;
   @NonNull
   private String numTel;
+  @NonNull
+  private Boolean isSuperAdmin;
 
   // No need for explicit getters, setters, or constructors
 }
