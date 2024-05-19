@@ -111,7 +111,7 @@ public class AuthService {
 
     String token = jwtHelper.generateToken(id, uuid, isAdmin);
 
-    return new AuthLoginResponseDto(id, token, false, nom, prenom, email, numTel,
+    return new AuthLoginResponseDto(id, token, isAdmin, nom, prenom, email, numTel,
         isPasswordUpdated);
   }
 
