@@ -9,14 +9,18 @@ import fr.esgi.al5.tayarim.exceptions.AdministrateurInvalidUpdateBody;
 import fr.esgi.al5.tayarim.exceptions.AdministrateurNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.AdministrateurNumTelAlreadyExistException;
 import fr.esgi.al5.tayarim.exceptions.PasswordHashNotPossibleException;
+import fr.esgi.al5.tayarim.exceptions.ProprietaireEmailAlreadyExistException;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireInvalidUpdateBody;
+import fr.esgi.al5.tayarim.exceptions.ProprietaireNumTelAlreadyExistException;
 import fr.esgi.al5.tayarim.mappers.AdministrateurMapper;
 import fr.esgi.al5.tayarim.repositories.AdministrateurRepository;
 import java.util.List;
 import java.util.Optional;
 import lombok.NonNull;
 import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -28,9 +32,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class AdministrateurService {
 
   private final AdministrateurRepository administrateurRepository;
+  private final ProprietaireService proprietaireService;
 
-  public AdministrateurService(AdministrateurRepository administrateurRepository) {
+  public AdministrateurService(AdministrateurRepository administrateurRepository,
+      @Lazy ProprietaireService proprietaireService) {
     this.administrateurRepository = administrateurRepository;
+    this.proprietaireService = proprietaireService;
   }
 
   /**
@@ -42,7 +49,7 @@ public class AdministrateurService {
    * @throws AdministrateurEmailAlreadyExistException  si l'email existe déjà.
    * @throws AdministrateurNumTelAlreadyExistException si le numéro de téléphone existe déjà.
    */
-  @Transactional
+  @Transactional(propagation = Propagation.NOT_SUPPORTED)
   public AdministrateurDto creerAdministrateur(
       @NonNull AdministrateurCreationDto administrateurCreationDto) {
     if (administrateurRepository.findFirstByEmail(administrateurCreationDto.getEmail())
@@ -50,10 +57,28 @@ public class AdministrateurService {
       throw new AdministrateurEmailAlreadyExistException();
     }
 
+    try {
+      proprietaireService.getProprietaireByEmail(administrateurCreationDto.getEmail());
+      throw new AdministrateurEmailAlreadyExistException();
+    } catch (AdministrateurEmailAlreadyExistException e) {
+      throw e;
+    } catch (Exception ignored) {
+      // ignored ProprietaireNotFoundException
+    }
+
     String numTel = administrateurCreationDto.getNumTel();
     numTel = numTel.replaceAll(" ", "");
     if (administrateurRepository.findFirstByNumTel(numTel).isPresent()) {
       throw new AdministrateurNumTelAlreadyExistException();
+    }
+
+    try {
+      proprietaireService.getProprietaireByNumTel(administrateurCreationDto.getNumTel());
+      throw new AdministrateurNumTelAlreadyExistException();
+    } catch (AdministrateurNumTelAlreadyExistException e) {
+      throw e;
+    } catch (Exception ignored) {
+      // ignored ProprietaireNotFoundException
     }
     administrateurCreationDto.setNumTel(numTel);
 
@@ -102,6 +127,23 @@ public class AdministrateurService {
   public AdministrateurDto getAdministrateurByEmail(@NonNull String email) {
     Optional<Administrateur> optionalAdministrateur = administrateurRepository.findFirstByEmail(
         email);
+    if (optionalAdministrateur.isEmpty()) {
+      throw new AdministrateurNotFoundException();
+    }
+
+    return AdministrateurMapper.entityToDto(optionalAdministrateur.get());
+  }
+
+  /**
+   * Récupère un administrateur par son numéro de téléphone.
+   *
+   * @param numTel Le numéro de l'administrateur à récupérer.
+   * @return Le DTO de l'administrateur.
+   * @throws AdministrateurNotFoundException si l'administrateur n'est pas trouvé.
+   */
+  public AdministrateurDto getAdministrateurByNumTel(@NonNull String numTel) {
+    Optional<Administrateur> optionalAdministrateur = administrateurRepository.findFirstByNumTel(
+        numTel);
     if (optionalAdministrateur.isEmpty()) {
       throw new AdministrateurNotFoundException();
     }

@@ -16,7 +16,9 @@ import java.util.List;
 import java.util.Optional;
 import lombok.NonNull;
 import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 
@@ -29,9 +31,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProprietaireService {
 
   private final ProprietaireRepository proprietaireRepository;
+  private final AdministrateurService administrateurService;
 
-  public ProprietaireService(ProprietaireRepository proprietaireRepository) {
+  public ProprietaireService(ProprietaireRepository proprietaireRepository,
+      @Lazy AdministrateurService administrateurService) {
     this.proprietaireRepository = proprietaireRepository;
+    this.administrateurService = administrateurService;
   }
 
   /**
@@ -43,11 +48,22 @@ public class ProprietaireService {
    * @throws ProprietaireEmailAlreadyExistException  si l'email existe déjà.
    * @throws ProprietaireNumTelAlreadyExistException si le numéro de téléphone existe déjà.
    */
-  @Transactional
+  @Transactional(propagation = Propagation.NOT_SUPPORTED)
   public ProprietaireDto creerProprietaire(
       @NonNull ProprietaireCreationDto proprietaireCreationDto) {
     if (proprietaireRepository.findFirstByEmail(proprietaireCreationDto.getEmail()).isPresent()) {
       throw new ProprietaireEmailAlreadyExistException();
+    }
+
+    try {
+      //should throw an exception if email doesnt exist
+      administrateurService.getAdministrateurByEmail(proprietaireCreationDto.getEmail());
+      throw new ProprietaireEmailAlreadyExistException();
+    } catch (ProprietaireEmailAlreadyExistException e) {
+      //we want to throw this exception
+      throw e;
+    } catch (Exception ignored) {
+      // ignored AdministrateurNotFoundException
     }
 
     String numTel = proprietaireCreationDto.getNumTel();
@@ -55,6 +71,18 @@ public class ProprietaireService {
     if (proprietaireRepository.findFirstByNumTel(numTel).isPresent()) {
       throw new ProprietaireNumTelAlreadyExistException();
     }
+
+    try {
+      //should throw an exception if email doesnt exist
+      administrateurService.getAdministrateurByNumTel(proprietaireCreationDto.getNumTel());
+      throw new ProprietaireNumTelAlreadyExistException();
+    } catch (ProprietaireNumTelAlreadyExistException e) {
+      //we want to throw this exception
+      throw e;
+    } catch (Exception ignored) {
+      // ignored AdministrateurNotFoundException
+    }
+
     proprietaireCreationDto.setNumTel(numTel);
 
     String allowedchar = "abcdefghijklmnopqrstuvwxyz"
@@ -130,6 +158,22 @@ public class ProprietaireService {
    */
   public ProprietaireDto getProprietaireByEmail(@NonNull String email) {
     Optional<Proprietaire> optionalProprietaire = proprietaireRepository.findFirstByEmail(email);
+    if (optionalProprietaire.isEmpty()) {
+      throw new ProprietaireNotFoundException();
+    }
+
+    return ProprietaireMapper.entityToDto(optionalProprietaire.get(), false);
+  }
+
+  /**
+   * Récupère un propriétaire par son numéro de téléphone.
+   *
+   * @param numTel Le numéro du propriétaire à récupérer.
+   * @return Le DTO du propriétaire.
+   * @throws ProprietaireNotFoundException si le propriétaire n'est pas trouvé.
+   */
+  public ProprietaireDto getProprietaireByNumTel(@NonNull String numTel) {
+    Optional<Proprietaire> optionalProprietaire = proprietaireRepository.findFirstByNumTel(numTel);
     if (optionalProprietaire.isEmpty()) {
       throw new ProprietaireNotFoundException();
     }

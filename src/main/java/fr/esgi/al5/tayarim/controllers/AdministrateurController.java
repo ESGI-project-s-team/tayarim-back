@@ -1,6 +1,7 @@
 package fr.esgi.al5.tayarim.controllers;
 
 import fr.esgi.al5.tayarim.auth.VerifyTokenResult;
+import fr.esgi.al5.tayarim.dto.proprietaire.AdministrateurCreationDto;
 import fr.esgi.al5.tayarim.dto.proprietaire.AdministrateurDto;
 import fr.esgi.al5.tayarim.dto.proprietaire.AdministrateurUpdateDto;
 import fr.esgi.al5.tayarim.exceptions.AdministrateurEmailAlreadyExistException;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -84,6 +86,30 @@ public class AdministrateurController {
 
     return new ResponseEntity<>(
         administrateurService.getAdministrateurById(id),
+        HttpStatus.OK
+    );
+  }
+
+  /**
+   * Crée un administrateur.
+   *
+   * @param authHeader Le token d'authentification fourni dans l'en-tête de la requête.
+   * @return Une réponse contenant les détails de l'administrateur crée et le statut HTTP.
+   */
+  @PostMapping("")
+  public ResponseEntity<AdministrateurDto> createAdministrateur(
+      @RequestHeader("Authorization") String authHeader,
+      @RequestBody AdministrateurCreationDto administrateurCreationDto) {
+
+    VerifyTokenResult verifyTokenResult = authService.verifyToken(getTokenFromHeader(authHeader),
+        true);
+
+    if (!verifyTokenResult.getIsSuperAdmin()) {
+      throw new UnauthorizedException();
+    }
+
+    return new ResponseEntity<>(
+        administrateurService.creerAdministrateur(administrateurCreationDto),
         HttpStatus.OK
     );
   }
