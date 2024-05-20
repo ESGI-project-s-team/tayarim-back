@@ -154,7 +154,9 @@ public class AdministrateurController {
       @RequestHeader("Authorization") String authHeader, @PathVariable Long id) {
     VerifyTokenResult verifyTokenResult = authService.verifyToken(getTokenFromHeader(authHeader),
         true);
-    if (!verifyTokenResult.getId().equals(id)) {
+    if (!verifyTokenResult.getIsAdmin()
+        || (!verifyTokenResult.getId().equals(id) && !verifyTokenResult.getIsSuperAdmin())) {
+
       throw new UnauthorizedException();
     }
 
