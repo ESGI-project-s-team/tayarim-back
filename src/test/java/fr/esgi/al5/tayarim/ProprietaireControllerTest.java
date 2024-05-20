@@ -135,7 +135,7 @@ public class ProprietaireControllerTest {
         new VerifyTokenResult(proprietaireDto.getId(), true, false)); //skip token verif
 
     ResultActions response = mockMvc.perform(post("/proprietaires")
-        .header("Authorization", token)
+        .requestAttr("token", token)
         .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(proprietaireCreationDto)));
 
@@ -161,7 +161,7 @@ public class ProprietaireControllerTest {
 
 
     ResultActions response = mockMvc.perform(post("/proprietaires")
-        .header("Authorization", token)
+        .requestAttr("token", token)
         .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(proprietaireCreationDto)));
 
@@ -182,7 +182,7 @@ public class ProprietaireControllerTest {
 
 
     ResultActions response = mockMvc.perform(post("/proprietaires")
-        .header("Authorization", token)
+        .requestAttr("token", token)
         .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(proprietaireCreationDto)));
 
@@ -203,7 +203,7 @@ public class ProprietaireControllerTest {
 
 
     ResultActions response = mockMvc.perform(post("/proprietaires")
-        .header("Authorization", token)
+        .requestAttr("token", token)
         .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(proprietaireCreationDto)));
 
@@ -224,7 +224,7 @@ public class ProprietaireControllerTest {
 
 
     ResultActions response = mockMvc.perform(post("/proprietaires")
-        .header("Authorization", token)
+        .requestAttr("token", token)
         .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(proprietaireCreationDto)));
 
@@ -245,7 +245,7 @@ public class ProprietaireControllerTest {
 
 
     ResultActions response = mockMvc.perform(post("/proprietaires")
-        .header("Authorization", token)
+        .requestAttr("token", token)
         .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(proprietaireCreationDto)));
 
@@ -266,7 +266,7 @@ public class ProprietaireControllerTest {
 
 
     ResultActions response = mockMvc.perform(post("/proprietaires")
-        .header("Authorization", token)
+        .requestAttr("token", token)
         .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(proprietaireCreationDto)));
 
@@ -286,7 +286,7 @@ public class ProprietaireControllerTest {
 
 
     ResultActions response = mockMvc.perform(get("/proprietaires")
-        .header("Authorization", token)
+        .requestAttr("token", token)
         .contentType(MediaType.APPLICATION_JSON));
 
     response.andExpect(MockMvcResultMatchers.status().isOk())
@@ -322,7 +322,7 @@ public class ProprietaireControllerTest {
 
 
     ResultActions response = mockMvc.perform(get("/proprietaires/1")
-        .header("Authorization", token)
+        .requestAttr("token", token)
         .contentType(MediaType.APPLICATION_JSON));
 
     response.andExpect(MockMvcResultMatchers.status().isOk())
@@ -349,7 +349,7 @@ public class ProprietaireControllerTest {
 
 
     ResultActions response = mockMvc.perform(put("/proprietaires/1")
-        .header("Authorization", token)
+        .requestAttr("token", token)
         .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(proprietaireUpdateDto)));
 
@@ -376,7 +376,7 @@ public class ProprietaireControllerTest {
 
 
     ResultActions response = mockMvc.perform(delete("/proprietaires/1")
-        .header("Authorization", token)
+        .requestAttr("token", token)
         .contentType(MediaType.APPLICATION_JSON));
 
     response.andExpect(MockMvcResultMatchers.status().isOk())

@@ -8,6 +8,8 @@ import fr.esgi.al5.tayarim.exceptions.ProprietaireNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.TokenExpireOrInvalidException;
 import fr.esgi.al5.tayarim.exceptions.UtilisateurNotFoundException;
 import fr.esgi.al5.tayarim.services.AuthService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -65,9 +68,10 @@ public class AuthController {
    * @param authHeader L'en-tête d'autorisation contenant le token JWT.
    * @return Un ResponseEntity contenant le DTO de réponse d'authentification et le statut HTTP.
    */
+  @Operation(summary = "Authenticate user", security = @SecurityRequirement(name = "bearer-key"))
   @GetMapping("")
   public ResponseEntity<AuthResponseDto> auth(
-      @RequestHeader("Authorization") String authHeader) {
+      @RequestAttribute("token") String authHeader) {
 
     String jwtToken = getTokenFromHeader(authHeader);
 
@@ -83,8 +87,9 @@ public class AuthController {
    * @param authHeader L'en-tête d'autorisation contenant le token JWT.
    * @return Un ResponseEntity avec le statut HTTP indiquant le succès de l'opération.
    */
+  @Operation(summary = "Authenticate user", security = @SecurityRequirement(name = "bearer-key"))
   @GetMapping("/logout")
-  public ResponseEntity<Void> logout(@RequestHeader("Authorization") String authHeader) {
+  public ResponseEntity<Void> logout(@RequestAttribute("token") String authHeader) {
 
     String jwtToken = getTokenFromHeader(authHeader);
     authService.logout(jwtToken);
