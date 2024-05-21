@@ -98,6 +98,7 @@ public class ProprietaireControllerTest {
         .numTel("0612345678")
         .dateInscription(localDateTime)
         .logements(null)
+        .isPasswordUpdated(Boolean.TRUE)
         .build();
     proprietaireDto2 = ProprietaireDto.builder()
         .id(2L)
@@ -107,6 +108,7 @@ public class ProprietaireControllerTest {
         .numTel("0612345679")
         .dateInscription(localDateTime)
         .logements(null)
+        .isPasswordUpdated(Boolean.TRUE)
         .build();
     proprietaireDtos = List.of(proprietaireDto, proprietaireDto2);
     proprietaireDtoWithLogement = ProprietaireDto.builder()
@@ -116,6 +118,7 @@ public class ProprietaireControllerTest {
         .email("test@gmail.com")
         .numTel("0612345678")
         .dateInscription(localDateTime)
+        .isPasswordUpdated(Boolean.TRUE)
         .logements(List.of(new LogementDto(1L, 1L)))
         .build();
     proprietaireUpdateDto = ProprietaireUpdateDto.builder()
@@ -131,7 +134,7 @@ public class ProprietaireControllerTest {
         new AbstractMap.SimpleEntry<>(proprietaireDto.getId(), true)); //skip token verif
 
     ResultActions response = mockMvc.perform(post("/proprietaires")
-        .header("Authorization", token)
+        .requestAttr("token", token)
         .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(proprietaireCreationDto)));
 
@@ -156,7 +159,7 @@ public class ProprietaireControllerTest {
         new AbstractMap.SimpleEntry<>(proprietaireDto.getId(), true)); //skip token verif
 
     ResultActions response = mockMvc.perform(post("/proprietaires")
-        .header("Authorization", token)
+        .requestAttr("token", token)
         .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(proprietaireCreationDto)));
 
@@ -176,7 +179,7 @@ public class ProprietaireControllerTest {
         new AbstractMap.SimpleEntry<>(proprietaireDto.getId(), true)); //skip token verif
 
     ResultActions response = mockMvc.perform(post("/proprietaires")
-        .header("Authorization", token)
+        .requestAttr("token", token)
         .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(proprietaireCreationDto)));
 
@@ -196,7 +199,7 @@ public class ProprietaireControllerTest {
         new AbstractMap.SimpleEntry<>(proprietaireDto.getId(), true)); //skip token verif
 
     ResultActions response = mockMvc.perform(post("/proprietaires")
-        .header("Authorization", token)
+        .requestAttr("token", token)
         .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(proprietaireCreationDto)));
 
@@ -216,7 +219,7 @@ public class ProprietaireControllerTest {
         new AbstractMap.SimpleEntry<>(proprietaireDto.getId(), true)); //skip token verif
 
     ResultActions response = mockMvc.perform(post("/proprietaires")
-        .header("Authorization", token)
+        .requestAttr("token", token)
         .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(proprietaireCreationDto)));
 
@@ -236,12 +239,11 @@ public class ProprietaireControllerTest {
         new AbstractMap.SimpleEntry<>(proprietaireDto.getId(), true)); //skip token verif
 
     ResultActions response = mockMvc.perform(post("/proprietaires")
-        .header("Authorization", token)
+        .requestAttr("token", token)
         .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(proprietaireCreationDto)));
 
-    List<String> errors = List.of("error_owner_invalid_phone",
-        "error_owner_invalid_phone"); // 2 error because it also doesnt match Regex
+    List<String> errors = List.of("error_owner_invalid_phone");
 
     response.andExpect(MockMvcResultMatchers.status().isBadRequest())
         .andExpect(MockMvcResultMatchers.jsonPath("$.errors", CoreMatchers.is(errors)));
@@ -257,7 +259,7 @@ public class ProprietaireControllerTest {
         new AbstractMap.SimpleEntry<>(proprietaireDto.getId(), true)); //skip token verif
 
     ResultActions response = mockMvc.perform(post("/proprietaires")
-        .header("Authorization", token)
+        .requestAttr("token", token)
         .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(proprietaireCreationDto)));
 
@@ -276,7 +278,7 @@ public class ProprietaireControllerTest {
         new AbstractMap.SimpleEntry<>(proprietaireDto.getId(), true)); //skip token verif
 
     ResultActions response = mockMvc.perform(get("/proprietaires")
-        .header("Authorization", token)
+        .requestAttr("token", token)
         .contentType(MediaType.APPLICATION_JSON));
 
     response.andExpect(MockMvcResultMatchers.status().isOk())
@@ -311,7 +313,7 @@ public class ProprietaireControllerTest {
         new AbstractMap.SimpleEntry<>(proprietaireDto.getId(), true)); //skip token verif
 
     ResultActions response = mockMvc.perform(get("/proprietaires/1")
-        .header("Authorization", token)
+        .requestAttr("token", token)
         .contentType(MediaType.APPLICATION_JSON));
 
     response.andExpect(MockMvcResultMatchers.status().isOk())
@@ -337,7 +339,7 @@ public class ProprietaireControllerTest {
         new AbstractMap.SimpleEntry<>(proprietaireDto.getId(), true)); //skip token verif
 
     ResultActions response = mockMvc.perform(put("/proprietaires/1")
-        .header("Authorization", token)
+        .requestAttr("token", token)
         .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(proprietaireUpdateDto)));
 
@@ -363,7 +365,7 @@ public class ProprietaireControllerTest {
         new AbstractMap.SimpleEntry<>(proprietaireDto.getId(), true)); //skip token verif
 
     ResultActions response = mockMvc.perform(delete("/proprietaires/1")
-        .header("Authorization", token)
+        .requestAttr("token", token)
         .contentType(MediaType.APPLICATION_JSON));
 
     response.andExpect(MockMvcResultMatchers.status().isOk())

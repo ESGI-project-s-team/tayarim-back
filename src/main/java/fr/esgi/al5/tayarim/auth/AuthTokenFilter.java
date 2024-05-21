@@ -29,6 +29,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
       return;
     }
 
+    request.setAttribute("token", authHeader);
     filterChain.doFilter(request, response);
   }
 

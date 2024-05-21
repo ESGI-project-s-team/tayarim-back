@@ -33,6 +33,8 @@ public class ProprietaireDto {
   private String numTel;
   @NonNull
   private LocalDateTime dateInscription;
+  @NonNull
+  private Boolean isPasswordUpdated;
 
   private List<LogementDto> logements;
 
