@@ -7,6 +7,7 @@ import fr.esgi.al5.tayarim.dto.auth.AuthLoginResponseDto;
 import fr.esgi.al5.tayarim.dto.auth.AuthResponseDto;
 import fr.esgi.al5.tayarim.dto.proprietaire.AdministrateurDto;
 import fr.esgi.al5.tayarim.dto.proprietaire.ProprietaireDto;
+import fr.esgi.al5.tayarim.entities.Utilisateur;
 import fr.esgi.al5.tayarim.exceptions.AdministrateurNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.TokenExpireOrInvalidException;
@@ -71,14 +72,17 @@ public class AuthService {
     String nom;
     String prenom;
     String numTel;
+    boolean isPasswordUpdated;
     try {
       proprietaireDto = proprietaireService.getProprietaireByEmail(email);
       id = proprietaireDto.getId();
       nom = proprietaireDto.getNom();
       prenom = proprietaireDto.getPrenom();
       numTel = proprietaireDto.getNumTel();
+      isPasswordUpdated = proprietaireDto.getIsPasswordUpdated();
     } catch (Exception e) {
       try {
+        isPasswordUpdated = true;
         administrateurDto = administrateurService.getAdministrateurByEmail(email);
         id = administrateurDto.getId();
         nom = administrateurDto.getNom();
@@ -107,7 +111,8 @@ public class AuthService {
 
     String token = jwtHelper.generateToken(id, uuid, isAdmin);
 
-    return new AuthLoginResponseDto(id, token, isAdmin, nom, prenom, email, numTel);
+    return new AuthLoginResponseDto(id, token, isAdmin, nom, prenom, email, numTel,
+        isPasswordUpdated);
   }
 
   /**
@@ -121,7 +126,14 @@ public class AuthService {
 
     Entry<Long, Boolean> entry = verifyToken(token, false);
 
-    return new AuthResponseDto(entry.getKey(), token, entry.getValue());
+    Boolean isPasswordUpdated = true;
+
+    if (!entry.getValue()) {
+      isPasswordUpdated = proprietaireService.getProprietaireById(entry.getKey(), false)
+          .getIsPasswordUpdated();
+    }
+
+    return new AuthResponseDto(entry.getKey(), token, entry.getValue(), isPasswordUpdated);
 
   }
 

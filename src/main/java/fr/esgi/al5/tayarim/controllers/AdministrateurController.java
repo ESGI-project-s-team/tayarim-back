@@ -11,6 +11,8 @@ import fr.esgi.al5.tayarim.exceptions.TokenExpireOrInvalidException;
 import fr.esgi.al5.tayarim.exceptions.UnauthorizedException;
 import fr.esgi.al5.tayarim.services.AdministrateurService;
 import fr.esgi.al5.tayarim.services.AuthService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -57,9 +60,10 @@ public class AdministrateurController {
    * @param authHeader Le token d'authentification fourni dans l'en-tête de la requête.
    * @return Une réponse contenant la liste des administrateurs et le statut HTTP.
    */
+  @Operation(summary = "Authenticate user", security = @SecurityRequirement(name = "bearer-key"))
   @GetMapping("")
   public ResponseEntity<List<AdministrateurDto>> getAdministrateur(
-      @RequestHeader("Authorization") String authHeader) {
+      @RequestAttribute("token") String authHeader) {
     authService.verifyToken(getTokenFromHeader(authHeader), true);
 
     return new ResponseEntity<>(
@@ -75,9 +79,10 @@ public class AdministrateurController {
    * @param id         L'identifiant de l'administrateur à récupérer.
    * @return Une réponse contenant les détails de l'administrateur et le statut HTTP.
    */
+  @Operation(summary = "Authenticate user", security = @SecurityRequirement(name = "bearer-key"))
   @GetMapping("/{id}")
   public ResponseEntity<AdministrateurDto> getAdministrateur(
-      @RequestHeader("Authorization") String authHeader, @PathVariable Long id) {
+      @RequestAttribute("token") String authHeader, @PathVariable Long id) {
 
     authService.verifyToken(getTokenFromHeader(authHeader), true);
 
@@ -96,9 +101,10 @@ public class AdministrateurController {
    * @param administrateurUpdateDto Les nouvelles informations de l'administrateur.
    * @return Une réponse contenant l'administrateur mis à jour et le statut HTTP.
    */
+  @Operation(summary = "Authenticate user", security = @SecurityRequirement(name = "bearer-key"))
   @PutMapping("/{id}")
   public ResponseEntity<AdministrateurDto> updateAdministrateur(
-      @RequestHeader("Authorization") String authHeader, @PathVariable Long id,
+      @RequestAttribute("token") String authHeader, @PathVariable Long id,
       @RequestBody AdministrateurUpdateDto administrateurUpdateDto) {
     Long idToken = authService.verifyToken(getTokenFromHeader(authHeader), true).getKey();
 
@@ -119,9 +125,10 @@ public class AdministrateurController {
    * @param id         L'identifiant de l'administrateur à supprimer.
    * @return Une réponse avec le statut HTTP indiquant le succès ou l'échec de l'opération.
    */
+  @Operation(summary = "Authenticate user", security = @SecurityRequirement(name = "bearer-key"))
   @DeleteMapping("/{id}")
   public ResponseEntity<AdministrateurDto> deleteAdministrateur(
-      @RequestHeader("Authorization") String authHeader, @PathVariable Long id) {
+      @RequestAttribute("token") String authHeader, @PathVariable Long id) {
     Long idToken = authService.verifyToken(getTokenFromHeader(authHeader), true).getKey();
     if (!idToken.equals(id)) {
       throw new UnauthorizedException();

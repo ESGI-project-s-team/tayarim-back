@@ -12,6 +12,8 @@ import fr.esgi.al5.tayarim.exceptions.TokenExpireOrInvalidException;
 import fr.esgi.al5.tayarim.exceptions.UnauthorizedException;
 import fr.esgi.al5.tayarim.services.AuthService;
 import fr.esgi.al5.tayarim.services.ProprietaireService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,6 +29,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -62,9 +65,10 @@ public class ProprietaireController {
    * @param proprietaireCreationDto Les données pour la création d'un propriétaire.
    * @return Une ResponseEntity contenant le propriétaire créé et le statut HTTP.
    */
+  @Operation(summary = "Authenticate user", security = @SecurityRequirement(name = "bearer-key"))
   @PostMapping("")
   public ResponseEntity<ProprietaireDto> creerProprietaire(
-      @RequestHeader("Authorization") String authHeader,
+      @RequestAttribute("token") String authHeader,
       @Valid @RequestBody ProprietaireCreationDto proprietaireCreationDto) {
     authService.verifyToken(getTokenFromHeader(authHeader), true);
     return new ResponseEntity<>(
@@ -80,9 +84,10 @@ public class ProprietaireController {
    *                   logement.
    * @return Une ResponseEntity contenant la liste des propriétaires et le statut HTTP.
    */
+  @Operation(summary = "Authenticate user", security = @SecurityRequirement(name = "bearer-key"))
   @GetMapping("")
   public ResponseEntity<List<ProprietaireDto>> getProprietaire(
-      @RequestHeader("Authorization") String authHeader,
+      @RequestAttribute("token") String authHeader,
       @RequestParam(name = "logement", defaultValue = "false") Boolean isLogement) {
     authService.verifyToken(getTokenFromHeader(authHeader), true);
 
@@ -101,9 +106,10 @@ public class ProprietaireController {
    *                   logement.
    * @return Une ResponseEntity contenant les détails du propriétaire et le statut HTTP.
    */
+  @Operation(summary = "Authenticate user", security = @SecurityRequirement(name = "bearer-key"))
   @GetMapping("/{id}")
   public ResponseEntity<ProprietaireDto> getProprietaire(
-      @RequestHeader("Authorization") String authHeader, @PathVariable Long id,
+      @RequestAttribute("token") String authHeader, @PathVariable Long id,
       @RequestParam(name = "logement", defaultValue = "false") Boolean isLogement) {
 
     authService.verifyToken(getTokenFromHeader(authHeader), false);
@@ -122,10 +128,11 @@ public class ProprietaireController {
    * @param proprietaireUpdateDto Les données de mise à jour du propriétaire.
    * @return Une ResponseEntity contenant le propriétaire mis à jour et le statut HTTP.
    */
+  @Operation(summary = "Authenticate user", security = @SecurityRequirement(name = "bearer-key"))
   @PutMapping("/{id}")
   public ResponseEntity<ProprietaireDto> updateProprietaire(
-      @RequestHeader("Authorization") String authHeader, @PathVariable Long id,
-      @RequestBody ProprietaireUpdateDto proprietaireUpdateDto) {
+      @RequestAttribute("token") String authHeader, @PathVariable Long id,
+      @Valid @RequestBody ProprietaireUpdateDto proprietaireUpdateDto) {
     Entry<Long, Boolean> tokenInfo = authService.verifyToken(getTokenFromHeader(authHeader), false);
     if (!tokenInfo.getKey().equals(id) && !tokenInfo.getValue()) {
       throw new UnauthorizedException();
@@ -144,9 +151,10 @@ public class ProprietaireController {
    * @param id         L'identifiant du propriétaire à supprimer.
    * @return Une ResponseEntity avec le statut HTTP indiquant le succès de l'opération.
    */
+  @Operation(summary = "Authenticate user", security = @SecurityRequirement(name = "bearer-key"))
   @DeleteMapping("/{id}")
   public ResponseEntity<ProprietaireDto> deleteProprietaire(
-      @RequestHeader("Authorization") String authHeader, @PathVariable Long id) {
+      @RequestAttribute("token") String authHeader, @PathVariable Long id) {
     authService.verifyToken(getTokenFromHeader(authHeader), true);
 
     return new ResponseEntity<>(
@@ -177,7 +185,9 @@ public class ProprietaireController {
     Map<String, List<String>> errorMapping = new HashMap<>();
     ex.getBindingResult().getAllErrors().forEach((error) -> {
       String errorMessage = error.getDefaultMessage();
-      errors.add(errorMessage);
+      if (!errors.contains(errorMessage)) {
+        errors.add(errorMessage);
+      }
     });
 
     errorMapping.put("errors", errors);

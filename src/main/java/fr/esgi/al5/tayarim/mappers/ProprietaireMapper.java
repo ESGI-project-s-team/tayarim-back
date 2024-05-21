@@ -55,6 +55,7 @@ public class ProprietaireMapper {
         .email(proprietaire.getEmail())
         .numTel(proprietaire.getNumTel())
         .dateInscription(proprietaire.getDateInscription())
+        .isPasswordUpdated(proprietaire.getIsPasswordUpdated())
         .logements(
             isLogement ? LogementMapper.entityListToDtoList(proprietaire.getLogements()) : null)
         .build();
