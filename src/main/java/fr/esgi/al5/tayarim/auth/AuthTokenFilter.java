@@ -37,7 +37,8 @@ public class AuthTokenFilter extends OncePerRequestFilter {
   }
 
   protected boolean shouldNotFilter(HttpServletRequest request) {
-    // Exclure le filtre pour les requêtes POST vers /proprietaire
+    //true = do not filter, then do not require token
+    //false = do filter, then require token
 
     if (
         !request.getServletPath().startsWith("/auth")
@@ -49,7 +50,9 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
     Map<String, List<String>> mapOfExcludeMethodPath = new HashMap<>();
     mapOfExcludeMethodPath.put("POST", List.of("/auth/login", "/auth/refresh"));
-    return mapOfExcludeMethodPath.get(request.getMethod().toUpperCase())
+
+    return mapOfExcludeMethodPath.get(request.getMethod().toUpperCase()) != null
+        && mapOfExcludeMethodPath.get(request.getMethod().toUpperCase())
         .contains(request.getServletPath());
   }
 }
