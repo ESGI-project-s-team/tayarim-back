@@ -16,6 +16,9 @@ import lombok.NonNull;
 public class AuthRefreshResponseDto {
 
   @NonNull
+  private Boolean isAdmin;
+
+  @NonNull
   private String accessToken;
 
   @NonNull

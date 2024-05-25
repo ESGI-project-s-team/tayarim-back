@@ -172,7 +172,7 @@ public class AuthService {
     String token = jwtHelper.generateToken(entry.getKey(), jwtHelper.extractUuid(refreshToken),
         entry.getValue(), false);
 
-    return new AuthRefreshResponseDto(token, refreshToken, "Bearer");
+    return new AuthRefreshResponseDto(entry.getValue(), token, refreshToken, "Bearer");
 
   }
 
