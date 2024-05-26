@@ -3,6 +3,7 @@ package fr.esgi.al5.tayarim.services;
 
 import fr.esgi.al5.tayarim.auth.JwtHelper;
 import fr.esgi.al5.tayarim.auth.TokenCacheService;
+import fr.esgi.al5.tayarim.auth.UserTokenInfo;
 import fr.esgi.al5.tayarim.dto.auth.AuthLoginResponseDto;
 import fr.esgi.al5.tayarim.dto.auth.AuthRefreshResponseDto;
 import fr.esgi.al5.tayarim.dto.auth.AuthResponseDto;
@@ -145,16 +146,17 @@ public class AuthService {
    */
   public AuthResponseDto auth(@NonNull String token) {
 
-    Entry<Long, Boolean> entry = verifyToken(token, false);
+    UserTokenInfo userTokenInfo = verifyToken(token, false);
 
     Boolean isPasswordUpdated = true;
 
-    if (!entry.getValue()) {
-      isPasswordUpdated = proprietaireService.getProprietaireById(entry.getKey(), false)
+    if (!userTokenInfo.getIsAdmin()) {
+      isPasswordUpdated = proprietaireService.getProprietaireById(userTokenInfo.getId(), false)
           .getIsPasswordUpdated();
     }
 
-    return new AuthResponseDto(entry.getKey(), token, entry.getValue(), isPasswordUpdated);
+    return new AuthResponseDto(userTokenInfo.getId(), token, userTokenInfo.getIsAdmin(),
+        isPasswordUpdated);
 
   }
 
@@ -167,12 +169,14 @@ public class AuthService {
    */
   public AuthRefreshResponseDto refresh(@NonNull String refreshToken) {
 
-    Entry<Long, Boolean> entry = verifyToken(refreshToken, false);
+    UserTokenInfo userTokenInfo = verifyToken(refreshToken, false);
 
-    String token = jwtHelper.generateToken(entry.getKey(), jwtHelper.extractUuid(refreshToken),
-        entry.getValue(), false);
+    String token = jwtHelper.generateToken(userTokenInfo.getId(),
+        jwtHelper.extractUuid(refreshToken),
+        userTokenInfo.getIsAdmin(), false);
 
-    return new AuthRefreshResponseDto(entry.getValue(), token, refreshToken, "Bearer");
+    return new AuthRefreshResponseDto(userTokenInfo.getId(), userTokenInfo.getIsAdmin(),
+        userTokenInfo.getIsPasswordUpdated(), token, refreshToken, "Bearer");
 
   }
 
@@ -183,7 +187,7 @@ public class AuthService {
    */
   public void logout(@NonNull String token) {
 
-    Entry<Long, Boolean> entry = verifyToken(token, false);
+    UserTokenInfo userTokenInfo = verifyToken(token, false);
 
     //tokenCacheService.addToCache(entry.getKey(), UUID.randomUUID().toString());
 
@@ -200,7 +204,7 @@ public class AuthService {
    * @throws TokenExpireOrInvalidException Si le token est invalide ou expiré, ou si l'utilisateur
    *                                       n'est pas autorisé comme administrateur lorsque requis.
    */
-  public Entry<Long, Boolean> verifyToken(@NonNull String token, boolean shouldBeAdmin) {
+  public UserTokenInfo verifyToken(@NonNull String token, boolean shouldBeAdmin) {
     boolean isAdmin = jwtHelper.extractAdmin(token);
     if (shouldBeAdmin && !isAdmin) {
       throw new TokenExpireOrInvalidException();
@@ -208,6 +212,7 @@ public class AuthService {
     Long id;
     AdministrateurDto administrateurDto;
     ProprietaireDto proprietaireDto;
+    boolean isPasswordUpdated;
     if (isAdmin) {
       try {
         administrateurDto = administrateurService.getAdministrateurById(
@@ -216,6 +221,7 @@ public class AuthService {
          * the token will not be valid anymore
          */
         id = administrateurDto.getId();
+        isPasswordUpdated = true;
       } catch (AdministrateurNotFoundException ex) {
         throw new TokenExpireOrInvalidException();
       }
@@ -227,6 +233,7 @@ public class AuthService {
          * the token will not be valid anymore
          */
         id = proprietaireDto.getId();
+        isPasswordUpdated = proprietaireDto.getIsPasswordUpdated();
       } catch (ProprietaireNotFoundException ex) {
         throw new TokenExpireOrInvalidException();
       }
@@ -240,6 +247,7 @@ public class AuthService {
     if (!jwtHelper.validateToken(token, id, jwtHelper.extractUuid(foundToken))) {
       throw new TokenExpireOrInvalidException();
     }
-    return new AbstractMap.SimpleEntry<>(id, isAdmin);
+
+    return new UserTokenInfo(id, isAdmin, isPasswordUpdated);
   }
 }
