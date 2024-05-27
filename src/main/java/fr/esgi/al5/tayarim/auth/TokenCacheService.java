@@ -26,7 +26,7 @@ public class TokenCacheService {
    * Récupère le token associé à un identifiant utilisateur du cache.
    *
    * @param key L'identifiant de l'utilisateur.
-   * @return Le token associé, ou null si aucun token n'est trouvé.
+   * @return Le token associé, ou null si aucun Uuid n'est trouvé.
    */
   public String getFromCache(Long key) {
     return cache.get(key);

@@ -6,6 +6,9 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -34,10 +37,22 @@ public class AuthTokenFilter extends OncePerRequestFilter {
   }
 
   protected boolean shouldNotFilter(HttpServletRequest request) {
-    // Exclure le filtre pour les requêtes POST vers /proprietaire
-    return (request.getMethod().equalsIgnoreCase("POST") && request.getServletPath()
-        .equals("/auth/login"))
-        || (!request.getServletPath().startsWith("/auth") && !request.getServletPath()
-        .startsWith("/proprietaires") && !request.getServletPath().startsWith("/admin"));
+    //true = do not filter, then do not require token
+    //false = do filter, then require token
+
+    if (
+        !request.getServletPath().startsWith("/auth")
+            && !request.getServletPath().startsWith("/proprietaires")
+            && !request.getServletPath().startsWith("/admin")
+    ) {
+      return true;
+    }
+
+    Map<String, List<String>> mapOfExcludeMethodPath = new HashMap<>();
+    mapOfExcludeMethodPath.put("POST", List.of("/auth/login", "/auth/refresh"));
+
+    return mapOfExcludeMethodPath.get(request.getMethod().toUpperCase()) != null
+        && mapOfExcludeMethodPath.get(request.getMethod().toUpperCase())
+        .contains(request.getServletPath());
   }
 }

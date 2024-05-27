@@ -3,11 +3,12 @@ package fr.esgi.al5.tayarim.services;
 
 import fr.esgi.al5.tayarim.auth.JwtHelper;
 import fr.esgi.al5.tayarim.auth.TokenCacheService;
+import fr.esgi.al5.tayarim.auth.UserTokenInfo;
 import fr.esgi.al5.tayarim.dto.auth.AuthLoginResponseDto;
+import fr.esgi.al5.tayarim.dto.auth.AuthRefreshResponseDto;
 import fr.esgi.al5.tayarim.dto.auth.AuthResponseDto;
 import fr.esgi.al5.tayarim.dto.proprietaire.AdministrateurDto;
 import fr.esgi.al5.tayarim.dto.proprietaire.ProprietaireDto;
-import fr.esgi.al5.tayarim.entities.Utilisateur;
 import fr.esgi.al5.tayarim.exceptions.AdministrateurNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.TokenExpireOrInvalidException;
@@ -103,16 +104,37 @@ public class AuthService {
       throw new AdministrateurNotFoundException();
     }
 
+    /*
     String uuid = tokenCacheService.getFromCache(id);
     if (uuid == null) {
       uuid = UUID.randomUUID().toString();
       tokenCacheService.addToCache(id, uuid);
     }
+    */
 
-    String token = jwtHelper.generateToken(id, uuid, isAdmin);
+    String refreshToken = "";
+    String foundToken = tokenCacheService.getFromCache(id);
+    if (foundToken == null) {
+      String uuid = UUID.randomUUID().toString();
+      refreshToken = jwtHelper.generateToken(id, uuid, isAdmin, true);
+      tokenCacheService.addToCache(id, refreshToken);
+    } else {
+      refreshToken = foundToken;
+      try {
+        verifyToken(refreshToken, false);
+      } catch (TokenExpireOrInvalidException e) {
+        refreshToken = jwtHelper.generateToken(id, jwtHelper.extractUuid(refreshToken), isAdmin,
+            true);
+        tokenCacheService.addToCache(id, refreshToken);
+      }
+    }
 
-    return new AuthLoginResponseDto(id, token, isAdmin, nom, prenom, email, numTel,
-        isPasswordUpdated);
+    String accessToken = jwtHelper.generateToken(id, jwtHelper.extractUuid(refreshToken), isAdmin,
+        false);
+
+    return new AuthLoginResponseDto(id, isAdmin, nom, prenom, email, numTel, isPasswordUpdated,
+        accessToken,
+        refreshToken);
   }
 
   /**
@@ -124,29 +146,50 @@ public class AuthService {
    */
   public AuthResponseDto auth(@NonNull String token) {
 
-    Entry<Long, Boolean> entry = verifyToken(token, false);
+    UserTokenInfo userTokenInfo = verifyToken(token, false);
 
     Boolean isPasswordUpdated = true;
 
-    if (!entry.getValue()) {
-      isPasswordUpdated = proprietaireService.getProprietaireById(entry.getKey(), false)
+    if (!userTokenInfo.getIsAdmin()) {
+      isPasswordUpdated = proprietaireService.getProprietaireById(userTokenInfo.getId(), false)
           .getIsPasswordUpdated();
     }
 
-    return new AuthResponseDto(entry.getKey(), token, entry.getValue(), isPasswordUpdated);
+    return new AuthResponseDto(userTokenInfo.getId(), token, userTokenInfo.getIsAdmin(),
+        isPasswordUpdated);
 
   }
 
   /**
-   * Déconnecte un utilisateur en invalidant le token actuel et en générant un nouveau.
+   * Actualise le token de l'utilisateur à partir de son token et dur efresh token.
+   *
+   * @param refreshToken Le refreshToken JWT de l'utilisateur
+   * @return {@link AuthResponseDto}
+   * @throws TokenExpireOrInvalidException Si le token est expiré ou invalide.
+   */
+  public AuthRefreshResponseDto refresh(@NonNull String refreshToken) {
+
+    UserTokenInfo userTokenInfo = verifyToken(refreshToken, false);
+
+    String token = jwtHelper.generateToken(userTokenInfo.getId(),
+        jwtHelper.extractUuid(refreshToken),
+        userTokenInfo.getIsAdmin(), false);
+
+    return new AuthRefreshResponseDto(userTokenInfo.getId(), userTokenInfo.getIsAdmin(),
+        userTokenInfo.getIsPasswordUpdated(), token, refreshToken, "Bearer");
+
+  }
+
+  /**
+   * Déconnecte un utilisateur en invalidant l'Uuid' actuel et en générant un nouveau.
    *
    * @param token Le token JWT de l'utilisateur à déconnecter.
    */
   public void logout(@NonNull String token) {
 
-    Entry<Long, Boolean> entry = verifyToken(token, false);
+    UserTokenInfo userTokenInfo = verifyToken(token, false);
 
-    tokenCacheService.addToCache(entry.getKey(), UUID.randomUUID().toString());
+    //tokenCacheService.addToCache(entry.getKey(), UUID.randomUUID().toString());
 
   }
 
@@ -161,7 +204,7 @@ public class AuthService {
    * @throws TokenExpireOrInvalidException Si le token est invalide ou expiré, ou si l'utilisateur
    *                                       n'est pas autorisé comme administrateur lorsque requis.
    */
-  public Entry<Long, Boolean> verifyToken(@NonNull String token, boolean shouldBeAdmin) {
+  public UserTokenInfo verifyToken(@NonNull String token, boolean shouldBeAdmin) {
     boolean isAdmin = jwtHelper.extractAdmin(token);
     if (shouldBeAdmin && !isAdmin) {
       throw new TokenExpireOrInvalidException();
@@ -169,6 +212,7 @@ public class AuthService {
     Long id;
     AdministrateurDto administrateurDto;
     ProprietaireDto proprietaireDto;
+    boolean isPasswordUpdated;
     if (isAdmin) {
       try {
         administrateurDto = administrateurService.getAdministrateurById(
@@ -177,6 +221,7 @@ public class AuthService {
          * the token will not be valid anymore
          */
         id = administrateurDto.getId();
+        isPasswordUpdated = true;
       } catch (AdministrateurNotFoundException ex) {
         throw new TokenExpireOrInvalidException();
       }
@@ -188,19 +233,21 @@ public class AuthService {
          * the token will not be valid anymore
          */
         id = proprietaireDto.getId();
+        isPasswordUpdated = proprietaireDto.getIsPasswordUpdated();
       } catch (ProprietaireNotFoundException ex) {
         throw new TokenExpireOrInvalidException();
       }
     }
 
-    String uuid = tokenCacheService.getFromCache(id);
-    if (uuid == null) {
+    String foundToken = tokenCacheService.getFromCache(id);
+    if (foundToken == null) {
       throw new TokenExpireOrInvalidException();
     }
 
-    if (!jwtHelper.validateToken(token, id, uuid)) {
+    if (!jwtHelper.validateToken(token, id, jwtHelper.extractUuid(foundToken))) {
       throw new TokenExpireOrInvalidException();
     }
-    return new AbstractMap.SimpleEntry<>(id, isAdmin);
+
+    return new UserTokenInfo(id, isAdmin, isPasswordUpdated);
   }
 }
