@@ -159,6 +159,9 @@ public class ProprietaireService {
             .isBlank())
             && (proprietaireUpdateDto.getMotDePasse() == null
             || proprietaireUpdateDto.getMotDePasse().isBlank())
+            && (proprietaireUpdateDto.getCommission() == null
+            || proprietaireUpdateDto.getCommission().isNaN())
+
     ) {
       throw new ProprietaireInvalidUpdateBody();
     }
@@ -200,6 +203,10 @@ public class ProprietaireService {
     proprietaire.setIsPasswordUpdated(
         proprietaireUpdateDto.getMotDePasse() != null && !proprietaireUpdateDto.getMotDePasse()
             .isBlank() || proprietaire.getIsPasswordUpdated());
+    proprietaire.setCommission(
+        (proprietaireUpdateDto.getCommission() != null && !proprietaireUpdateDto.getCommission()
+            .isNaN())
+            ? proprietaireUpdateDto.getCommission() : proprietaire.getCommission());
 
     return ProprietaireMapper.entityToDto(proprietaireRepository.save(proprietaire), false);
   }

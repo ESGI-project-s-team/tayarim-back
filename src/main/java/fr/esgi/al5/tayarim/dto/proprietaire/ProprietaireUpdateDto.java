@@ -2,6 +2,8 @@ package fr.esgi.al5.tayarim.dto.proprietaire;
 
 import jakarta.validation.GroupSequence;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -38,6 +40,10 @@ public class ProprietaireUpdateDto {
   @Pattern(regexp = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?\\d)(?=.*?[!@#$%&*()_+\\-=\\[\\]?]).{8,}$",
       message = "error_owner_invalid_password")
   private String motDePasse;
+
+  @DecimalMin(value = "0.0", message = "error_owner_invalid_commission")
+  @DecimalMax(value = "99.99", message = "error_owner_invalid_commission")
+  private Float commission;
 
   // No need for explicit getters, setters, or constructors
 }
