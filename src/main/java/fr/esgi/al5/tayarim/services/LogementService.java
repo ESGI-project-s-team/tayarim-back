@@ -19,11 +19,17 @@ import fr.esgi.al5.tayarim.exceptions.UtilisateurNotFoundException;
 import fr.esgi.al5.tayarim.mappers.LogementMapper;
 import fr.esgi.al5.tayarim.repositories.LogementRepository;
 import fr.esgi.al5.tayarim.repositories.ProprietaireRepository;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.NonNull;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -69,8 +75,6 @@ public class LogementService {
 
     Proprietaire proprietaire = optionalProprietaire.get();
 
-    // https://www.airbnb.fr/rooms/1165713786974991920?source_impression_id=p3_1716826122_Ahyg2iAbHsrMtNY%2F
-
     String[] parts = logementCreationDto.getUrl().split("/");
 
     String roomId = null;
@@ -85,7 +89,47 @@ public class LogementService {
       System.out.println("ID de la chambre : " + roomId);
     } else {
       System.out.println("Aucun ID trouvé"); //throw error
+    }
 
+    // Configurer le chemin vers le WebDriver
+    /*
+    //get actual dir
+    System.setProperty("webdriver.chrome.driver", "src/main/resources/chromedriver.exe");
+    System.out.println("1");
+    // Options de Chrome pour éviter les erreurs
+    ChromeOptions options = new ChromeOptions();
+    System.out.println("2");
+    options.addArguments("--headless"); // Exécuter en mode headless, sans interface graphique
+    options.addArguments("--disable-gpu"); // Nécessaire pour le mode headless dans certaines versions de Chrome
+    System.out.println("3");
+
+    // Créer une instance de WebDriver
+    WebDriver driver = new ChromeDriver(options);
+    System.out.println("4");
+
+    try {
+      // Définir la taille de la fenêtre
+      driver.manage().window().setSize(new org.openqa.selenium.Dimension(1920, 1080));
+
+      // Ouvrir la page Airbnb
+      String url = logementCreationDto.getUrl();
+      driver.get(url);
+
+      // Attendre que la page soit complètement chargée
+      Thread.sleep(500);
+
+      // Sélecteur pour trouver le nom de l'hôte
+      WebElement hostElement = driver.findElement(By.cssSelector("div[class*='t1pxe1a4']"));
+      String hostName = hostElement.getText();
+
+      System.out.println("Nom de l'hôte: " + hostName);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    } finally {
+      // Fermer le navigateur
+      driver.quit();
+    }
+    */
     return LogementMapper.entityToDto(
         logementRepository.save(
             LogementMapper.creationDtoToEntity(true, 1, 1, 1, 1, 1, "description", 1f, 1f,
