@@ -3,6 +3,7 @@ package fr.esgi.al5.tayarim.controllers;
 import fr.esgi.al5.tayarim.dto.logement.LogementCreationDto;
 import fr.esgi.al5.tayarim.dto.logement.LogementDto;
 import fr.esgi.al5.tayarim.exceptions.AdministrateurNotFoundException;
+import fr.esgi.al5.tayarim.exceptions.LogementNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.TokenExpireOrInvalidException;
 import fr.esgi.al5.tayarim.exceptions.UtilisateurNotFoundException;
@@ -17,6 +18,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -61,6 +64,34 @@ public class LogementController {
         logementService.createLogement(logementCreationDto),
         HttpStatus.OK
     );
+  }
+
+  /**
+   * Obtient un logement par son identifiant.
+   *
+   * @param authHeader L'en-tête d'autorisation contenant le token JWT.
+   * @return Une ResponseEntity contenant les détails du propriétaire et le statut HTTP.
+   */
+  @GetMapping("")
+  public ResponseEntity<List<LogementDto>> getAllLogements(
+      @RequestAttribute("token") String authHeader) {
+    authService.verifyToken(getTokenFromHeader(authHeader), true);
+    return new ResponseEntity<>(logementService.getAllLogement(), HttpStatus.OK);
+  }
+
+  /**
+   * Obtient un logement par son identifiant.
+   *
+   * @param authHeader L'en-tête d'autorisation contenant le token JWT.
+   * @param id         L'identifiant du propriétaire.
+   * @return Une ResponseEntity contenant les détails du propriétaire et le statut HTTP.
+   */
+  @GetMapping("/{id}")
+  public ResponseEntity<LogementDto> getLogementsById(
+      @RequestAttribute("token") String authHeader,
+      @PathVariable Long id) {
+    authService.verifyToken(getTokenFromHeader(authHeader), false);
+    return new ResponseEntity<>(logementService.getLogementById(id), HttpStatus.OK);
   }
 
   /**
@@ -120,6 +151,18 @@ public class LogementController {
   @ResponseStatus(HttpStatus.NOT_FOUND)
   @ExceptionHandler({ProprietaireNotFoundException.class})
   public Map<String, List<String>> proprietaireNotFoundException(ProprietaireNotFoundException ex) {
+    return mapException(ex);
+  }
+
+  /**
+   * Gère les exceptions lorsque le logement n'est pas trouvé.
+   *
+   * @param ex L'exception capturée.
+   * @return Une carte des erreurs.
+   */
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  @ExceptionHandler({LogementNotFoundException.class})
+  public Map<String, List<String>> logementNotFoundException(LogementNotFoundException ex) {
     return mapException(ex);
   }
 

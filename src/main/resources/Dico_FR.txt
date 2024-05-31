@@ -37,4 +37,5 @@
 "error_home_invalid_country": "Le pays saisie est invalide",
 "error_home_invalid_type_id": "L'id du type de logement est invalide",
 "error_home_invalid_title": "Le titre saisie est invalide",
+"error_home_notExist": "Ce logement n'existe pas",
 

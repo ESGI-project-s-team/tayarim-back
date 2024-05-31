@@ -37,3 +37,4 @@
 "error_home_invalid_country": "The country entered is invalid",
 "error_home_invalid_type_id": "The id of the housing type is invalid",
 "error_home_invalid_title": "The title entered is invalid",
+"error_home_notExist": "This housing doesn't exist"

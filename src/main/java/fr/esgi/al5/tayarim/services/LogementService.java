@@ -13,8 +13,10 @@ import fr.esgi.al5.tayarim.dto.logement.LogementCreationDto;
 import fr.esgi.al5.tayarim.dto.logement.LogementDto;
 import fr.esgi.al5.tayarim.dto.proprietaire.AdministrateurDto;
 import fr.esgi.al5.tayarim.dto.proprietaire.ProprietaireDto;
+import fr.esgi.al5.tayarim.entities.Logement;
 import fr.esgi.al5.tayarim.entities.Proprietaire;
 import fr.esgi.al5.tayarim.exceptions.AdministrateurNotFoundException;
+import fr.esgi.al5.tayarim.exceptions.LogementNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.TokenExpireOrInvalidException;
 import fr.esgi.al5.tayarim.exceptions.UtilisateurNotFoundException;
@@ -29,6 +31,7 @@ import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Base64;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.UUID;
@@ -91,6 +94,34 @@ public class LogementService {
                 proprietaire)
         )
     );
+  }
+
+  /**
+   * Tente de récupérer tous les logements.
+   *
+   * @return {@link LogementDto}
+   */
+  @Transactional
+  public List<LogementDto> getAllLogement() {
+    return LogementMapper.entityListToDtoList(
+        logementRepository.findAll()
+    );
+  }
+
+  /**
+   * Tente de récupérer un logements par son id.
+   *
+   * @return {@link LogementDto}
+   */
+  @Transactional
+  public LogementDto getLogementById(@NonNull Long id) {
+    Optional<Logement> optionalLogement = logementRepository.findById(id);
+
+    if (optionalLogement.isEmpty()) {
+      throw new LogementNotFoundException();
+    }
+
+    return LogementMapper.entityToDto(optionalLogement.get());
   }
 
 
