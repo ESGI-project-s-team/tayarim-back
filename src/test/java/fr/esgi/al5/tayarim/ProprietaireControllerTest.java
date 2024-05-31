@@ -124,6 +124,7 @@ public class ProprietaireControllerTest {
         .isPasswordUpdated(Boolean.TRUE)
         .logements(List.of(new LogementDto(
             1L,
+            "titre",
             1L,
             true,
             2,
