@@ -122,7 +122,23 @@ public class ProprietaireControllerTest {
         .numTel("0612345678")
         .dateInscription(localDateTime)
         .isPasswordUpdated(Boolean.TRUE)
-        .logements(List.of(new LogementDto(1L, 1L)))
+        .logements(List.of(new LogementDto(
+            1L,
+            1L,
+            true,
+            2,
+            3,
+            2,
+            5,
+            1,
+            "description",
+            0f,
+            50f,
+            "10:00",
+            "12:00",
+            "13 FakeStreet City, 12345 Country",
+            "Appartement"
+        )))
         .commission(20f)
         .build();
     proprietaireUpdateDto = ProprietaireUpdateDto.builder()
