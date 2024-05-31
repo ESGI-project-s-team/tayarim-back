@@ -6,6 +6,7 @@ import fr.esgi.al5.tayarim.entities.Logement;
 import fr.esgi.al5.tayarim.entities.Proprietaire;
 import fr.esgi.al5.tayarim.repositories.ProprietaireRepository;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.NonNull;
@@ -22,23 +23,28 @@ public class LogementMapper {
   /**
    * Convertit une entité Logement en un DTO Logement.
    *
-   * @param logement L'entité logement à convertir.
+   * @param logementCreationDto Le Dto logement à convertir.
    * @return Le DTO Logement correspondant.
    */
-  public static Logement creationDtoToEntity(@NonNull Boolean isLouable,
-      @NonNull Integer nombresDeChambres, @NonNull Integer nombresDeLits,
-      @NonNull Integer nombresSallesDeBains,
-      @NonNull Integer capaciteMaxPersonne, @NonNull Integer nombresNuitsMin,
-      @NonNull String description, @NonNull Float note, @NonNull Float prixParNuit,
-      @NonNull LocalDateTime defaultCheckIn, @NonNull LocalDateTime defaultCheckOut,
-      @NonNull Integer intervalReservation, @NonNull Long idAdresse,
-      @NonNull Long idTypeLogement, @NonNull Proprietaire proprietaire) {
+  public static Logement creationDtoToEntity(@NonNull LogementCreationDto logementCreationDto, @NonNull Long idAddresse, @NonNull Long idTypeLogement, @NonNull Proprietaire proprietaire) {
 
 
 
-    return new Logement(isLouable, nombresDeChambres, nombresDeLits, nombresSallesDeBains,
-        capaciteMaxPersonne, nombresNuitsMin, description, note, prixParNuit, defaultCheckIn,
-        defaultCheckOut, intervalReservation, idAdresse, idTypeLogement, proprietaire);
+    return new Logement(true,
+        logementCreationDto.getNombresDeChambres(),
+        logementCreationDto.getNombresDeLits(),
+        logementCreationDto.getNombresSallesDeBains(),
+        logementCreationDto.getCapaciteMaxPersonne(),
+        logementCreationDto.getNombresNuitsMin(),
+        logementCreationDto.getDescription(),
+        0f,
+        logementCreationDto.getPrixParNuit(),
+        LocalTime.parse(logementCreationDto.getDefaultCheckIn()),
+        LocalTime.parse(logementCreationDto.getDefaultCheckOut()),
+        logementCreationDto.getIntervalReservation(),
+        idAddresse,
+        idTypeLogement,
+        proprietaire);
   }
 
   /**
@@ -50,7 +56,21 @@ public class LogementMapper {
   public static LogementDto entityToDto(@NonNull Logement logement) {
     return new LogementDto(
         logement.getId(),
-        logement.getProprietaire().getId());
+        logement.getProprietaire().getId(),
+        logement.getIsLouable(),
+        logement.getNombresDeChambres(),
+        logement.getNombresDeLits(),
+        logement.getNombresSallesDeBains(),
+        logement.getCapaciteMaxPersonne(),
+        logement.getNombresNuitsMin(),
+        logement.getDescription(),
+        logement.getNote(),
+        logement.getPrixParNuit(),
+        logement.getDefaultCheckIn().toString(),
+        logement.getDefaultCheckOut().toString(),
+        "13 FakeStreet City, 12345 Country",
+        "Appartement"
+    );
   }
 
   /**

@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NonNull;
@@ -56,10 +57,10 @@ public class Logement {
   private Float prixParNuit;
 
   @Column(name = "DEFAULTCHECKIN")
-  private LocalDateTime defaultCheckIn;
+  private LocalTime defaultCheckIn;
 
   @Column(name = "DEFAULTCHECKOUT")
-  private LocalDateTime defaultCheckOut;
+  private LocalTime defaultCheckOut;
 
   @Column(name = "INTERVALRESERVATION")
   private Integer intervalReservation;
@@ -77,7 +78,7 @@ public class Logement {
   @Builder
   public Logement(@NonNull Boolean isLouable, @NonNull Integer nombresDeChambres, @NonNull Integer nombresDeLits, @NonNull Integer nombresSallesDeBains,
       @NonNull Integer capaciteMaxPersonne, @NonNull Integer nombresNuitsMin, @NonNull String description, @NonNull Float note, @NonNull Float prixParNuit,
-      @NonNull LocalDateTime defaultCheckIn, @NonNull LocalDateTime defaultCheckOut, @NonNull Integer intervalReservation, @NonNull Long idAdresse,
+      @NonNull LocalTime defaultCheckIn, @NonNull LocalTime defaultCheckOut, @NonNull Integer intervalReservation, @NonNull Long idAdresse,
       @NonNull Long idTypeLogement, @NonNull Proprietaire proprietaire) {
     this.isLouable = isLouable;
     this.nombresDeChambres = nombresDeChambres;

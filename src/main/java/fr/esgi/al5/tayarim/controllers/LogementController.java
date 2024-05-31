@@ -1,10 +1,5 @@
 package fr.esgi.al5.tayarim.controllers;
 
-import fr.esgi.al5.tayarim.dto.auth.AuthLoginDto;
-import fr.esgi.al5.tayarim.dto.auth.AuthLoginResponseDto;
-import fr.esgi.al5.tayarim.dto.auth.AuthRefreshDto;
-import fr.esgi.al5.tayarim.dto.auth.AuthRefreshResponseDto;
-import fr.esgi.al5.tayarim.dto.auth.AuthResponseDto;
 import fr.esgi.al5.tayarim.dto.logement.LogementCreationDto;
 import fr.esgi.al5.tayarim.dto.logement.LogementDto;
 import fr.esgi.al5.tayarim.exceptions.AdministrateurNotFoundException;
@@ -13,8 +8,6 @@ import fr.esgi.al5.tayarim.exceptions.TokenExpireOrInvalidException;
 import fr.esgi.al5.tayarim.exceptions.UtilisateurNotFoundException;
 import fr.esgi.al5.tayarim.services.AuthService;
 import fr.esgi.al5.tayarim.services.LogementService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,7 +17,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,14 +32,17 @@ import org.springframework.web.bind.annotation.RestController;
 public class LogementController {
 
   private final LogementService logementService;
+  private final AuthService authService;
 
   /**
    * Construit le contrôleur avec le service de logement nécessaire.
    *
    * @param logementService Le service de logement.
+   * @param authService
    */
-  public LogementController(LogementService logementService) {
+  public LogementController(LogementService logementService, AuthService authService) {
     this.logementService = logementService;
+    this.authService = authService;
   }
 
   /**
@@ -57,8 +52,11 @@ public class LogementController {
    * @return Un ResponseEntity contenant le DTO de réponse à la creation de logement.
    */
   @PostMapping("")
-  public ResponseEntity<LogementDto> createLogement(@Valid @RequestBody LogementCreationDto logementCreationDto) {
+  public ResponseEntity<LogementDto> createLogement(
+      @RequestAttribute("token") String authHeader,
+      @Valid @RequestBody LogementCreationDto logementCreationDto) {
 
+    authService.verifyToken(getTokenFromHeader(authHeader), true);
     return new ResponseEntity<>(
         logementService.createLogement(logementCreationDto),
         HttpStatus.OK

@@ -29,9 +29,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProprietaireService {
 
   private final ProprietaireRepository proprietaireRepository;
+  private final MailingService mailingService;
 
-  public ProprietaireService(ProprietaireRepository proprietaireRepository) {
+  public ProprietaireService(ProprietaireRepository proprietaireRepository,
+      MailingService mailingService) {
     this.proprietaireRepository = proprietaireRepository;
+    this.mailingService = mailingService;
   }
 
   /**
@@ -87,6 +90,8 @@ public class ProprietaireService {
     }
 
     System.out.println(generatedPassword); // waiting for SMTP
+    mailingService.sendMail(proprietaireCreationDto.getEmail(), "Bienvenue sur Tayarim",
+        "Votre mot de passe est : " + generatedPassword);
 
     Proprietaire proprietaire = ProprietaireMapper.creationDtoToEntity(proprietaireCreationDto,
         hashPassword(generatedPassword.toString()));

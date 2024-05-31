@@ -82,7 +82,7 @@ CREATE TABLE IF NOT EXISTS Adresse (
                                        numero INT,
                                        suffixeNumero VARCHAR(100),
                                        codePostal VARCHAR(50),
-                                       Pays VARCHAR(100),
+                                       pays VARCHAR(100),
                                        etage VARCHAR(100),
                                        numeroDePorte VARCHAR(100),
                                        longitude FLOAT,
