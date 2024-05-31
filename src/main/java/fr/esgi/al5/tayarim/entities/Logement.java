@@ -32,6 +32,9 @@ public class Logement {
   @Column(name = "ID")
   private Long id;
 
+  @Column(name = "TITRE")
+  private String titre;
+
   @Column(name = "LOUABLE")
   private Boolean isLouable;
 
@@ -81,24 +84,25 @@ public class Logement {
   /**
    * Builder pour l'entité Logmeent.
    *
-   * @param isLouable Indicateur de disponibilité du logement
-   * @param nombresDeChambres Nombre de chambres dans le logement
-   * @param nombresDeLits Nombre de lits dans le logement
+   * @param isLouable            Indicateur de disponibilité du logement
+   * @param nombresDeChambres    Nombre de chambres dans le logement
+   * @param nombresDeLits        Nombre de lits dans le logement
    * @param nombresSallesDeBains Nombre de salles de bains dans le logement
-   * @param capaciteMaxPersonne Capacité maximale de personnes dans le logement
-   * @param nombresNuitsMin Nombre minimum de nuits pour une réservation
-   * @param description Description du logement
-   * @param note Note moyenne du logement
-   * @param prixParNuit Prix par nuit du logement
-   * @param defaultCheckIn Heure de check-in par défaut
-   * @param defaultCheckOut Heure de check-out par défaut
-   * @param intervalReservation Intervalle de réservation en jours
-   * @param idAdresse Identifiant de l'adresse du logement
-   * @param idTypeLogement Identifiant du type de logement
-   * @param proprietaire Propriétaire du logement
+   * @param capaciteMaxPersonne  Capacité maximale de personnes dans le logement
+   * @param nombresNuitsMin      Nombre minimum de nuits pour une réservation
+   * @param description          Description du logement
+   * @param note                 Note moyenne du logement
+   * @param prixParNuit          Prix par nuit du logement
+   * @param defaultCheckIn       Heure de check-in par défaut
+   * @param defaultCheckOut      Heure de check-out par défaut
+   * @param intervalReservation  Intervalle de réservation en jours
+   * @param idAdresse            Identifiant de l'adresse du logement
+   * @param idTypeLogement       Identifiant du type de logement
+   * @param proprietaire         Propriétaire du logement
    */
   @Builder
-  public Logement(@NonNull Boolean isLouable, @NonNull Integer nombresDeChambres,
+  public Logement(@NonNull Boolean isLouable, @NonNull String titre,
+      @NonNull Integer nombresDeChambres,
       @NonNull Integer nombresDeLits, @NonNull Integer nombresSallesDeBains,
       @NonNull Integer capaciteMaxPersonne, @NonNull Integer nombresNuitsMin,
       @NonNull String description, @NonNull Float note, @NonNull Float prixParNuit,
@@ -106,6 +110,7 @@ public class Logement {
       @NonNull Integer intervalReservation, @NonNull Long idAdresse,
       @NonNull Long idTypeLogement, @NonNull Proprietaire proprietaire) {
     this.isLouable = isLouable;
+    this.titre = titre;
     this.nombresDeChambres = nombresDeChambres;
     this.nombresDeLits = nombresDeLits;
     this.nombresSallesDeBains = nombresSallesDeBains;

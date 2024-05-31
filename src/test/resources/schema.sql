@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS Administrateur (
 
 CREATE TABLE IF NOT EXISTS Logement (
                                         id INT PRIMARY KEY AUTO_INCREMENT,
-                                        type VARCHAR(50),
+                                        titre VARCHAR(50),
                                         louable BOOL,
                                         nombresDeChambres INT,
                                         nombresDeLits INT,

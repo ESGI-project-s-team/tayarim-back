@@ -16,6 +16,8 @@ public class LogementDto {
   @NonNull
   private Long id;
   @NonNull
+  private String titre;
+  @NonNull
   private Long idProprietaire;
   @NonNull
   private Boolean isLouable;

@@ -30,6 +30,7 @@ public class LogementMapper {
       @NonNull Long idAddresse, @NonNull Long idTypeLogement, @NonNull Proprietaire proprietaire) {
 
     return new Logement(true,
+        logementCreationDto.getTitre(),
         logementCreationDto.getNombresDeChambres(),
         logementCreationDto.getNombresDeLits(),
         logementCreationDto.getNombresSallesDeBains(),
@@ -55,6 +56,7 @@ public class LogementMapper {
   public static LogementDto entityToDto(@NonNull Logement logement) {
     return new LogementDto(
         logement.getId(),
+        logement.getTitre(),
         logement.getProprietaire().getId(),
         logement.getIsLouable(),
         logement.getNombresDeChambres(),
