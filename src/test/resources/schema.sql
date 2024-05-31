@@ -27,7 +27,8 @@ CREATE TABLE IF NOT EXISTS Utilisateur (
 CREATE TABLE IF NOT EXISTS Proprietaire (
     idUser INT PRIMARY KEY,
     dateInscription DATETIME,
-    isPasswordUpdated BOOLEAN
+    isPasswordUpdated BOOLEAN,
+    commission FLOAT
 );
 
 CREATE TABLE IF NOT EXISTS Administrateur (

@@ -100,6 +100,7 @@ public class ProprietaireControllerTest {
         .dateInscription(localDateTime)
         .logements(null)
         .isPasswordUpdated(Boolean.TRUE)
+        .commission(20f)
         .build();
     proprietaireDto2 = ProprietaireDto.builder()
         .id(2L)
@@ -110,6 +111,7 @@ public class ProprietaireControllerTest {
         .dateInscription(localDateTime)
         .logements(null)
         .isPasswordUpdated(Boolean.TRUE)
+        .commission(20f)
         .build();
     proprietaireDtos = List.of(proprietaireDto, proprietaireDto2);
     proprietaireDtoWithLogement = ProprietaireDto.builder()
@@ -121,6 +123,7 @@ public class ProprietaireControllerTest {
         .dateInscription(localDateTime)
         .isPasswordUpdated(Boolean.TRUE)
         .logements(List.of(new LogementDto(1L, 1L)))
+        .commission(20f)
         .build();
     proprietaireUpdateDto = ProprietaireUpdateDto.builder()
         .prenom("Karl")
