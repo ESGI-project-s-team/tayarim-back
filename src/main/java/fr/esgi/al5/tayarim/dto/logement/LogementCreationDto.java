@@ -17,13 +17,12 @@ import lombok.RequiredArgsConstructor;
 @Data // Generates getters, setters, toString, equals, and hashCode methods
 @RequiredArgsConstructor
 @AllArgsConstructor // Generates an all-args constructor
-@NoArgsConstructor
 @Builder
 public class LogementCreationDto {
 
   @Valid
 
-  @NotBlank
+  @NotBlank(message = "error_home_invalid_title")
   private String titre;
 
   @Min(value = 1, message = "error_home_invalid_owner_id")

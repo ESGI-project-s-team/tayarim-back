@@ -11,8 +11,10 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 /**
@@ -22,6 +24,7 @@ import lombok.NonNull;
  */
 @Data
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Logement {
 
   @Id
@@ -75,10 +78,32 @@ public class Logement {
   @JoinColumn(name = "IDPROPRIETAIRE")
   private Proprietaire proprietaire;
 
+  /**
+   * Builder pour l'entité Logmeent.
+   *
+   * @param isLouable Indicateur de disponibilité du logement
+   * @param nombresDeChambres Nombre de chambres dans le logement
+   * @param nombresDeLits Nombre de lits dans le logement
+   * @param nombresSallesDeBains Nombre de salles de bains dans le logement
+   * @param capaciteMaxPersonne Capacité maximale de personnes dans le logement
+   * @param nombresNuitsMin Nombre minimum de nuits pour une réservation
+   * @param description Description du logement
+   * @param note Note moyenne du logement
+   * @param prixParNuit Prix par nuit du logement
+   * @param defaultCheckIn Heure de check-in par défaut
+   * @param defaultCheckOut Heure de check-out par défaut
+   * @param intervalReservation Intervalle de réservation en jours
+   * @param idAdresse Identifiant de l'adresse du logement
+   * @param idTypeLogement Identifiant du type de logement
+   * @param proprietaire Propriétaire du logement
+   */
   @Builder
-  public Logement(@NonNull Boolean isLouable, @NonNull Integer nombresDeChambres, @NonNull Integer nombresDeLits, @NonNull Integer nombresSallesDeBains,
-      @NonNull Integer capaciteMaxPersonne, @NonNull Integer nombresNuitsMin, @NonNull String description, @NonNull Float note, @NonNull Float prixParNuit,
-      @NonNull LocalTime defaultCheckIn, @NonNull LocalTime defaultCheckOut, @NonNull Integer intervalReservation, @NonNull Long idAdresse,
+  public Logement(@NonNull Boolean isLouable, @NonNull Integer nombresDeChambres,
+      @NonNull Integer nombresDeLits, @NonNull Integer nombresSallesDeBains,
+      @NonNull Integer capaciteMaxPersonne, @NonNull Integer nombresNuitsMin,
+      @NonNull String description, @NonNull Float note, @NonNull Float prixParNuit,
+      @NonNull LocalTime defaultCheckIn, @NonNull LocalTime defaultCheckOut,
+      @NonNull Integer intervalReservation, @NonNull Long idAdresse,
       @NonNull Long idTypeLogement, @NonNull Proprietaire proprietaire) {
     this.isLouable = isLouable;
     this.nombresDeChambres = nombresDeChambres;

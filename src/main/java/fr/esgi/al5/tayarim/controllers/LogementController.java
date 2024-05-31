@@ -38,7 +38,7 @@ public class LogementController {
    * Construit le contrôleur avec le service de logement nécessaire.
    *
    * @param logementService Le service de logement.
-   * @param authService
+   * @param authService Le service d'authentification.
    */
   public LogementController(LogementService logementService, AuthService authService) {
     this.logementService = logementService;

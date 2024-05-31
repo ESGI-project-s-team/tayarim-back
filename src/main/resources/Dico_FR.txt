@@ -35,5 +35,6 @@
 "error_home_invalid_suffix_number": "Le suffixe du numéro de rue saisie est invalide",
 "error_home_invalid_postal_code": "Le code postal saisie est invalide",
 "error_home_invalid_country": "Le pays saisie est invalide",
-"error_home_invalid_type_id": "L'id du type de logement est invalide"
+"error_home_invalid_type_id": "L'id du type de logement est invalide",
+"error_home_invalid_title": "Le titre saisie est invalide",
 

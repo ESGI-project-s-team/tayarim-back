@@ -26,9 +26,8 @@ public class LogementMapper {
    * @param logementCreationDto Le Dto logement à convertir.
    * @return Le DTO Logement correspondant.
    */
-  public static Logement creationDtoToEntity(@NonNull LogementCreationDto logementCreationDto, @NonNull Long idAddresse, @NonNull Long idTypeLogement, @NonNull Proprietaire proprietaire) {
-
-
+  public static Logement creationDtoToEntity(@NonNull LogementCreationDto logementCreationDto,
+      @NonNull Long idAddresse, @NonNull Long idTypeLogement, @NonNull Proprietaire proprietaire) {
 
     return new Logement(true,
         logementCreationDto.getNombresDeChambres(),
