@@ -35,6 +35,8 @@
 "error_home_invalid_suffix_number": "The suffix of the street number entered is invalid",
 "error_home_invalid_postal_code": "The postal code entered is invalid",
 "error_home_invalid_country": "The country entered is invalid",
+"error_home_invalid_floor": "The floor entered is invalid",
+"error_home_invalid_door_number": "The door number entered is invalid",
 "error_home_invalid_type_id": "The id of the housing type is invalid",
 "error_home_invalid_title": "The title entered is invalid",
 "error_home_notExist": "This housing doesn't exist"

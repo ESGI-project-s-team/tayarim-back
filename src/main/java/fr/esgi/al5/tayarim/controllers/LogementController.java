@@ -7,6 +7,7 @@ import fr.esgi.al5.tayarim.dto.logement.LogementUpdateDto;
 import fr.esgi.al5.tayarim.dto.proprietaire.ProprietaireDto;
 import fr.esgi.al5.tayarim.dto.proprietaire.ProprietaireUpdateDto;
 import fr.esgi.al5.tayarim.exceptions.AdministrateurNotFoundException;
+import fr.esgi.al5.tayarim.exceptions.LogementInvalidUpdateBody;
 import fr.esgi.al5.tayarim.exceptions.LogementNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.TokenExpireOrInvalidException;
@@ -24,6 +25,7 @@ import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -49,7 +51,7 @@ public class LogementController {
    * Construit le contrôleur avec le service de logement nécessaire.
    *
    * @param logementService Le service de logement.
-   * @param authService Le service d'authentification.
+   * @param authService     Le service d'authentification.
    */
   public LogementController(LogementService logementService, AuthService authService) {
     this.logementService = logementService;
@@ -83,8 +85,10 @@ public class LogementController {
   @GetMapping("")
   public ResponseEntity<List<LogementDto>> getAllLogements(
       @RequestAttribute("token") String authHeader) {
-    authService.verifyToken(getTokenFromHeader(authHeader), true);
-    return new ResponseEntity<>(logementService.getAllLogement(), HttpStatus.OK);
+    UserTokenInfo userTokenInfo = authService.verifyToken(getTokenFromHeader(authHeader), false);
+    return new ResponseEntity<>(
+        logementService.getAllLogement(userTokenInfo.getId(), userTokenInfo.getIsAdmin()),
+        HttpStatus.OK);
   }
 
   /**
@@ -101,17 +105,17 @@ public class LogementController {
     authService.verifyToken(getTokenFromHeader(authHeader), false);
     return new ResponseEntity<>(logementService.getLogementById(id), HttpStatus.OK);
   }
-  /*
+
   /**
    * Met à jour les informations d'un logement.
    *
-   * @param authHeader            L'en-tête d'autorisation contenant le token JWT.
-   * @param id                    L'identifiant du logement à mettre à jour.
+   * @param authHeader        L'en-tête d'autorisation contenant le token JWT.
+   * @param id                L'identifiant du logement à mettre à jour.
    * @param logementUpdateDto Les données de mise à jour du logement.
    * @return Une ResponseEntity contenant le propriétaire mis à jour et le statut HTTP.
    */
 
-  /*@Operation(summary = "Authenticate user", security = @SecurityRequirement(name = "bearer-key"))
+  @Operation(summary = "Authenticate user", security = @SecurityRequirement(name = "bearer-key"))
   @PutMapping("/{id}")
   public ResponseEntity<LogementDto> updateProprietaire(
       @RequestAttribute("token") String authHeader, @PathVariable Long id,
@@ -122,7 +126,26 @@ public class LogementController {
         logementService.updateLogement(id, logementUpdateDto),
         HttpStatus.OK
     );
-  }*/
+  }
+
+  /**
+   * Supprime un logement par son identifiant.
+   *
+   * @param authHeader L'en-tête d'autorisation contenant le token JWT.
+   * @param id         L'identifiant du logement à supprimer.
+   * @return Une ResponseEntity avec le statut HTTP indiquant le succès de l'opération.
+   */
+  @Operation(summary = "Authenticate user", security = @SecurityRequirement(name = "bearer-key"))
+  @DeleteMapping("/{id}")
+  public ResponseEntity<LogementDto> deleteProprietaire(
+      @RequestAttribute("token") String authHeader, @PathVariable Long id) {
+    authService.verifyToken(getTokenFromHeader(authHeader), true);
+
+    return new ResponseEntity<>(
+        logementService.deleteLogement(id),
+        HttpStatus.OK
+    );
+  }
 
   /**
    * Extrait le token JWT de l'en-tête d'autorisation.
@@ -158,6 +181,18 @@ public class LogementController {
     errorMapping.put("errors", errors);
 
     return errorMapping;
+  }
+
+  /**
+   * Gère les exceptions lorsque le body update du logement est invalide.
+   *
+   * @param ex L'exception capturée.
+   * @return Une carte des erreurs.
+   */
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  @ExceptionHandler({LogementInvalidUpdateBody.class})
+  public Map<String, List<String>> logementInvalidUpdateBody(LogementInvalidUpdateBody ex) {
+    return mapException(ex);
   }
 
   /**

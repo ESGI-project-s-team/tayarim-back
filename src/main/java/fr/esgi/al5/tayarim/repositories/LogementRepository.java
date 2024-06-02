@@ -2,6 +2,7 @@ package fr.esgi.al5.tayarim.repositories;
 
 import fr.esgi.al5.tayarim.entities.Logement;
 import fr.esgi.al5.tayarim.entities.Proprietaire;
+import java.util.List;
 import java.util.Optional;
 import lombok.NonNull;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,5 +15,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface LogementRepository extends JpaRepository<Logement, Long> {
 
+  List<Logement> findAllByProprietaire(@NonNull Proprietaire proprietaire);
 
 }

@@ -53,10 +53,10 @@ public class LogementUpdateDto {
   @Min(value = 1, message = "error_home_invalid_price")
   private Float prixParNuit;
 
-  @Pattern(regexp = "([01]?[0-9]|2[0-3]):[0-5][0-9]", message = "error_home_invalid_checkin")
+  @Pattern(regexp = "([01][0-9]|2[0-3]):[0-5][0-9]", message = "error_home_invalid_checkin")
   private String defaultCheckIn;
 
-  @Pattern(regexp = "([01]?[0-9]|2[0-3]):[0-5][0-9]", message = "error_home_invalid_checkout")
+  @Pattern(regexp = "([01][0-9]|2[0-3]):[0-5][0-9]", message = "error_home_invalid_checkout")
   private String defaultCheckOut;
 
   @Min(value = 1, message = "error_home_invalid_reservation_interval")
@@ -71,7 +71,7 @@ public class LogementUpdateDto {
   @Min(value = 1, message = "error_home_invalid_number")
   private Integer numero;
 
-  @Min(value = 1, message = "error_home_invalid_suffix_number")
+  @Size(min = 1, max = 10, message = "error_home_invalid_suffix_number")
   private String suffixeNumero;
 
   @Size(min = 1, max = 10, message = "error_home_invalid_postal_code")

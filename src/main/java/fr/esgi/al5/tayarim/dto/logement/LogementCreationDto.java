@@ -52,7 +52,7 @@ public class LogementCreationDto {
   @NotNull(message = "error_home_invalid_night_number")
   private Integer nombresNuitsMin;
 
-  @Size(min = 1, max = 500, message = "error_home_invalid_title")
+  @Size(min = 1, max = 500, message = "error_home_invalid_description")
   @NotBlank(message = "error_home_invalid_description")
   private String description;
 
@@ -61,22 +61,22 @@ public class LogementCreationDto {
   private Float prixParNuit;
 
   @NotBlank(message = "error_home_invalid_checkin")
-  @Pattern(regexp = "([01]?[0-9]|2[0-3]):[0-5][0-9]", message = "error_home_invalid_checkin")
+  @Pattern(regexp = "([01][0-9]|2[0-3]):[0-5][0-9]", message = "error_home_invalid_checkin")
   private String defaultCheckIn;
 
   @NotBlank(message = "error_home_invalid_checkout")
-  @Pattern(regexp = "([01]?[0-9]|2[0-3]):[0-5][0-9]", message = "error_home_invalid_checkin")
+  @Pattern(regexp = "([01][0-9]|2[0-3]):[0-5][0-9]", message = "error_home_invalid_checkout")
   private String defaultCheckOut;
 
   @Min(value = 1, message = "error_home_invalid_reservation_interval")
   @NotNull(message = "error_home_invalid_reservation_interval")
   private Integer intervalReservation;
 
-  @Size(min = 1, max = 30, message = "error_home_invalid_title")
+  @Size(min = 1, max = 30, message = "error_home_invalid_city")
   @NotBlank(message = "error_home_invalid_city")
   private String ville;
 
-  @Size(min = 1, max = 30, message = "error_home_invalid_title")
+  @Size(min = 1, max = 30, message = "error_home_invalid_street")
   @NotBlank(message = "error_home_invalid_street")
   private String rue;
 
@@ -84,22 +84,22 @@ public class LogementCreationDto {
   @NotNull(message = "error_home_invalid_number")
   private Integer numero;
 
-  @Size(min = 1, max = 30, message = "error_home_invalid_title")
-  @Min(value = 1, message = "error_home_invalid_suffix_number")
+  @Size(min = 1, max = 10, message = "error_home_invalid_suffix_number")
+  @NotBlank(message = "error_home_invalid_suffix_number")
   private String suffixeNumero;
 
-  @Size(min = 1, max = 10, message = "error_home_invalid_title")
+  @Size(min = 1, max = 10, message = "error_home_invalid_postal_code")
   @NotBlank(message = "error_home_invalid_postal_code")
   private String codePostal;
 
-  @Size(min = 1, max = 30, message = "error_home_invalid_title")
+  @Size(min = 1, max = 30, message = "error_home_invalid_country")
   @NotBlank(message = "error_home_invalid_country")
   private String pays;
 
-  @Size(min = 1, max = 30, message = "error_home_invalid_title")
+  @Size(min = 1, max = 30, message = "error_home_invalid_floor")
   private String etage;
 
-  @Size(min = 1, max = 30, message = "error_home_invalid_title")
+  @Size(min = 1, max = 30, message = "error_home_invalid_door_number")
   private String numeroDePorte;
 
   @Min(value = 1, message = "error_home_invalid_type_id")
