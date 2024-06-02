@@ -42,7 +42,20 @@ public class LogementDto {
   @NonNull
   private String defaultCheckOut;
   @NonNull
-  private String adresse;
+  private String adresseComplete;
+  @NonNull
+  private String addresse;
+  @NonNull
+  private String ville;
+  @NonNull
+  private String codePostal;
+  @NonNull
+  private String pays;
+
+  private String etage;
+
+  private String nummeroDePorte;
+
   @NonNull
   private String typeLogement;
 

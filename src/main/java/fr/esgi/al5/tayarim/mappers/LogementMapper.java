@@ -70,6 +70,12 @@ public class LogementMapper {
         logement.getDefaultCheckIn().toString(),
         logement.getDefaultCheckOut().toString(),
         "13 FakeStreet City, 12345 Country",
+        "13 FakeStreet",
+        "City",
+        "12345",
+        "Country",
+        null,
+        null,
         "Appartement"
     );
   }
