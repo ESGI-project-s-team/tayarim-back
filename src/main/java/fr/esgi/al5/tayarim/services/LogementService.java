@@ -1,50 +1,29 @@
 package fr.esgi.al5.tayarim.services;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import fr.esgi.al5.tayarim.auth.JwtHelper;
-import fr.esgi.al5.tayarim.auth.TokenCacheService;
-import fr.esgi.al5.tayarim.auth.UserTokenInfo;
-import fr.esgi.al5.tayarim.dto.auth.AuthLoginResponseDto;
-import fr.esgi.al5.tayarim.dto.auth.AuthRefreshResponseDto;
-import fr.esgi.al5.tayarim.dto.auth.AuthResponseDto;
 import fr.esgi.al5.tayarim.dto.logement.LogementCreationDto;
 import fr.esgi.al5.tayarim.dto.logement.LogementDto;
 import fr.esgi.al5.tayarim.dto.logement.LogementUpdateDto;
-import fr.esgi.al5.tayarim.dto.proprietaire.AdministrateurDto;
-import fr.esgi.al5.tayarim.dto.proprietaire.ProprietaireDto;
-import fr.esgi.al5.tayarim.dto.proprietaire.ProprietaireUpdateDto;
 import fr.esgi.al5.tayarim.entities.Logement;
 import fr.esgi.al5.tayarim.entities.Proprietaire;
-import fr.esgi.al5.tayarim.exceptions.AdministrateurNotFoundException;
+import fr.esgi.al5.tayarim.exceptions.LogementAddressCreationError;
 import fr.esgi.al5.tayarim.exceptions.LogementInvalidUpdateBody;
 import fr.esgi.al5.tayarim.exceptions.LogementNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireInvalidUpdateBody;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireNotFoundException;
-import fr.esgi.al5.tayarim.exceptions.TokenExpireOrInvalidException;
-import fr.esgi.al5.tayarim.exceptions.UtilisateurNotFoundException;
 import fr.esgi.al5.tayarim.mappers.LogementMapper;
-import fr.esgi.al5.tayarim.mappers.ProprietaireMapper;
 import fr.esgi.al5.tayarim.repositories.LogementRepository;
 import fr.esgi.al5.tayarim.repositories.ProprietaireRepository;
-import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Base64;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.UUID;
 import lombok.NonNull;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 
 /**
@@ -61,7 +40,8 @@ public class LogementService {
   /**
    * Constructeur pour le service de logement.
    *
-   * @param logementRepository Le repository des logements.
+   * @param logementRepository     Le repository des logements.
+   * @param proprietaireRepository Le repository des propriétaires.
    */
   public LogementService(LogementRepository logementRepository,
       ProprietaireRepository proprietaireRepository) {
@@ -87,11 +67,19 @@ public class LogementService {
 
     Proprietaire proprietaire = optionalProprietaire.get();
 
+    String address =
+        logementCreationDto.getAdresse() + ", " + logementCreationDto.getCodePostal() + " "
+            + logementCreationDto.getVille() + ", " + logementCreationDto.getPays();
+
+    //List<Double> coordinate = callOsm(address);
+    List<Double> coordinate = callGeo(address);
+
     return LogementMapper.entityToDto(
         logementRepository.save(
             LogementMapper.creationDtoToEntity(
                 logementCreationDto,
-                1L,
+                coordinate.get(0),
+                coordinate.get(1),
                 1L,
                 proprietaire)
         )
@@ -168,6 +156,14 @@ public class LogementService {
         .isBlank())
         && (logementUpdateDto.getIntervalReservation() == null
         || logementUpdateDto.getIntervalReservation() == 0)
+        && (logementUpdateDto.getVille() == null || logementUpdateDto.getVille().isBlank())
+        && (logementUpdateDto.getAdresse() == null || logementUpdateDto.getAdresse().isBlank())
+        && (logementUpdateDto.getCodePostal() == null || logementUpdateDto.getCodePostal()
+        .isBlank())
+        && (logementUpdateDto.getPays() == null || logementUpdateDto.getPays().isBlank())
+        && (logementUpdateDto.getEtage() == null || logementUpdateDto.getEtage().isBlank())
+        && (logementUpdateDto.getNumeroDePorte() == null || logementUpdateDto.getNumeroDePorte()
+        .isBlank())
         && (logementUpdateDto.getIdTypeLogement() == null
         || logementUpdateDto.getIdTypeLogement() == 0)) {
       throw new LogementInvalidUpdateBody();
@@ -180,9 +176,13 @@ public class LogementService {
     }
 
     Logement logement = optionalLogement.get();
+    double latitude = logement.getLatitude();
+    double longitude = logement.getLongitude();
 
-    logement.setTitre(logementUpdateDto.getTitre().isBlank() ? logement.getTitre()
-        : logementUpdateDto.getTitre());
+    logement.setTitre(
+        (logementUpdateDto.getTitre() == null || logementUpdateDto.getTitre().isBlank())
+            ? logement.getTitre()
+            : logementUpdateDto.getTitre());
     logement.setNombresDeChambres(
         logementUpdateDto.getNombresDeChambres() == null ? logement.getNombresDeChambres()
             : logementUpdateDto.getNombresDeChambres());
@@ -198,20 +198,65 @@ public class LogementService {
     logement.setNombresNuitsMin(
         logementUpdateDto.getNombresNuitsMin() == null ? logement.getNombresNuitsMin()
             : logementUpdateDto.getNombresNuitsMin());
-    logement.setDescription(logementUpdateDto.getDescription().isBlank() ? logement.getDescription()
-        : logementUpdateDto.getDescription());
+    logement.setDescription(
+        logementUpdateDto.getDescription() == null || logementUpdateDto.getDescription().isBlank()
+            ? logement.getDescription()
+            : logementUpdateDto.getDescription());
     logement.setPrixParNuit(logementUpdateDto.getPrixParNuit() == null ? logement.getPrixParNuit()
         : logementUpdateDto.getPrixParNuit());
     logement.setDefaultCheckIn(
-        logementUpdateDto.getDefaultCheckIn().isBlank() ? logement.getDefaultCheckIn()
+        logementUpdateDto.getDefaultCheckIn() == null || logementUpdateDto.getDefaultCheckIn()
+            .isBlank() ? logement.getDefaultCheckIn()
             : LocalTime.parse(logementUpdateDto.getDefaultCheckIn()));
     logement.setDefaultCheckOut(
-        logementUpdateDto.getDefaultCheckOut().isBlank() ? logement.getDefaultCheckOut()
+        logementUpdateDto.getDefaultCheckOut() == null || logementUpdateDto.getDefaultCheckOut()
+            .isBlank() ? logement.getDefaultCheckOut()
             : LocalTime.parse(logementUpdateDto.getDefaultCheckOut()));
     logement.setIntervalReservation(
         logementUpdateDto.getIntervalReservation() == null ? logement.getIntervalReservation()
             : logementUpdateDto.getIntervalReservation());
-    //update adresse
+    logement.setVille(
+        logementUpdateDto.getVille() == null || logementUpdateDto.getVille().isBlank()
+            ? logement.getVille()
+            : logementUpdateDto.getVille());
+    logement.setAdresse(
+        logementUpdateDto.getAdresse() == null || logementUpdateDto.getAdresse().isBlank()
+            ? logement.getAdresse()
+            : logementUpdateDto.getAdresse());
+    logement.setCodePostal(
+        logementUpdateDto.getCodePostal() == null || logementUpdateDto.getCodePostal().isBlank()
+            ? logement.getCodePostal()
+            : logementUpdateDto.getCodePostal());
+    logement.setPays(
+        logementUpdateDto.getPays() == null || logementUpdateDto.getPays().isBlank()
+            ? logement.getPays()
+            : logementUpdateDto.getPays());
+    logement.setEtage(
+        logementUpdateDto.getEtage() == null || logementUpdateDto.getEtage().isBlank()
+            ? logement.getEtage()
+            : logementUpdateDto.getEtage());
+    logement.setNumeroDePorte(
+        logementUpdateDto.getNumeroDePorte() == null || logementUpdateDto.getNumeroDePorte()
+            .isBlank() ? logement.getNumeroDePorte()
+            : logementUpdateDto.getNumeroDePorte());
+
+    if ((logementUpdateDto.getAdresse() != null && !logementUpdateDto.getAdresse().isBlank())
+        || (logementUpdateDto.getVille() != null && !logementUpdateDto.getVille().isBlank())
+        || (logementUpdateDto.getCodePostal() != null && !logementUpdateDto.getCodePostal()
+        .isBlank())
+        || (logementUpdateDto.getPays() != null && !logementUpdateDto.getPays().isBlank())) {
+      System.out.println(
+          "do geocoding, address: " + logement.getAdresse() + ", " + logement.getVille() + ", "
+              + logement.getCodePostal() + ", " + logement.getPays());
+      List<Double> coordinate = callGeo(
+          logement.getAdresse() + ", " + logement.getVille() + ", " + logement.getCodePostal()
+              + ", " + logement.getPays());
+      latitude = coordinate.get(0);
+      longitude = coordinate.get(1);
+    }
+
+    logement.setLatitude(latitude);
+    logement.setLongitude(longitude);
     logement.setIdTypeLogement(
         logementUpdateDto.getIdTypeLogement() == null ? logement.getIdTypeLogement()
             : logementUpdateDto.getIdTypeLogement());
@@ -243,5 +288,57 @@ public class LogementService {
 
   }
 
+  /**
+   * Réalise un appel à l'API OSM pour obtenir les coordonnées géographiques d'une adresse.
+   *
+   * @param address Adresse à géocoder
+   * @return Liste contenant la latitude et la longitude de l'adresse
+   */
+  private List<Double> callOsm(String address) {
+    double lat = -1;
+    double lon = -1;
+    try {
+      String url = "https://nominatim.openstreetmap.org/search?q=" + address
+          + "&format=json&addressdetails=1&limit=1";
+      String response = new RestTemplate().getForObject(url, String.class);
 
+      JsonNode root = new ObjectMapper().readTree(response);
+      if (root.isArray() && root.size() > 0) {
+        JsonNode location = root.get(0);
+        lat = location.path("lat").asDouble();
+        lon = location.path("lon").asDouble();
+      } else {
+        throw new LogementAddressCreationError();
+      }
+    } catch (LogementAddressCreationError | JsonProcessingException e) {
+      throw new LogementAddressCreationError();
+    }
+    return List.of(lat, lon);
+  }
+
+  /**
+   * Réalise un appel à l'API OSM pour obtenir les coordonnées géographiques d'une adresse.
+   *
+   * @param address Adresse à géocoder
+   * @return Liste contenant la latitude et la longitude de l'adresse
+   */
+  private List<Double> callGeo(String address) {
+    double lat = -1;
+    double lon = -1;
+    try {
+      String url = "https://geocode.xyz/" + address + "?json=1&auth=60458438564472723419x76535";
+      String response = new RestTemplate().getForObject(url, String.class);
+
+      JsonNode root = new ObjectMapper().readTree(response);
+      if (root.has("latt") && root.has("longt")) {
+        lat = root.path("latt").asDouble();
+        lon = root.path("longt").asDouble();
+      } else {
+        throw new LogementAddressCreationError();
+      }
+    } catch (LogementAddressCreationError | JsonProcessingException e) {
+      throw new LogementAddressCreationError();
+    }
+    return List.of(lat, lon);
+  }
 }

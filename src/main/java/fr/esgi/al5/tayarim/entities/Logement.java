@@ -71,9 +71,29 @@ public class Logement {
   @Column(name = "INTERVALRESERVATION")
   private Integer intervalReservation;
 
-  @Column(name = "IDADRESSE")
-  private Long idAdresse;
+  @Column(name = "VILLE", nullable = false)
+  private String ville;
 
+  @Column(name = "ADRESSE", nullable = false)
+  private String adresse;
+
+  @Column(name = "CODEPOSTAL", nullable = false)
+  private String codePostal;
+
+  @Column(name = "PAYS", nullable = false)
+  private String pays;
+
+  @Column(name = "ETAGE")
+  private String etage;
+
+  @Column(name = "NUMERODEPORTE")
+  private String numeroDePorte;
+
+  @Column(name = "LONGITUDE", nullable = false)
+  private Double longitude;
+
+  @Column(name = "LATITUDE", nullable = false)
+  private Double latitude;
   @Column(name = "IDTYPELOGEMENT")
   private Long idTypeLogement;
 
@@ -96,7 +116,14 @@ public class Logement {
    * @param defaultCheckIn       Heure de check-in par défaut
    * @param defaultCheckOut      Heure de check-out par défaut
    * @param intervalReservation  Intervalle de réservation en jours
-   * @param idAdresse            Identifiant de l'adresse du logement
+   * @param ville                Ville du logement
+   * @param adresse              Adresse du logement
+   * @param codePostal           Code postal du logement
+   * @param pays                 Pays du logement
+   * @param etage                Etage du logement
+   * @param numeroDePorte        Numéro de porte du logement
+   * @param latitude             Latitude du logement
+   * @param longitude            Longitude du logement
    * @param idTypeLogement       Identifiant du type de logement
    * @param proprietaire         Propriétaire du logement
    */
@@ -107,7 +134,9 @@ public class Logement {
       @NonNull Integer capaciteMaxPersonne, @NonNull Integer nombresNuitsMin,
       @NonNull String description, @NonNull Float note, @NonNull Float prixParNuit,
       @NonNull LocalTime defaultCheckIn, @NonNull LocalTime defaultCheckOut,
-      @NonNull Integer intervalReservation, @NonNull Long idAdresse,
+      @NonNull Integer intervalReservation, @NonNull String ville, @NonNull String adresse,
+      @NonNull String codePostal, @NonNull String pays, String etage, String numeroDePorte,
+      @NonNull Double latitude, @NonNull Double longitude,
       @NonNull Long idTypeLogement, @NonNull Proprietaire proprietaire) {
     this.isLouable = isLouable;
     this.titre = titre;
@@ -122,7 +151,14 @@ public class Logement {
     this.defaultCheckIn = defaultCheckIn;
     this.defaultCheckOut = defaultCheckOut;
     this.intervalReservation = intervalReservation;
-    this.idAdresse = idAdresse;
+    this.ville = ville;
+    this.adresse = adresse;
+    this.codePostal = codePostal;
+    this.pays = pays;
+    this.etage = etage;
+    this.numeroDePorte = numeroDePorte;
+    this.latitude = latitude;
+    this.longitude = longitude;
     this.idTypeLogement = idTypeLogement;
     this.proprietaire = proprietaire;
   }

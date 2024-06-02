@@ -10,7 +10,6 @@ DROP TABLE IF EXISTS Amenagement;
 DROP TABLE IF EXISTS ReglesLogement;
 DROP TABLE IF EXISTS Icone;
 DROP TABLE IF EXISTS CategorieAmenagement;
-DROP TABLE IF EXISTS Adresse;
 DROP TABLE IF EXISTS Administrateur;
 DROP TABLE IF EXISTS Proprietaire;
 DROP TABLE IF EXISTS Utilisateur;
@@ -50,7 +49,14 @@ CREATE TABLE IF NOT EXISTS Logement (
                                         defaultCheckIn TIME,
                                         defaultCheckOut TIME,
                                         intervalReservation INT,
-                                        idAdresse INT,
+                                        ville VARCHAR(100),
+                                        adresse VARCHAR(150),
+                                        codePostal VARCHAR(50),
+                                        pays VARCHAR(100),
+                                        etage VARCHAR(100),
+                                        numeroDePorte VARCHAR(100),
+                                        longitude DOUBLE,
+                                        latitude DOUBLE,
                                         idTypeLogement INT,
                                         idProprietaire INT
 );
@@ -73,20 +79,6 @@ CREATE TABLE IF NOT EXISTS Reservation (
                                            checkIn DATETIME,
                                            checkOut DATETIME,
                                            idLogement INT
-);
-
-CREATE TABLE IF NOT EXISTS Adresse (
-                                       id INT PRIMARY KEY AUTO_INCREMENT,
-                                       ville VARCHAR(100),
-                                       rue VARCHAR(100),
-                                       numero INT,
-                                       suffixeNumero VARCHAR(100),
-                                       codePostal VARCHAR(50),
-                                       pays VARCHAR(100),
-                                       etage VARCHAR(100),
-                                       numeroDePorte VARCHAR(100),
-                                       longitude FLOAT,
-                                       latitude FLOAT
 );
 
 CREATE TABLE IF NOT EXISTS Amenagement (
@@ -149,8 +141,6 @@ CREATE TABLE IF NOT EXISTS Contenir (
 ALTER TABLE Proprietaire ADD FOREIGN KEY (idUser) REFERENCES Utilisateur(id);
 
 ALTER TABLE Administrateur ADD FOREIGN KEY (idUser) REFERENCES Utilisateur(id);
-
-ALTER TABLE Logement ADD FOREIGN KEY (idAdresse) REFERENCES Adresse(id);
 
 ALTER TABLE Logement ADD FOREIGN KEY (idTypeLogement) REFERENCES TypeLogement(id);
 

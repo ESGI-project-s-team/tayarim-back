@@ -18,8 +18,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class LogementMapper {
 
-  private ProprietaireRepository proprietaireRepository;
-
   /**
    * Convertit une entité Logement en un DTO Logement.
    *
@@ -27,7 +25,8 @@ public class LogementMapper {
    * @return Le DTO Logement correspondant.
    */
   public static Logement creationDtoToEntity(@NonNull LogementCreationDto logementCreationDto,
-      @NonNull Long idAddresse, @NonNull Long idTypeLogement, @NonNull Proprietaire proprietaire) {
+      @NonNull Double latitude, @NonNull Double longitude, @NonNull Long idTypeLogement,
+      @NonNull Proprietaire proprietaire) {
 
     return new Logement(true,
         logementCreationDto.getTitre(),
@@ -42,7 +41,14 @@ public class LogementMapper {
         LocalTime.parse(logementCreationDto.getDefaultCheckIn()),
         LocalTime.parse(logementCreationDto.getDefaultCheckOut()),
         logementCreationDto.getIntervalReservation(),
-        idAddresse,
+        logementCreationDto.getVille(),
+        logementCreationDto.getAdresse(),
+        logementCreationDto.getCodePostal(),
+        logementCreationDto.getPays(),
+        logementCreationDto.getEtage(),
+        logementCreationDto.getNumeroDePorte(),
+        latitude,
+        longitude,
         idTypeLogement,
         proprietaire);
   }
@@ -69,13 +75,16 @@ public class LogementMapper {
         logement.getPrixParNuit(),
         logement.getDefaultCheckIn().toString(),
         logement.getDefaultCheckOut().toString(),
-        "13 FakeStreet City, 12345 Country",
-        "13 FakeStreet",
-        "City",
-        "12345",
-        "Country",
-        null,
-        null,
+        logement.getAdresse() + ", " + logement.getVille() + ", " + logement.getCodePostal() + ", "
+            + logement.getPays(),
+        logement.getAdresse(),
+        logement.getVille(),
+        logement.getCodePostal(),
+        logement.getPays(),
+        logement.getEtage(),
+        logement.getNumeroDePorte(),
+        logement.getLatitude(),
+        logement.getLongitude(),
         "Appartement"
     );
   }

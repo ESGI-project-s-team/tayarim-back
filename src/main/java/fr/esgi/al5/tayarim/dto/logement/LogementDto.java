@@ -54,7 +54,13 @@ public class LogementDto {
 
   private String etage;
 
-  private String nummeroDePorte;
+  private String numeroDePorte;
+
+  @NonNull
+  private Double latitude;
+
+  @NonNull
+  private Double longitude;
 
   @NonNull
   private String typeLogement;

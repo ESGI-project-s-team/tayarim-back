@@ -66,7 +66,6 @@ public class LogementUpdateDto {
   private String ville;
 
   @Size(min = 1, max = 150, message = "error_home_invalid_address")
-  @NotBlank(message = "error_home_invalid_address")
   private String adresse;
 
   @Size(min = 1, max = 10, message = "error_home_invalid_postal_code")
