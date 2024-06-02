@@ -44,7 +44,7 @@ public class LogementDto {
   @NonNull
   private String adresseComplete;
   @NonNull
-  private String addresse;
+  private String adresse;
   @NonNull
   private String ville;
   @NonNull
