@@ -28,7 +28,7 @@ public class LogementMapper {
       @NonNull Long idTypeLogement,
       @NonNull Proprietaire proprietaire) {
 
-    return new Logement(true,
+    return new Logement(logementCreationDto.getIsLouable(),
         logementCreationDto.getTitre(),
         logementCreationDto.getNombresDeChambres(),
         logementCreationDto.getNombresDeLits(),

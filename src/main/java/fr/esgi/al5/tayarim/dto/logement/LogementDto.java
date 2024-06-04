@@ -21,25 +21,25 @@ public class LogementDto {
   private Long idProprietaire;
   @NonNull
   private Boolean isLouable;
-  @NonNull
+
   private Integer nombresDeChambres;
-  @NonNull
+
   private Integer nombresDeLits;
-  @NonNull
+
   private Integer nombresSallesDeBains;
-  @NonNull
+
   private Integer capaciteMaxPersonne;
-  @NonNull
+
   private Integer nombresNuitsMin;
   @NonNull
   private String description;
   @NonNull
   private Float note;
-  @NonNull
+
   private Float prixParNuit;
-  @NonNull
+
   private String defaultCheckIn;
-  @NonNull
+
   private String defaultCheckOut;
   @NonNull
   private String adresseComplete;

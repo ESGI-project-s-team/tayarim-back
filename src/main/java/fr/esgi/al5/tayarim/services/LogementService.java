@@ -67,19 +67,22 @@ public class LogementService {
 
     Proprietaire proprietaire = optionalProprietaire.get();
 
-    if(
-      Boolean.parseBoolean(logementCreationDto.getIsLouable()) && (
-        logementCreationDto.getNombresDeChambres() == null
-        || logementCreationDto.getNombresDeLits() == null
-        || logementCreationDto.getNombresSallesDeBains() == null
-        || logementCreationDto.getCapaciteMaxPersonne() == null
-        || logementCreationDto.getNombresNuitsMin() == null
-        || (logementCreationDto.getDefaultCheckIn() == null || logementCreationDto.getDefaultCheckIn().isBlank())
-        || (logementCreationDto.getDefaultCheckOut() == null || logementCreationDto.getDefaultCheckOut().isBlank())
-        || logementCreationDto.getPrixParNuit() == null
-      )){
-        throw new LogementInvalidCreationBody();
-      }
+    System.out.println(logementCreationDto.getIsLouable());
+    if (
+        logementCreationDto.getIsLouable() && (
+            logementCreationDto.getNombresDeChambres() == null
+                || logementCreationDto.getNombresDeLits() == null
+                || logementCreationDto.getNombresSallesDeBains() == null
+                || logementCreationDto.getCapaciteMaxPersonne() == null
+                || logementCreationDto.getNombresNuitsMin() == null
+                || (logementCreationDto.getDefaultCheckIn() == null
+                || logementCreationDto.getDefaultCheckIn().isBlank())
+                || (logementCreationDto.getDefaultCheckOut() == null
+                || logementCreationDto.getDefaultCheckOut().isBlank())
+                || logementCreationDto.getPrixParNuit() == null
+        )) {
+      throw new LogementInvalidCreationBody();
+    }
 
     return LogementMapper.entityToDto(
         logementRepository.save(
@@ -142,6 +145,7 @@ public class LogementService {
       @NonNull LogementUpdateDto logementUpdateDto) {
 
     if ((logementUpdateDto.getTitre() == null || logementUpdateDto.getTitre().isBlank())
+        && (logementUpdateDto.getIsLouable() == null)
         && (logementUpdateDto.getNombresDeChambres() == null
         || logementUpdateDto.getNombresDeChambres() == 0)
         && (logementUpdateDto.getNombresDeLits() == null
@@ -183,25 +187,35 @@ public class LogementService {
     Logement logement = optionalLogement.get();
 
     if (
-      (!logement.getIsLouable() && Boolean.parseBoolean(logementUpdateDto.getIsLouable()))
-      && (
-        (logement.getNombresDeChambres() == null && logementUpdateDto.getNombresDeChambres() == null)
-        || (logement.getNombresDeLits() == null && logementUpdateDto.getNombresDeLits() == null)
-        || (logement.getNombresSallesDeBains() == null && logementUpdateDto.getNombresSallesDeBains() == null)
-        || (logement.getCapaciteMaxPersonne() == null && logementUpdateDto.getCapaciteMaxPersonne() == null)
-        || (logement.getNombresNuitsMin() == null && logementUpdateDto.getNombresNuitsMin() == null)
-        || (logement.getDefaultCheckIn() == null && logementUpdateDto.getDefaultCheckIn() == null)
-        || (logement.getDefaultCheckOut() == null && logementUpdateDto.getDefaultCheckOut() == null)
-        || (logement.getPrixParNuit() == null && logementUpdateDto.getPrixParNuit() == null)
+        (!logement.getIsLouable() && logementUpdateDto.getIsLouable())
+            && (
+            (logement.getNombresDeChambres() == null
+                && logementUpdateDto.getNombresDeChambres() == null)
+                || (logement.getNombresDeLits() == null
+                && logementUpdateDto.getNombresDeLits() == null)
+                || (logement.getNombresSallesDeBains() == null
+                && logementUpdateDto.getNombresSallesDeBains() == null)
+                || (logement.getCapaciteMaxPersonne() == null
+                && logementUpdateDto.getCapaciteMaxPersonne() == null)
+                || (logement.getNombresNuitsMin() == null
+                && logementUpdateDto.getNombresNuitsMin() == null)
+                || (logement.getDefaultCheckIn() == null
+                && logementUpdateDto.getDefaultCheckIn() == null)
+                || (logement.getDefaultCheckOut() == null
+                && logementUpdateDto.getDefaultCheckOut() == null)
+                || (logement.getPrixParNuit() == null && logementUpdateDto.getPrixParNuit() == null)
         )
-      ) {
-        throw new LogementInvalidUpdateBody();
-      }
+    ) {
+      throw new LogementInvalidUpdateBody();
+    }
 
     logement.setTitre(
         (logementUpdateDto.getTitre() == null || logementUpdateDto.getTitre().isBlank())
             ? logement.getTitre()
             : logementUpdateDto.getTitre());
+    logement.setIsLouable(
+        logementUpdateDto.getIsLouable() == null ? logement.getIsLouable()
+            : logementUpdateDto.getIsLouable());
     logement.setNombresDeChambres(
         logementUpdateDto.getNombresDeChambres() == null ? logement.getNombresDeChambres()
             : logementUpdateDto.getNombresDeChambres());
