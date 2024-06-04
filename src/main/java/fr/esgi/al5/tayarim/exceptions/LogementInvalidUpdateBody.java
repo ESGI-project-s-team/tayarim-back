@@ -6,6 +6,6 @@ package fr.esgi.al5.tayarim.exceptions;
 public class LogementInvalidUpdateBody extends RuntimeException {
 
   public LogementInvalidUpdateBody() {
-    super("error_owner_invalid_updateBody");
+    super("error_home_invalid_updateBody");
   }
 }

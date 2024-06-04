@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS Administrateur (
 CREATE TABLE IF NOT EXISTS Logement (
                                         id INT PRIMARY KEY AUTO_INCREMENT,
                                         titre VARCHAR(50),
-                                        louable BOOL,
+                                        isLouable BOOL,
                                         nombresDeChambres INT,
                                         nombresDeLits INT,
                                         nombresSallesDeBains INT,
@@ -55,8 +55,6 @@ CREATE TABLE IF NOT EXISTS Logement (
                                         pays VARCHAR(100),
                                         etage VARCHAR(100),
                                         numeroDePorte VARCHAR(100),
-                                        longitude DOUBLE,
-                                        latitude DOUBLE,
                                         idTypeLogement INT,
                                         idProprietaire INT
 );

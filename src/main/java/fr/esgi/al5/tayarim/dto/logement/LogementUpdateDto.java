@@ -27,7 +27,7 @@ public class LogementUpdateDto {
   private String titre;
 
   @Pattern(regexp = "true|false", message = "error_home_invalid_louable")
-  private String louable;
+  private String isLouable;
 
   @Min(value = 1, message = "error_home_invalid_owner_id")
   private Long idProprietaire;

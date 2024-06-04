@@ -28,28 +28,27 @@ public class LogementCreationDto {
   @NotBlank(message = "error_home_invalid_title")
   private String titre;
 
+  @NotBlank(message = "error_home_invalid_louable")
+  @Pattern(regexp = "true|false", message = "error_home_invalid_louable")
+  private String isLouable;
+
   @Min(value = 1, message = "error_home_invalid_owner_id")
   @NotNull(message = "error_home_invalid_owner_id")
   private Long idProprietaire;
 
   @Min(value = 1, message = "error_home_invalid_room_number")
-  @NotNull(message = "error_home_invalid_room_number")
   private Integer nombresDeChambres;
 
   @Min(value = 1, message = "error_home_invalid_bed_number")
-  @NotNull(message = "error_home_invalid_bed_number")
   private Integer nombresDeLits;
 
   @Min(value = 1, message = "error_home_invalid_bathroom_number")
-  @NotNull(message = "error_home_invalid_bathroom_number")
   private Integer nombresSallesDeBains;
 
   @Min(value = 1, message = "error_home_invalid_max_capacity")
-  @NotNull(message = "error_home_invalid_max_capacity")
   private Integer capaciteMaxPersonne;
 
   @Min(value = 1, message = "error_home_invalid_night_number")
-  @NotNull(message = "error_home_invalid_night_number")
   private Integer nombresNuitsMin;
 
   @Size(min = 1, max = 500, message = "error_home_invalid_description")
@@ -57,14 +56,11 @@ public class LogementCreationDto {
   private String description;
 
   @Min(value = 1, message = "error_home_invalid_price")
-  @NotNull(message = "error_home_invalid_price")
   private Float prixParNuit;
 
-  @NotBlank(message = "error_home_invalid_checkin")
   @Pattern(regexp = "([01][0-9]|2[0-3]):[0-5][0-9]", message = "error_home_invalid_checkin")
   private String defaultCheckIn;
 
-  @NotBlank(message = "error_home_invalid_checkout")
   @Pattern(regexp = "([01][0-9]|2[0-3]):[0-5][0-9]", message = "error_home_invalid_checkout")
   private String defaultCheckOut;
 

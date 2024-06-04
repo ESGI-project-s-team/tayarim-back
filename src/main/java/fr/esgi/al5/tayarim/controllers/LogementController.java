@@ -7,7 +7,7 @@ import fr.esgi.al5.tayarim.dto.logement.LogementUpdateDto;
 import fr.esgi.al5.tayarim.dto.proprietaire.ProprietaireDto;
 import fr.esgi.al5.tayarim.dto.proprietaire.ProprietaireUpdateDto;
 import fr.esgi.al5.tayarim.exceptions.AdministrateurNotFoundException;
-import fr.esgi.al5.tayarim.exceptions.LogementAddressCreationError;
+import fr.esgi.al5.tayarim.exceptions.LogementInvalidCreationBody;
 import fr.esgi.al5.tayarim.exceptions.LogementInvalidUpdateBody;
 import fr.esgi.al5.tayarim.exceptions.LogementNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireNotFoundException;
@@ -190,7 +190,7 @@ public class LogementController {
    * @param ex L'exception capturée.
    * @return Une carte des erreurs.
    */
-  @ResponseStatus(HttpStatus.NOT_FOUND)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ExceptionHandler({LogementInvalidUpdateBody.class})
   public Map<String, List<String>> logementInvalidUpdateBody(LogementInvalidUpdateBody ex) {
     return mapException(ex);
@@ -203,8 +203,8 @@ public class LogementController {
    * @return Une carte des erreurs.
    */
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  @ExceptionHandler({LogementAddressCreationError.class})
-  public Map<String, List<String>> logementAddressCreationError(LogementAddressCreationError ex) {
+  @ExceptionHandler({LogementInvalidCreationBody.class})
+  public Map<String, List<String>> logementInvalidCreationBody(LogementInvalidCreationBody ex) {
     return mapException(ex);
   }
 

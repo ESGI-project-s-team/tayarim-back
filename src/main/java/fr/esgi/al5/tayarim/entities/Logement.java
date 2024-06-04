@@ -32,10 +32,10 @@ public class Logement {
   @Column(name = "ID")
   private Long id;
 
-  @Column(name = "TITRE")
+  @Column(name = "TITRE", nullable = false)
   private String titre;
 
-  @Column(name = "LOUABLE")
+  @Column(name = "ISLOUABLE", nullable = false)
   private Boolean isLouable;
 
   @Column(name = "NOMBRESDECHAMBRES")
@@ -53,10 +53,10 @@ public class Logement {
   @Column(name = "NOMBRESNUITSMIN")
   private Integer nombresNuitsMin;
 
-  @Column(name = "DESCRIPTION")
+  @Column(name = "DESCRIPTION", nullable = false)
   private String description;
 
-  @Column(name = "NOTE")
+  @Column(name = "NOTE", nullable = false)
   private Float note;
 
   @Column(name = "PRIXPARNUIT")
@@ -68,7 +68,7 @@ public class Logement {
   @Column(name = "DEFAULTCHECKOUT")
   private LocalTime defaultCheckOut;
 
-  @Column(name = "INTERVALRESERVATION")
+  @Column(name = "INTERVALRESERVATION", nullable = false)
   private Integer intervalReservation;
 
   @Column(name = "VILLE", nullable = false)
@@ -89,16 +89,11 @@ public class Logement {
   @Column(name = "NUMERODEPORTE")
   private String numeroDePorte;
 
-  @Column(name = "LONGITUDE", nullable = false)
-  private Double longitude;
-
-  @Column(name = "LATITUDE", nullable = false)
-  private Double latitude;
-  @Column(name = "IDTYPELOGEMENT")
+  @Column(name = "IDTYPELOGEMENT", nullable = false)
   private Long idTypeLogement;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "IDPROPRIETAIRE")
+  @JoinColumn(name = "IDPROPRIETAIRE", nullable = false)
   private Proprietaire proprietaire;
 
   /**
@@ -122,21 +117,18 @@ public class Logement {
    * @param pays                 Pays du logement
    * @param etage                Etage du logement
    * @param numeroDePorte        Numéro de porte du logement
-   * @param latitude             Latitude du logement
-   * @param longitude            Longitude du logement
    * @param idTypeLogement       Identifiant du type de logement
    * @param proprietaire         Propriétaire du logement
    */
   @Builder
   public Logement(@NonNull Boolean isLouable, @NonNull String titre,
-      @NonNull Integer nombresDeChambres,
-      @NonNull Integer nombresDeLits, @NonNull Integer nombresSallesDeBains,
-      @NonNull Integer capaciteMaxPersonne, @NonNull Integer nombresNuitsMin,
-      @NonNull String description, @NonNull Float note, @NonNull Float prixParNuit,
-      @NonNull LocalTime defaultCheckIn, @NonNull LocalTime defaultCheckOut,
+      Integer nombresDeChambres,
+      Integer nombresDeLits, Integer nombresSallesDeBains,
+      Integer capaciteMaxPersonne, Integer nombresNuitsMin,
+      @NonNull String description, @NonNull Float note, Float prixParNuit,
+      LocalTime defaultCheckIn, LocalTime defaultCheckOut,
       @NonNull Integer intervalReservation, @NonNull String ville, @NonNull String adresse,
       @NonNull String codePostal, @NonNull String pays, String etage, String numeroDePorte,
-      @NonNull Double latitude, @NonNull Double longitude,
       @NonNull Long idTypeLogement, @NonNull Proprietaire proprietaire) {
     this.isLouable = isLouable;
     this.titre = titre;
@@ -157,8 +149,6 @@ public class Logement {
     this.pays = pays;
     this.etage = etage;
     this.numeroDePorte = numeroDePorte;
-    this.latitude = latitude;
-    this.longitude = longitude;
     this.idTypeLogement = idTypeLogement;
     this.proprietaire = proprietaire;
   }

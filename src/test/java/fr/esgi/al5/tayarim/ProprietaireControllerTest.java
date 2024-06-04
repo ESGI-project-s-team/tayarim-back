@@ -138,6 +138,12 @@ public class ProprietaireControllerTest {
             "10:00",
             "12:00",
             "13 FakeStreet City, 12345 Country",
+            "13 FakeStreet City",
+            "City",
+            "12345",
+            "Country",
+            null,
+            null,
             "Appartement"
         )))
         .commission(20f)

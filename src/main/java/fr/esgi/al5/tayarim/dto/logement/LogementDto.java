@@ -57,12 +57,6 @@ public class LogementDto {
   private String numeroDePorte;
 
   @NonNull
-  private Double latitude;
-
-  @NonNull
-  private Double longitude;
-
-  @NonNull
   private String typeLogement;
 
 

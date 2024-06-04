@@ -38,4 +38,6 @@
 "error_home_invalid_type_id": "L'id du type de logement est invalide",
 "error_home_invalid_title": "Le titre saisie est invalide",
 "error_home_notExist": "Ce logement n'existe pas",
+"error_home_invalid_updateBody": "Donnée invalide ou manquante pour la mise à jour du logement",
+"error_home_invalid_updateBody": "Donnée invalide ou manquante pour la création du logement",
 

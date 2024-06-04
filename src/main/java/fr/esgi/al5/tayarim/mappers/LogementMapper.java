@@ -25,7 +25,7 @@ public class LogementMapper {
    * @return Le DTO Logement correspondant.
    */
   public static Logement creationDtoToEntity(@NonNull LogementCreationDto logementCreationDto,
-      @NonNull Double latitude, @NonNull Double longitude, @NonNull Long idTypeLogement,
+      @NonNull Long idTypeLogement,
       @NonNull Proprietaire proprietaire) {
 
     return new Logement(true,
@@ -47,8 +47,6 @@ public class LogementMapper {
         logementCreationDto.getPays(),
         logementCreationDto.getEtage(),
         logementCreationDto.getNumeroDePorte(),
-        latitude,
-        longitude,
         idTypeLogement,
         proprietaire);
   }
@@ -83,8 +81,6 @@ public class LogementMapper {
         logement.getPays(),
         logement.getEtage(),
         logement.getNumeroDePorte(),
-        logement.getLatitude(),
-        logement.getLongitude(),
         "Appartement"
     );
   }
