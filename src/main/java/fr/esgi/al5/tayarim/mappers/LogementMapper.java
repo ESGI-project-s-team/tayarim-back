@@ -84,7 +84,8 @@ public class LogementMapper {
         logement.getPays(),
         logement.getEtage(),
         logement.getNumeroDePorte(),
-        logement.getTypeLogement().getNom()
+        logement.getTypeLogement().getNom(),
+        logement.getTypeLogement().getIcone().getSvg()
     );
   }
 

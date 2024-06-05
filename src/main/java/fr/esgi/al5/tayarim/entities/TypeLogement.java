@@ -36,10 +36,8 @@ public class TypeLogement {
   @Column(name = "NOM")
   private String nom;
 
-  @Column(name = "IDICONE")
-  private Long idIcone;
-
-  @OneToMany(mappedBy = "typeLogement")
-  private List<Logement> logements;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "IDICONE", nullable = false)
+  private Icone icone;
 
 }
