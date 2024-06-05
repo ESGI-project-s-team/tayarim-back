@@ -93,7 +93,7 @@ CREATE TABLE IF NOT EXISTS CategorieAmenagement (
 
 CREATE TABLE IF NOT EXISTS Icone (
                                      id INT PRIMARY KEY AUTO_INCREMENT,
-                                     svg VARCHAR(100)
+                                     svg VARCHAR(1000)
 );
 
 CREATE TABLE IF NOT EXISTS ReglesLogement (
