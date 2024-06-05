@@ -62,7 +62,7 @@ CREATE TABLE IF NOT EXISTS Logement (
 CREATE TABLE IF NOT EXISTS TypeLogement (
                                             id INT PRIMARY KEY AUTO_INCREMENT,
                                             nom VARCHAR(100),
-                                            idIcone INT
+                                            icone VARCHAR(1000)
 );
 
 CREATE TABLE IF NOT EXISTS Reservation (
@@ -143,8 +143,6 @@ ALTER TABLE Administrateur ADD FOREIGN KEY (idUser) REFERENCES Utilisateur(id);
 ALTER TABLE Logement ADD FOREIGN KEY (idTypeLogement) REFERENCES TypeLogement(id);
 
 ALTER TABLE Logement ADD FOREIGN KEY (idProprietaire) REFERENCES Proprietaire(idUser);
-
-ALTER TABLE TypeLogement ADD FOREIGN KEY (idIcone) REFERENCES Icone(id);
 
 ALTER TABLE Reservation ADD FOREIGN KEY (idLogement) REFERENCES Logement(id);
 

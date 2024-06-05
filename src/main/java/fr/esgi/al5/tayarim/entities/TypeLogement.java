@@ -36,8 +36,7 @@ public class TypeLogement {
   @Column(name = "NOM")
   private String nom;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "IDICONE", nullable = false)
-  private Icone icone;
+  @Column(name = "ICONE", nullable = false)
+  private String icone;
 
 }
