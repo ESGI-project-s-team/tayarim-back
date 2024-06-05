@@ -38,8 +38,10 @@ public class LogementMapper {
         logementCreationDto.getDescription(),
         0f,
         logementCreationDto.getPrixParNuit(),
-        LocalTime.parse(logementCreationDto.getDefaultCheckIn()),
-        LocalTime.parse(logementCreationDto.getDefaultCheckOut()),
+        (logementCreationDto.getDefaultCheckIn() == null) ? null
+            : LocalTime.parse(logementCreationDto.getDefaultCheckIn()),
+        (logementCreationDto.getDefaultCheckOut() == null) ? null
+            : LocalTime.parse(logementCreationDto.getDefaultCheckOut()),
         logementCreationDto.getIntervalReservation(),
         logementCreationDto.getVille(),
         logementCreationDto.getAdresse(),
@@ -71,8 +73,8 @@ public class LogementMapper {
         logement.getDescription(),
         logement.getNote(),
         logement.getPrixParNuit(),
-        logement.getDefaultCheckIn().toString(),
-        logement.getDefaultCheckOut().toString(),
+        (logement.getDefaultCheckIn() == null) ? null : logement.getDefaultCheckIn().toString(),
+        (logement.getDefaultCheckOut() == null) ? null : logement.getDefaultCheckOut().toString(),
         logement.getAdresse() + ", " + logement.getVille() + ", " + logement.getCodePostal() + ", "
             + logement.getPays(),
         logement.getAdresse(),
