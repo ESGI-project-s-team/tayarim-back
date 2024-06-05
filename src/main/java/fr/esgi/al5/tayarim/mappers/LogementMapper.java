@@ -4,6 +4,7 @@ import fr.esgi.al5.tayarim.dto.logement.LogementCreationDto;
 import fr.esgi.al5.tayarim.dto.logement.LogementDto;
 import fr.esgi.al5.tayarim.entities.Logement;
 import fr.esgi.al5.tayarim.entities.Proprietaire;
+import fr.esgi.al5.tayarim.entities.TypeLogement;
 import fr.esgi.al5.tayarim.repositories.ProprietaireRepository;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -25,7 +26,7 @@ public class LogementMapper {
    * @return Le DTO Logement correspondant.
    */
   public static Logement creationDtoToEntity(@NonNull LogementCreationDto logementCreationDto,
-      @NonNull Long idTypeLogement,
+      @NonNull TypeLogement typeLogement,
       @NonNull Proprietaire proprietaire) {
 
     return new Logement(logementCreationDto.getIsLouable(),
@@ -49,7 +50,7 @@ public class LogementMapper {
         logementCreationDto.getPays(),
         logementCreationDto.getEtage(),
         logementCreationDto.getNumeroDePorte(),
-        idTypeLogement,
+        typeLogement,
         proprietaire);
   }
 
@@ -83,7 +84,7 @@ public class LogementMapper {
         logement.getPays(),
         logement.getEtage(),
         logement.getNumeroDePorte(),
-        "Appartement"
+        logement.getTypeLogement().getNom()
     );
   }
 

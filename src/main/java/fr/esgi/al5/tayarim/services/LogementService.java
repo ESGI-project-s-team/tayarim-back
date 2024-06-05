@@ -1,15 +1,14 @@
 package fr.esgi.al5.tayarim.services;
 
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.esgi.al5.tayarim.dto.logement.LogementCreationDto;
 import fr.esgi.al5.tayarim.dto.logement.LogementDto;
 import fr.esgi.al5.tayarim.dto.logement.LogementUpdateDto;
 import fr.esgi.al5.tayarim.entities.Logement;
 import fr.esgi.al5.tayarim.entities.Proprietaire;
+import fr.esgi.al5.tayarim.entities.TypeLogement;
 import fr.esgi.al5.tayarim.exceptions.LogementInvalidCreationBody;
+import fr.esgi.al5.tayarim.exceptions.LogementInvalidTypeLogement;
 import fr.esgi.al5.tayarim.exceptions.LogementInvalidUpdateBody;
 import fr.esgi.al5.tayarim.exceptions.LogementNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireInvalidUpdateBody;
@@ -17,13 +16,13 @@ import fr.esgi.al5.tayarim.exceptions.ProprietaireNotFoundException;
 import fr.esgi.al5.tayarim.mappers.LogementMapper;
 import fr.esgi.al5.tayarim.repositories.LogementRepository;
 import fr.esgi.al5.tayarim.repositories.ProprietaireRepository;
+import fr.esgi.al5.tayarim.repositories.TypeLogementRepository;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import lombok.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
 
 /**
@@ -36,17 +35,22 @@ public class LogementService {
   private final LogementRepository logementRepository;
   private final ProprietaireRepository proprietaireRepository;
 
+  private final TypeLogementRepository typeLogementRepository;
+
 
   /**
    * Constructeur pour le service de logement.
    *
    * @param logementRepository     Le repository des logements.
    * @param proprietaireRepository Le repository des propriétaires.
+   * @param typeLogementRepository Le repository des types de logements.
    */
   public LogementService(LogementRepository logementRepository,
-      ProprietaireRepository proprietaireRepository) {
+      ProprietaireRepository proprietaireRepository,
+      TypeLogementRepository typeLogementRepository) {
     this.logementRepository = logementRepository;
     this.proprietaireRepository = proprietaireRepository;
+    this.typeLogementRepository = typeLogementRepository;
   }
 
   /**
@@ -67,7 +71,6 @@ public class LogementService {
 
     Proprietaire proprietaire = optionalProprietaire.get();
 
-    System.out.println(logementCreationDto.getIsLouable());
     if (
         logementCreationDto.getIsLouable() && (
             logementCreationDto.getNombresDeChambres() == null
@@ -84,11 +87,17 @@ public class LogementService {
       throw new LogementInvalidCreationBody();
     }
 
+    Optional<TypeLogement> optionalTypeLogement = typeLogementRepository.findById(
+        logementCreationDto.getIdTypeLogement());
+    if (optionalTypeLogement.isEmpty()) {
+      throw new LogementInvalidTypeLogement();
+    }
+
     return LogementMapper.entityToDto(
         logementRepository.save(
             LogementMapper.creationDtoToEntity(
                 logementCreationDto,
-                1L,
+                optionalTypeLogement.get(),
                 proprietaire)
         )
     );
@@ -272,9 +281,11 @@ public class LogementService {
         logementUpdateDto.getNumeroDePorte() == null || logementUpdateDto.getNumeroDePorte()
             .isBlank() ? logement.getNumeroDePorte()
             : logementUpdateDto.getNumeroDePorte());
-    logement.setIdTypeLogement(
-        logementUpdateDto.getIdTypeLogement() == null ? logement.getIdTypeLogement()
-            : logementUpdateDto.getIdTypeLogement());
+    logement.setTypeLogement(
+        logementUpdateDto.getIdTypeLogement() == null || logementUpdateDto.getIdTypeLogement() == 0
+            ? logement.getTypeLogement()
+            : typeLogementRepository.findById(logementUpdateDto.getIdTypeLogement()).orElseThrow(
+                LogementInvalidTypeLogement::new));
 
     return LogementMapper.entityToDto(logementRepository.save(logement));
 

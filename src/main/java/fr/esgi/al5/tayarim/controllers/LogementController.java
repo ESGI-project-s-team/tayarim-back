@@ -8,6 +8,7 @@ import fr.esgi.al5.tayarim.dto.proprietaire.ProprietaireDto;
 import fr.esgi.al5.tayarim.dto.proprietaire.ProprietaireUpdateDto;
 import fr.esgi.al5.tayarim.exceptions.AdministrateurNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.LogementInvalidCreationBody;
+import fr.esgi.al5.tayarim.exceptions.LogementInvalidTypeLogement;
 import fr.esgi.al5.tayarim.exceptions.LogementInvalidUpdateBody;
 import fr.esgi.al5.tayarim.exceptions.LogementNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireNotFoundException;
@@ -193,6 +194,18 @@ public class LogementController {
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ExceptionHandler({LogementInvalidUpdateBody.class})
   public Map<String, List<String>> logementInvalidUpdateBody(LogementInvalidUpdateBody ex) {
+    return mapException(ex);
+  }
+
+  /**
+   * Gère les exceptions lorsque le body update du logement est invalide.
+   *
+   * @param ex L'exception capturée.
+   * @return Une carte des erreurs.
+   */
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ExceptionHandler({LogementInvalidTypeLogement.class})
+  public Map<String, List<String>> logementInvalidTypeLogement(LogementInvalidTypeLogement ex) {
     return mapException(ex);
   }
 

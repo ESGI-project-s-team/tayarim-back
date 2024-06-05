@@ -89,8 +89,9 @@ public class Logement {
   @Column(name = "NUMERODEPORTE")
   private String numeroDePorte;
 
-  @Column(name = "IDTYPELOGEMENT", nullable = false)
-  private Long idTypeLogement;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "IDTYPELOGEMENT", nullable = false)
+  private TypeLogement typeLogement;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "IDPROPRIETAIRE", nullable = false)
@@ -117,7 +118,7 @@ public class Logement {
    * @param pays                 Pays du logement
    * @param etage                Etage du logement
    * @param numeroDePorte        Numéro de porte du logement
-   * @param idTypeLogement       Identifiant du type de logement
+   * @param typeLogement       Identifiant du type de logement
    * @param proprietaire         Propriétaire du logement
    */
   @Builder
@@ -129,7 +130,7 @@ public class Logement {
       LocalTime defaultCheckIn, LocalTime defaultCheckOut,
       @NonNull Integer intervalReservation, @NonNull String ville, @NonNull String adresse,
       @NonNull String codePostal, @NonNull String pays, String etage, String numeroDePorte,
-      @NonNull Long idTypeLogement, @NonNull Proprietaire proprietaire) {
+      @NonNull TypeLogement typeLogement, @NonNull Proprietaire proprietaire) {
     this.isLouable = isLouable;
     this.titre = titre;
     this.nombresDeChambres = nombresDeChambres;
@@ -149,7 +150,7 @@ public class Logement {
     this.pays = pays;
     this.etage = etage;
     this.numeroDePorte = numeroDePorte;
-    this.idTypeLogement = idTypeLogement;
+    this.typeLogement = typeLogement;
     this.proprietaire = proprietaire;
   }
 
