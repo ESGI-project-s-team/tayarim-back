@@ -59,8 +59,5 @@ public class LogementDto {
   @NonNull
   private String typeLogement;
 
-  @NonNull
-  private String iconeLogement;
-
 
 }

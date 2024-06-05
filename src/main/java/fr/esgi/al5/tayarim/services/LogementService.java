@@ -4,6 +4,7 @@ package fr.esgi.al5.tayarim.services;
 import fr.esgi.al5.tayarim.dto.logement.LogementCreationDto;
 import fr.esgi.al5.tayarim.dto.logement.LogementDto;
 import fr.esgi.al5.tayarim.dto.logement.LogementUpdateDto;
+import fr.esgi.al5.tayarim.dto.logement.TypeLogementDto;
 import fr.esgi.al5.tayarim.entities.Logement;
 import fr.esgi.al5.tayarim.entities.Proprietaire;
 import fr.esgi.al5.tayarim.entities.TypeLogement;
@@ -14,6 +15,7 @@ import fr.esgi.al5.tayarim.exceptions.LogementNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireInvalidUpdateBody;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireNotFoundException;
 import fr.esgi.al5.tayarim.mappers.LogementMapper;
+import fr.esgi.al5.tayarim.mappers.TypeLogementMapper;
 import fr.esgi.al5.tayarim.repositories.LogementRepository;
 import fr.esgi.al5.tayarim.repositories.ProprietaireRepository;
 import fr.esgi.al5.tayarim.repositories.TypeLogementRepository;
@@ -34,7 +36,6 @@ public class LogementService {
 
   private final LogementRepository logementRepository;
   private final ProprietaireRepository proprietaireRepository;
-
   private final TypeLogementRepository typeLogementRepository;
 
 
@@ -312,5 +313,17 @@ public class LogementService {
 
     return logementDto;
 
+  }
+
+  /**
+   * Récupère tous les type de logements.
+   *
+   * @return Le DTO des type de logements.
+   */
+  @Transactional
+  public List<TypeLogementDto> getAllTypeLogement() {
+    return TypeLogementMapper.entityListToDtoList(
+        typeLogementRepository.findAll()
+    );
   }
 }

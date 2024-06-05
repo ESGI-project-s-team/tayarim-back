@@ -4,6 +4,7 @@ import fr.esgi.al5.tayarim.auth.UserTokenInfo;
 import fr.esgi.al5.tayarim.dto.logement.LogementCreationDto;
 import fr.esgi.al5.tayarim.dto.logement.LogementDto;
 import fr.esgi.al5.tayarim.dto.logement.LogementUpdateDto;
+import fr.esgi.al5.tayarim.dto.logement.TypeLogementDto;
 import fr.esgi.al5.tayarim.dto.proprietaire.ProprietaireDto;
 import fr.esgi.al5.tayarim.dto.proprietaire.ProprietaireUpdateDto;
 import fr.esgi.al5.tayarim.exceptions.AdministrateurNotFoundException;
@@ -145,6 +146,24 @@ public class LogementController {
 
     return new ResponseEntity<>(
         logementService.deleteLogement(id),
+        HttpStatus.OK
+    );
+  }
+
+  /**
+   * Récupère tous les type de logements.
+   *
+   * @param authHeader L'en-tête d'autorisation contenant le token JWT.
+   * @return Une ResponseEntity avec le statut HTTP indiquant le succès de l'opération.
+   */
+  @Operation(summary = "Authenticate user", security = @SecurityRequirement(name = "bearer-key"))
+  @GetMapping("/types")
+  public ResponseEntity<List<TypeLogementDto>> getAllTypeLogement(
+      @RequestAttribute("token") String authHeader) {
+    authService.verifyToken(getTokenFromHeader(authHeader), false);
+
+    return new ResponseEntity<>(
+        logementService.getAllTypeLogement(),
         HttpStatus.OK
     );
   }
