@@ -16,7 +16,48 @@ public class LogementDto {
   @NonNull
   private Long id;
   @NonNull
+  private String titre;
+  @NonNull
   private Long idProprietaire;
+  @NonNull
+  private Boolean isLouable;
+
+  private Integer nombresDeChambres;
+
+  private Integer nombresDeLits;
+
+  private Integer nombresSallesDeBains;
+
+  private Integer capaciteMaxPersonne;
+
+  private Integer nombresNuitsMin;
+  @NonNull
+  private String description;
+  @NonNull
+  private Float note;
+
+  private Float prixParNuit;
+
+  private String defaultCheckIn;
+
+  private String defaultCheckOut;
+  @NonNull
+  private String adresseComplete;
+  @NonNull
+  private String adresse;
+  @NonNull
+  private String ville;
+  @NonNull
+  private String codePostal;
+  @NonNull
+  private String pays;
+
+  private String etage;
+
+  private String numeroDePorte;
+
+  @NonNull
+  private String typeLogement;
 
 
 }
