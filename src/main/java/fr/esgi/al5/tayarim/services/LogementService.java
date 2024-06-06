@@ -19,6 +19,7 @@ import fr.esgi.al5.tayarim.mappers.TypeLogementMapper;
 import fr.esgi.al5.tayarim.repositories.LogementRepository;
 import fr.esgi.al5.tayarim.repositories.ProprietaireRepository;
 import fr.esgi.al5.tayarim.repositories.TypeLogementRepository;
+import java.lang.reflect.Field;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -218,7 +219,8 @@ public class LogementService {
     ) {
       throw new LogementInvalidUpdateBody();
     }
-
+    logement = updateLogement(logementUpdateDto, logement);
+    /*
     logement.setTitre(
         (logementUpdateDto.getTitre() == null || logementUpdateDto.getTitre().isBlank())
             ? logement.getTitre()
@@ -286,7 +288,7 @@ public class LogementService {
         logementUpdateDto.getIdTypeLogement() == null || logementUpdateDto.getIdTypeLogement() == 0
             ? logement.getTypeLogement()
             : typeLogementRepository.findById(logementUpdateDto.getIdTypeLogement()).orElseThrow(
-                LogementInvalidTypeLogement::new));
+                LogementInvalidTypeLogement::new));*/
 
     return LogementMapper.entityToDto(logementRepository.save(logement));
 
@@ -325,5 +327,25 @@ public class LogementService {
     return TypeLogementMapper.entityListToDtoList(
         typeLogementRepository.findAll()
     );
+  }
+
+  public Logement updateLogement(LogementUpdateDto logementUpdateDto, Logement logement) {
+
+    Field[] fields = logementUpdateDto.getClass().getDeclaredFields();
+    for (Field field : fields) {
+      try {
+        Field fieldLogement = logement.getClass().getDeclaredField(field.getName());
+        fieldLogement.setAccessible(true);
+        field.setAccessible(true);
+        if (field.get(logementUpdateDto) != null) {
+          fieldLogement.set(logement, field.get(logementUpdateDto));
+        }
+      } catch (NoSuchFieldException | IllegalAccessException e) {
+        e.printStackTrace();
+      }
+    }
+
+    return logement;
+
   }
 }
