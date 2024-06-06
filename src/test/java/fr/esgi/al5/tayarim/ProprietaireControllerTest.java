@@ -144,8 +144,7 @@ public class ProprietaireControllerTest {
             "Country",
             null,
             null,
-            "Appartement",
-            "lienImage"
+            "Appartement"
         )))
         .commission(20f)
         .build();
