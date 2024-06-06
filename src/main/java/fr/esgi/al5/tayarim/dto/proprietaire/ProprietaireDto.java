@@ -23,20 +23,29 @@ public class ProprietaireDto {
 
   @NonNull
   private Long id;
+
   @NonNull
   private String nom;
+
   @NonNull
   private String prenom;
+
   @NonNull
   private String email;
+
   @NonNull
   private String numTel;
+
   @NonNull
   private LocalDateTime dateInscription;
+
   @NonNull
   private Boolean isPasswordUpdated;
 
   private List<LogementDto> logements;
+
+  @NonNull
+  private Float commission;
 
   // No need for explicit getters, setters, or constructors
 }

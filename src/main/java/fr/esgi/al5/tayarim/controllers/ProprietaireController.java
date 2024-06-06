@@ -1,5 +1,6 @@
 package fr.esgi.al5.tayarim.controllers;
 
+import fr.esgi.al5.tayarim.auth.UserTokenInfo;
 import fr.esgi.al5.tayarim.dto.proprietaire.ProprietaireCreationDto;
 import fr.esgi.al5.tayarim.dto.proprietaire.ProprietaireDto;
 import fr.esgi.al5.tayarim.dto.proprietaire.ProprietaireUpdateDto;
@@ -133,8 +134,8 @@ public class ProprietaireController {
   public ResponseEntity<ProprietaireDto> updateProprietaire(
       @RequestAttribute("token") String authHeader, @PathVariable Long id,
       @Valid @RequestBody ProprietaireUpdateDto proprietaireUpdateDto) {
-    Entry<Long, Boolean> tokenInfo = authService.verifyToken(getTokenFromHeader(authHeader), false);
-    if (!tokenInfo.getKey().equals(id) && !tokenInfo.getValue()) {
+    UserTokenInfo userTokenInfo = authService.verifyToken(getTokenFromHeader(authHeader), false);
+    if (!userTokenInfo.getId().equals(id) && !userTokenInfo.getIsAdmin()) {
       throw new UnauthorizedException();
     }
 

@@ -31,14 +31,21 @@ public class JwtHelper {
    * @param isAdmin Booléen indiquant si l'utilisateur est un administrateur.
    * @return Le token JWT généré.
    */
-  public String generateToken(Long id, String uuid, boolean isAdmin) {
+  public String generateToken(Long id, String uuid, boolean isAdmin, boolean isRefreshToken) {
     String subject = id.toString().concat(";").concat(uuid).concat(";")
         .concat(Boolean.toString(isAdmin));
-    var now = Instant.now();
+
+    Instant now = Instant.now();
+    Date expiration;
+    if (isRefreshToken) {
+      expiration = Date.from(now.plusSeconds(86400 * 7)); // 7j
+    } else {
+      expiration = Date.from(now.plusSeconds(86400)); //24h
+    }
     return Jwts.builder()
         .subject(subject)
         .issuedAt(Date.from(now))
-        .expiration(Date.from(now.plusSeconds(86400))) //24h
+        .expiration(expiration) //24h
         .signWith(getSignKey())
         .compact();
   }

@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
 import com.fasterxml.jackson.databind.ObjectMapper; // Make sure to import ObjectMapper
+import fr.esgi.al5.tayarim.auth.UserTokenInfo;
 import fr.esgi.al5.tayarim.controllers.ProprietaireController;
 import fr.esgi.al5.tayarim.dto.logement.LogementDto;
 import fr.esgi.al5.tayarim.dto.proprietaire.ProprietaireCreationDto;
@@ -99,6 +100,7 @@ public class ProprietaireControllerTest {
         .dateInscription(localDateTime)
         .logements(null)
         .isPasswordUpdated(Boolean.TRUE)
+        .commission(20f)
         .build();
     proprietaireDto2 = ProprietaireDto.builder()
         .id(2L)
@@ -109,6 +111,7 @@ public class ProprietaireControllerTest {
         .dateInscription(localDateTime)
         .logements(null)
         .isPasswordUpdated(Boolean.TRUE)
+        .commission(20f)
         .build();
     proprietaireDtos = List.of(proprietaireDto, proprietaireDto2);
     proprietaireDtoWithLogement = ProprietaireDto.builder()
@@ -119,7 +122,31 @@ public class ProprietaireControllerTest {
         .numTel("0612345678")
         .dateInscription(localDateTime)
         .isPasswordUpdated(Boolean.TRUE)
-        .logements(List.of(new LogementDto(1L, 1L)))
+        .logements(List.of(new LogementDto(
+            1L,
+            "titre",
+            1L,
+            true,
+            2,
+            3,
+            2,
+            5,
+            1,
+            "description",
+            0f,
+            50f,
+            "10:00",
+            "12:00",
+            "13 FakeStreet City, 12345 Country",
+            "13 FakeStreet City",
+            "City",
+            "12345",
+            "Country",
+            null,
+            null,
+            "Appartement"
+        )))
+        .commission(20f)
         .build();
     proprietaireUpdateDto = ProprietaireUpdateDto.builder()
         .prenom("Karl")
@@ -131,7 +158,7 @@ public class ProprietaireControllerTest {
     given(proprietaireService.creerProprietaire(ArgumentMatchers.any())).willAnswer(
         invocationOnMock -> proprietaireDto);
     when(authService.verifyToken(any(), anyBoolean())).thenReturn(
-        new AbstractMap.SimpleEntry<>(proprietaireDto.getId(), true)); //skip token verif
+        new UserTokenInfo(proprietaireDto.getId(), true, true)); //skip token verif
 
     ResultActions response = mockMvc.perform(post("/proprietaires")
         .requestAttr("token", token)
@@ -156,7 +183,7 @@ public class ProprietaireControllerTest {
     given(proprietaireService.creerProprietaire(ArgumentMatchers.any())).willAnswer(
         invocationOnMock -> proprietaireDto);
     when(authService.verifyToken(any(), anyBoolean())).thenReturn(
-        new AbstractMap.SimpleEntry<>(proprietaireDto.getId(), true)); //skip token verif
+        new UserTokenInfo(proprietaireDto.getId(), true, true)); //skip token verif
 
     ResultActions response = mockMvc.perform(post("/proprietaires")
         .requestAttr("token", token)
@@ -176,7 +203,7 @@ public class ProprietaireControllerTest {
     given(proprietaireService.creerProprietaire(ArgumentMatchers.any())).willAnswer(
         invocationOnMock -> proprietaireDto);
     when(authService.verifyToken(any(), anyBoolean())).thenReturn(
-        new AbstractMap.SimpleEntry<>(proprietaireDto.getId(), true)); //skip token verif
+        new UserTokenInfo(proprietaireDto.getId(), true, true)); //skip token verif
 
     ResultActions response = mockMvc.perform(post("/proprietaires")
         .requestAttr("token", token)
@@ -196,7 +223,7 @@ public class ProprietaireControllerTest {
     given(proprietaireService.creerProprietaire(ArgumentMatchers.any())).willAnswer(
         invocationOnMock -> proprietaireDto);
     when(authService.verifyToken(any(), anyBoolean())).thenReturn(
-        new AbstractMap.SimpleEntry<>(proprietaireDto.getId(), true)); //skip token verif
+        new UserTokenInfo(proprietaireDto.getId(), true, true)); //skip token verif
 
     ResultActions response = mockMvc.perform(post("/proprietaires")
         .requestAttr("token", token)
@@ -216,7 +243,7 @@ public class ProprietaireControllerTest {
     given(proprietaireService.creerProprietaire(ArgumentMatchers.any())).willAnswer(
         invocationOnMock -> proprietaireDto);
     when(authService.verifyToken(any(), anyBoolean())).thenReturn(
-        new AbstractMap.SimpleEntry<>(proprietaireDto.getId(), true)); //skip token verif
+        new UserTokenInfo(proprietaireDto.getId(), true, true)); //skip token verif
 
     ResultActions response = mockMvc.perform(post("/proprietaires")
         .requestAttr("token", token)
@@ -236,7 +263,7 @@ public class ProprietaireControllerTest {
     given(proprietaireService.creerProprietaire(ArgumentMatchers.any())).willAnswer(
         invocationOnMock -> proprietaireDto);
     when(authService.verifyToken(any(), anyBoolean())).thenReturn(
-        new AbstractMap.SimpleEntry<>(proprietaireDto.getId(), true)); //skip token verif
+        new UserTokenInfo(proprietaireDto.getId(), true, true)); //skip token verif
 
     ResultActions response = mockMvc.perform(post("/proprietaires")
         .requestAttr("token", token)
@@ -256,7 +283,7 @@ public class ProprietaireControllerTest {
     given(proprietaireService.creerProprietaire(ArgumentMatchers.any())).willAnswer(
         invocationOnMock -> proprietaireDto);
     when(authService.verifyToken(any(), anyBoolean())).thenReturn(
-        new AbstractMap.SimpleEntry<>(proprietaireDto.getId(), true)); //skip token verif
+        new UserTokenInfo(proprietaireDto.getId(), true, true)); //skip token verif
 
     ResultActions response = mockMvc.perform(post("/proprietaires")
         .requestAttr("token", token)
@@ -275,7 +302,7 @@ public class ProprietaireControllerTest {
         invocationOnMock -> proprietaireDtos);
 
     when(authService.verifyToken(any(), anyBoolean())).thenReturn(
-        new AbstractMap.SimpleEntry<>(proprietaireDto.getId(), true)); //skip token verif
+        new UserTokenInfo(proprietaireDto.getId(), true, true)); //skip token verif
 
     ResultActions response = mockMvc.perform(get("/proprietaires")
         .requestAttr("token", token)
@@ -310,7 +337,7 @@ public class ProprietaireControllerTest {
         invocationOnMock -> proprietaireDto);
 
     when(authService.verifyToken(any(), anyBoolean())).thenReturn(
-        new AbstractMap.SimpleEntry<>(proprietaireDto.getId(), true)); //skip token verif
+        new UserTokenInfo(proprietaireDto.getId(), true, true)); //skip token verif
 
     ResultActions response = mockMvc.perform(get("/proprietaires/1")
         .requestAttr("token", token)
@@ -336,7 +363,7 @@ public class ProprietaireControllerTest {
         invocationOnMock -> proprietaireDto);
 
     when(authService.verifyToken(any(), anyBoolean())).thenReturn(
-        new AbstractMap.SimpleEntry<>(proprietaireDto.getId(), true)); //skip token verif
+        new UserTokenInfo(proprietaireDto.getId(), true, true)); //skip token verif
 
     ResultActions response = mockMvc.perform(put("/proprietaires/1")
         .requestAttr("token", token)
@@ -362,7 +389,7 @@ public class ProprietaireControllerTest {
         invocationOnMock -> proprietaireDto);
 
     when(authService.verifyToken(any(), anyBoolean())).thenReturn(
-        new AbstractMap.SimpleEntry<>(proprietaireDto.getId(), true)); //skip token verif
+        new UserTokenInfo(proprietaireDto.getId(), true, true)); //skip token verif
 
     ResultActions response = mockMvc.perform(delete("/proprietaires/1")
         .requestAttr("token", token)
