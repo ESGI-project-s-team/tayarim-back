@@ -154,7 +154,7 @@ public class ProprietaireControllerTest {
   }
 
   @Test
-  public void creerProprietaire_ReturnCreated() throws Exception {
+  public void create_ReturnCreated() throws Exception {
     given(proprietaireService.creerProprietaire(ArgumentMatchers.any())).willAnswer(
         invocationOnMock -> proprietaireDto);
     when(authService.verifyToken(any(), anyBoolean())).thenReturn(
@@ -177,7 +177,7 @@ public class ProprietaireControllerTest {
   }
 
   @Test
-  public void creerProprietaire_ReturnErrorOwnerInvalidName()
+  public void create_ReturnErrorOwnerInvalidName()
       throws Exception {
     proprietaireCreationDto.setNom("");
     given(proprietaireService.creerProprietaire(ArgumentMatchers.any())).willAnswer(
@@ -197,7 +197,7 @@ public class ProprietaireControllerTest {
   }
 
   @Test
-  public void creerProprietaire_ReturnErrorOwnerInvalidFirstName()
+  public void create_ReturnErrorOwnerInvalidFirstName()
       throws Exception {
     proprietaireCreationDto.setPrenom("");
     given(proprietaireService.creerProprietaire(ArgumentMatchers.any())).willAnswer(
@@ -217,7 +217,7 @@ public class ProprietaireControllerTest {
   }
 
   @Test
-  public void creerProprietaire_ReturnErrorOwnerInvalidMail_WhenEmailIsEmpty()
+  public void create_ReturnErrorOwnerInvalidMail_WhenEmailIsEmpty()
       throws Exception {
     proprietaireCreationDto.setEmail("");
     given(proprietaireService.creerProprietaire(ArgumentMatchers.any())).willAnswer(
@@ -237,7 +237,7 @@ public class ProprietaireControllerTest {
   }
 
   @Test
-  public void creerProprietaire_ReturnErrorOwnerInvalidMail_WhenEmailDoesntMatchFormat()
+  public void create_ReturnErrorOwnerInvalidMail_WhenEmailDoesntMatchFormat()
       throws Exception {
     proprietaireCreationDto.setEmail("testmailcom");
     given(proprietaireService.creerProprietaire(ArgumentMatchers.any())).willAnswer(
@@ -257,7 +257,7 @@ public class ProprietaireControllerTest {
   }
 
   @Test
-  public void creerProprietaire_ReturnErrorOwnerInvalidNumTel_WhenNumTelIsEmpty()
+  public void create_ReturnErrorOwnerInvalidNumTel_WhenNumTelIsEmpty()
       throws Exception {
     proprietaireCreationDto.setNumTel("");
     given(proprietaireService.creerProprietaire(ArgumentMatchers.any())).willAnswer(
@@ -277,7 +277,7 @@ public class ProprietaireControllerTest {
   }
 
   @Test
-  public void creerProprietaire_ReturnErrorOwnerInvalidNumTel_WhenNumTelDoesntMatchFormat()
+  public void create_ReturnErrorOwnerInvalidNumTel_WhenNumTelDoesntMatchFormat()
       throws Exception {
     proprietaireCreationDto.setNumTel("aaaaa");
     given(proprietaireService.creerProprietaire(ArgumentMatchers.any())).willAnswer(
@@ -297,7 +297,7 @@ public class ProprietaireControllerTest {
   }
 
   @Test
-  public void getProprietaire_ReturnOk() throws Exception {
+  public void getAll_ReturnOk() throws Exception {
     given(proprietaireService.getProprietaire(false)).willAnswer(
         invocationOnMock -> proprietaireDtos);
 
@@ -332,7 +332,7 @@ public class ProprietaireControllerTest {
   }
 
   @Test
-  public void getProprietaire_WithIdInPath_ReturnOk() throws Exception {
+  public void getById_WithIdInPath_ReturnOk() throws Exception {
     given(proprietaireService.getProprietaireById(1L, false)).willAnswer(
         invocationOnMock -> proprietaireDto);
 
@@ -357,7 +357,7 @@ public class ProprietaireControllerTest {
   }
 
   @Test
-  public void updateProprietaire_ReturnOk() throws Exception {
+  public void update_ReturnOk() throws Exception {
     proprietaireDto.setPrenom(proprietaireUpdateDto.getPrenom());
     given(proprietaireService.updateProprietaire(1L, proprietaireUpdateDto)).willAnswer(
         invocationOnMock -> proprietaireDto);
@@ -384,7 +384,7 @@ public class ProprietaireControllerTest {
   }
 
   @Test
-  public void deleteProprietaire_ReturnOk() throws Exception {
+  public void delete_ReturnOk() throws Exception {
     given(proprietaireService.deleteProprietaire(1L)).willAnswer(
         invocationOnMock -> proprietaireDto);
 

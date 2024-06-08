@@ -156,7 +156,8 @@ public class LogementService {
 
     if ((logementUpdateDto.getTitre() == null || logementUpdateDto.getTitre().isBlank())
         && (logementUpdateDto.getIsLouable() == null)
-        && (logementUpdateDto.getIdProprietaire() == null || logementUpdateDto.getIdProprietaire() == 0)
+        && (logementUpdateDto.getIdProprietaire() == null
+        || logementUpdateDto.getIdProprietaire() == 0)
         && (logementUpdateDto.getNombresDeChambres() == null
         || logementUpdateDto.getNombresDeChambres() == 0)
         && (logementUpdateDto.getNombresDeLits() == null
@@ -220,7 +221,8 @@ public class LogementService {
       throw new LogementInvalidUpdateBody();
     }
 
-    if(logementUpdateDto.getIdProprietaire() != null && logementUpdateDto.getIdProprietaire() != 0) {
+    if (logementUpdateDto.getIdProprietaire() != null
+        && logementUpdateDto.getIdProprietaire() != 0) {
       Optional<Proprietaire> optionalProprietaire = proprietaireRepository.findById(
           logementUpdateDto.getIdProprietaire());
       if (optionalProprietaire.isEmpty()) {

@@ -33,7 +33,7 @@ public class LogementCreationDto {
   @Pattern(regexp = "true|false", message = "error_home_invalid_louable")
   private String isLouable;*/
 
-  @NotNull
+  @NotNull(message = "error_home_invalid_louable")
   private Boolean isLouable;
 
   @Min(value = 1, message = "error_home_invalid_owner_id")
