@@ -5,33 +5,21 @@ import lombok.Data;
 import lombok.NonNull;
 
 /**
- * Objet de transfert de données (DTO) pour la réponse après une tentative de connexion réussie. Ce
- * DTO encapsule les informations essentielles de l'utilisateur authentifié, telles que son
+ * Objet de transfert de données (DTO) pour la réponse après une tentative de refresh token réussie.
+ * Ce DTO encapsule les informations d'authentification de l'utilisateur authentifié, telles que son
  * identifiant, son token d'accès et son statut d'administrateur, et les info de l'utilisateur. Les
  * annotations Lombok génèrent automatiquement les méthodes getteurs, setteurs, toString, equals et
  * hashCode.
  */
 @Data // Generates getters, setters, toString, equals, and hashCode methods
-@AllArgsConstructor // Generates an all-args constructor
-public class AuthLoginResponseDto {
+@AllArgsConstructor// Generates an all-args constructor
+public class AuthRefreshResponseDto {
 
   @NonNull
   private Long id;
 
   @NonNull
   private Boolean admin;
-
-  @NonNull
-  private String nom;
-
-  @NonNull
-  private String prenom;
-
-  @NonNull
-  private String email;
-
-  @NonNull
-  private String numTel;
 
   @NonNull
   private Boolean isPasswordUpdated;
@@ -41,5 +29,9 @@ public class AuthLoginResponseDto {
 
   @NonNull
   private String refreshToken;
+
+  @NonNull
+  private String tokenType;
+
   // No need for explicit getters, setters, or constructors
 }

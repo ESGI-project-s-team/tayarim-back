@@ -38,6 +38,10 @@ public class Proprietaire extends Utilisateur {
   @NonNull
   private Boolean isPasswordUpdated;
 
+  @Column(name = "COMMISSION", nullable = false)
+  @NonNull
+  private Float commission;
+
   /**
    * Builder pour l'entité Proprietaire.
    *
@@ -63,6 +67,7 @@ public class Proprietaire extends Utilisateur {
     this.logements = List.of();
 
     this.isPasswordUpdated = isPasswordUpdated;
+    this.commission = 20f;
   }
 
 

@@ -58,6 +58,7 @@ public class ProprietaireMapper {
         .isPasswordUpdated(proprietaire.getIsPasswordUpdated())
         .logements(
             isLogement ? LogementMapper.entityListToDtoList(proprietaire.getLogements()) : null)
+        .commission(proprietaire.getCommission())
         .build();
   }
 
