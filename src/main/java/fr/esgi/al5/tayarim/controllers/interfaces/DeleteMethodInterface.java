@@ -23,6 +23,6 @@ public interface DeleteMethodInterface<T> {
 
   @Operation(summary = "Authenticate user", security = @SecurityRequirement(name = "bearer-key"))
   @DeleteMapping("/{id}")
-  ResponseEntity<T> delete(String authHeader, @PathVariable Long id);
+  ResponseEntity<T> delete(@RequestAttribute("token") String authHeader, @PathVariable Long id);
 
 }

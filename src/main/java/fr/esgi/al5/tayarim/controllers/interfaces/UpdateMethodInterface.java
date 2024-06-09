@@ -24,6 +24,7 @@ public interface UpdateMethodInterface<T, U> {
 
   @Operation(summary = "Authenticate user", security = @SecurityRequirement(name = "bearer-key"))
   @PutMapping("/{id}")
-  ResponseEntity<T> update(String authHeader, @PathVariable Long id, U u);
+  ResponseEntity<T> update(@RequestAttribute("token") String authHeader, @PathVariable Long id,
+      @Valid @RequestBody U u);
 
 }

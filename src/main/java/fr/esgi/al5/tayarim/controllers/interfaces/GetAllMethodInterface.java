@@ -23,6 +23,6 @@ public interface GetAllMethodInterface<T> {
 
   @Operation(summary = "Authenticate user", security = @SecurityRequirement(name = "bearer-key"))
   @GetMapping("")
-  ResponseEntity<List<T>> getAll(String authHeader);
+  ResponseEntity<List<T>> getAll(@RequestAttribute("token") String authHeader);
 
 }

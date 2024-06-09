@@ -40,3 +40,5 @@
 "error_home_notExist": "This housing doesn't exist"
 "error_home_invalid_updateBody": "Invalid or missing data to update that home",
 "error_home_invalid_creationBody": "Invalid or missing data to create that home",
+"error_home_invalid_rules": "The rules entered are invalid",
+"error_unsupported_method_path": "Unsupported method and/or path",

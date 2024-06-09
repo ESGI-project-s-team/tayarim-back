@@ -117,7 +117,6 @@ public class LogementController implements
       String authHeader, Long id,
       LogementUpdateDto logementUpdateDto) {
     UserTokenInfo userTokenInfo = authService.verifyToken(getTokenFromHeader(authHeader), true);
-
     return new ResponseEntity<>(
         logementService.updateLogement(id, logementUpdateDto),
         HttpStatus.OK
@@ -145,14 +144,10 @@ public class LogementController implements
   /**
    * Récupère tous les type de logements.
    *
-   * @param authHeader L'en-tête d'autorisation contenant le token JWT.
    * @return Une ResponseEntity avec le statut HTTP indiquant le succès de l'opération.
    */
-  @Operation(summary = "Authenticate user", security = @SecurityRequirement(name = "bearer-key"))
   @GetMapping("/types")
-  public ResponseEntity<List<TypeLogementDto>> getAllTypeLogement(
-      @RequestAttribute("token") String authHeader) {
-    authService.verifyToken(getTokenFromHeader(authHeader), false);
+  public ResponseEntity<List<TypeLogementDto>> getAllTypeLogement() {
 
     return new ResponseEntity<>(
         logementService.getAllTypeLogement(),

@@ -40,4 +40,5 @@
 "error_home_notExist": "Ce logement n'existe pas",
 "error_home_invalid_updateBody": "Donnée invalide ou manquante pour la mise à jour du logement",
 "error_home_invalid_updateBody": "Donnée invalide ou manquante pour la création du logement",
-
+"error_home_invalid_rules": "Les regles saisies sont invalides",
+"error_unsupported_method_path": "Méthode et/ou chemin non supporté",

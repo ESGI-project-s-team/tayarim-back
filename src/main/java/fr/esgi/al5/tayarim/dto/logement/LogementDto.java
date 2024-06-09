@@ -1,5 +1,7 @@
 package fr.esgi.al5.tayarim.dto.logement;
 
+import java.util.List;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NonNull;
@@ -58,6 +60,9 @@ public class LogementDto {
 
   @NonNull
   private String typeLogement;
+
+  @NonNull
+  private Map<String, String> reglesLogement;
 
 
 }

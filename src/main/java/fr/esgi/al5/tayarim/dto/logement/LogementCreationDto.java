@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -97,5 +98,9 @@ public class LogementCreationDto {
   @Min(value = 1, message = "error_home_invalid_type_id")
   @NotNull(message = "error_home_invalid_type_id")
   private Long idTypeLogement;
+
+  @Size(min = 1, max = 1000, message = "error_home_invalid_rules")
+  @NotNull(message = "error_home_invalid_rules")
+  private List<Long> reglesLogement;
 
 }

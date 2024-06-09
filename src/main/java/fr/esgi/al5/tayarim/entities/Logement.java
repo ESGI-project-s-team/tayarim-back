@@ -8,12 +8,16 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Set;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
@@ -25,6 +29,7 @@ import lombok.NonNull;
 @Data
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EqualsAndHashCode(exclude = {"id", "reglesLogements"})
 public class Logement {
 
   @Id
@@ -97,6 +102,14 @@ public class Logement {
   @JoinColumn(name = "IDPROPRIETAIRE", nullable = false)
   private Proprietaire proprietaire;
 
+  @ManyToMany
+  @JoinTable(
+      name = "RESPECTER",
+      joinColumns = @JoinColumn(name = "IDLOGEMENT"),
+      inverseJoinColumns = @JoinColumn(name = "IDREGLESLOGEMENT")
+  )
+  private Set<ReglesLogement> reglesLogements;
+
   /**
    * Builder pour l'entité Logmeent.
    *
@@ -118,7 +131,7 @@ public class Logement {
    * @param pays                 Pays du logement
    * @param etage                Etage du logement
    * @param numeroDePorte        Numéro de porte du logement
-   * @param typeLogement       Identifiant du type de logement
+   * @param typeLogement         Identifiant du type de logement
    * @param proprietaire         Propriétaire du logement
    */
   @Builder
@@ -130,7 +143,8 @@ public class Logement {
       LocalTime defaultCheckIn, LocalTime defaultCheckOut,
       @NonNull Integer intervalReservation, @NonNull String ville, @NonNull String adresse,
       @NonNull String codePostal, @NonNull String pays, String etage, String numeroDePorte,
-      @NonNull TypeLogement typeLogement, @NonNull Proprietaire proprietaire) {
+      @NonNull TypeLogement typeLogement, @NonNull Proprietaire proprietaire,
+      @NonNull Set<ReglesLogement> reglesLogements) {
     this.isLouable = isLouable;
     this.titre = titre;
     this.nombresDeChambres = nombresDeChambres;
@@ -152,6 +166,7 @@ public class Logement {
     this.numeroDePorte = numeroDePorte;
     this.typeLogement = typeLogement;
     this.proprietaire = proprietaire;
+    this.reglesLogements = reglesLogements;
   }
 
 }

@@ -4,12 +4,16 @@ import fr.esgi.al5.tayarim.dto.logement.LogementCreationDto;
 import fr.esgi.al5.tayarim.dto.logement.LogementDto;
 import fr.esgi.al5.tayarim.entities.Logement;
 import fr.esgi.al5.tayarim.entities.Proprietaire;
+import fr.esgi.al5.tayarim.entities.ReglesLogement;
 import fr.esgi.al5.tayarim.entities.TypeLogement;
 import fr.esgi.al5.tayarim.repositories.ProprietaireRepository;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.NonNull;
 import org.springframework.stereotype.Component;
 
@@ -27,7 +31,8 @@ public class LogementMapper {
    */
   public static Logement creationDtoToEntity(@NonNull LogementCreationDto logementCreationDto,
       @NonNull TypeLogement typeLogement,
-      @NonNull Proprietaire proprietaire) {
+      @NonNull Proprietaire proprietaire,
+      @NonNull Set<ReglesLogement> reglesLogement) {
 
     return new Logement(logementCreationDto.getIsLouable(),
         logementCreationDto.getTitre(),
@@ -51,7 +56,8 @@ public class LogementMapper {
         logementCreationDto.getEtage(),
         logementCreationDto.getNumeroDePorte(),
         typeLogement,
-        proprietaire);
+        proprietaire,
+        reglesLogement);
   }
 
   /**
@@ -84,7 +90,10 @@ public class LogementMapper {
         logement.getPays(),
         logement.getEtage(),
         logement.getNumeroDePorte(),
-        logement.getTypeLogement().getNom()
+        logement.getTypeLogement().getNom(),
+        logement.getReglesLogements().stream().collect(
+            Collectors.toMap(ReglesLogement::getRegles, ReglesLogement::getIcone)
+        )
     );
   }
 

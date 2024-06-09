@@ -23,6 +23,6 @@ public interface GetByIdMethodInterface<T> {
 
   @Operation(summary = "Authenticate user", security = @SecurityRequirement(name = "bearer-key"))
   @GetMapping("/{id}")
-  ResponseEntity<T> getById(String authHeader, @PathVariable Long id);
+  ResponseEntity<T> getById(@RequestAttribute("token") String authHeader, @PathVariable Long id);
 
 }

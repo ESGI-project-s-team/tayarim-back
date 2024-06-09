@@ -7,8 +7,10 @@ import fr.esgi.al5.tayarim.dto.logement.LogementUpdateDto;
 import fr.esgi.al5.tayarim.dto.logement.TypeLogementDto;
 import fr.esgi.al5.tayarim.entities.Logement;
 import fr.esgi.al5.tayarim.entities.Proprietaire;
+import fr.esgi.al5.tayarim.entities.ReglesLogement;
 import fr.esgi.al5.tayarim.entities.TypeLogement;
 import fr.esgi.al5.tayarim.exceptions.LogementInvalidCreationBody;
+import fr.esgi.al5.tayarim.exceptions.LogementInvalidReglesLogement;
 import fr.esgi.al5.tayarim.exceptions.LogementInvalidTypeLogement;
 import fr.esgi.al5.tayarim.exceptions.LogementInvalidUpdateBody;
 import fr.esgi.al5.tayarim.exceptions.LogementNotFoundException;
@@ -18,10 +20,15 @@ import fr.esgi.al5.tayarim.mappers.LogementMapper;
 import fr.esgi.al5.tayarim.mappers.TypeLogementMapper;
 import fr.esgi.al5.tayarim.repositories.LogementRepository;
 import fr.esgi.al5.tayarim.repositories.ProprietaireRepository;
+import fr.esgi.al5.tayarim.repositories.ReglesLogementRepository;
 import fr.esgi.al5.tayarim.repositories.TypeLogementRepository;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,20 +45,25 @@ public class LogementService {
   private final ProprietaireRepository proprietaireRepository;
   private final TypeLogementRepository typeLogementRepository;
 
+  private final ReglesLogementRepository reglesLogementRepository;
+
 
   /**
    * Constructeur pour le service de logement.
    *
-   * @param logementRepository     Le repository des logements.
-   * @param proprietaireRepository Le repository des propriétaires.
-   * @param typeLogementRepository Le repository des types de logements.
+   * @param logementRepository       Le repository des logements.
+   * @param proprietaireRepository   Le repository des propriétaires.
+   * @param typeLogementRepository   Le repository des types de logements.
+   * @param reglesLogementRepository Le repository des règles de logements.
    */
   public LogementService(LogementRepository logementRepository,
       ProprietaireRepository proprietaireRepository,
-      TypeLogementRepository typeLogementRepository) {
+      TypeLogementRepository typeLogementRepository,
+      ReglesLogementRepository reglesLogementRepository) {
     this.logementRepository = logementRepository;
     this.proprietaireRepository = proprietaireRepository;
     this.typeLogementRepository = typeLogementRepository;
+    this.reglesLogementRepository = reglesLogementRepository;
   }
 
   /**
@@ -84,6 +96,8 @@ public class LogementService {
                 || (logementCreationDto.getDefaultCheckOut() == null
                 || logementCreationDto.getDefaultCheckOut().isBlank())
                 || logementCreationDto.getPrixParNuit() == null
+                || (logementCreationDto.getReglesLogement() == null
+                || logementCreationDto.getReglesLogement().isEmpty())
         )) {
       throw new LogementInvalidCreationBody();
     }
@@ -94,12 +108,16 @@ public class LogementService {
       throw new LogementInvalidTypeLogement();
     }
 
+    ArrayList<ReglesLogement> reglesLogements = parseRegle(logementCreationDto.getReglesLogement());
+
     return LogementMapper.entityToDto(
         logementRepository.save(
             LogementMapper.creationDtoToEntity(
                 logementCreationDto,
                 optionalTypeLogement.get(),
-                proprietaire)
+                proprietaire,
+                Set.copyOf(reglesLogements)
+            )
         )
     );
   }
@@ -113,7 +131,7 @@ public class LogementService {
   public List<LogementDto> getAllLogement(@NonNull Long idUser, @NonNull Boolean isAdmin) {
     if (isAdmin) {
       return LogementMapper.entityListToDtoList(
-          logementRepository.findAll()
+          logementRepository.findAllWithReglesLogements()
       );
     }
     Optional<Proprietaire> optionalProprietaire = proprietaireRepository.findById(idUser);
@@ -186,7 +204,10 @@ public class LogementService {
         && (logementUpdateDto.getNumeroDePorte() == null || logementUpdateDto.getNumeroDePorte()
         .isBlank())
         && (logementUpdateDto.getIdTypeLogement() == null
-        || logementUpdateDto.getIdTypeLogement() == 0)) {
+        || logementUpdateDto.getIdTypeLogement() == 0)
+        && (logementUpdateDto.getReglesLogement() == null || logementUpdateDto.getReglesLogement()
+        .isEmpty())
+    ) {
       throw new LogementInvalidUpdateBody();
     }
 
@@ -216,6 +237,10 @@ public class LogementService {
                 || (logement.getDefaultCheckOut() == null
                 && logementUpdateDto.getDefaultCheckOut() == null)
                 || (logement.getPrixParNuit() == null && logementUpdateDto.getPrixParNuit() == null)
+                || (logement.getReglesLogements() == null && (
+                logementUpdateDto.getReglesLogement() == null
+                    || logementUpdateDto.getReglesLogement().isEmpty())
+            )
         )
     ) {
       throw new LogementInvalidUpdateBody();
@@ -299,6 +324,10 @@ public class LogementService {
             ? logement.getTypeLogement()
             : typeLogementRepository.findById(logementUpdateDto.getIdTypeLogement()).orElseThrow(
                 LogementInvalidTypeLogement::new));
+    logement.setReglesLogements(
+        logementUpdateDto.getReglesLogement() == null || logementUpdateDto.getReglesLogement()
+            .isEmpty() ? logement.getReglesLogements()
+            : new HashSet<>(parseRegle(logementUpdateDto.getReglesLogement())));
 
     return LogementMapper.entityToDto(logementRepository.save(logement));
 
@@ -337,5 +366,19 @@ public class LogementService {
     return TypeLogementMapper.entityListToDtoList(
         typeLogementRepository.findAll()
     );
+  }
+
+  private ArrayList<ReglesLogement> parseRegle(@NonNull List<Long> idregles) {
+    ArrayList<ReglesLogement> reglesLogements = new ArrayList<>();
+    for (Long id : idregles) {
+      Optional<ReglesLogement> optionalReglesLogement = reglesLogementRepository.findById(id);
+      if (optionalReglesLogement.isEmpty()) {
+        throw new LogementInvalidReglesLogement();
+      }
+      reglesLogements.add(optionalReglesLogement.get());
+    }
+
+    return reglesLogements;
+
   }
 }
