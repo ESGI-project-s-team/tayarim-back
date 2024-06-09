@@ -22,6 +22,7 @@ import fr.esgi.al5.tayarim.services.ProprietaireService;
 import java.time.LocalDateTime;
 import java.util.AbstractMap;
 import java.util.List;
+import java.util.Map;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -144,7 +145,9 @@ public class ProprietaireControllerTest {
             "Country",
             null,
             null,
-            "Appartement"
+            "Appartement",
+            Map.of("Children allowed", "FaChild", "Smoking allowed", "FaSmoking", "Pets allowed",
+                "MdOutlinePets")
         )))
         .commission(20f)
         .build();

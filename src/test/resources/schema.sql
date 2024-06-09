@@ -99,7 +99,7 @@ CREATE TABLE IF NOT EXISTS Icone (
 CREATE TABLE IF NOT EXISTS ReglesLogement (
                                               id INT PRIMARY KEY AUTO_INCREMENT,
                                               regles VARCHAR(100),
-                                              idIcone INT
+                                              icone VARCHAR(1000)
 );
 
 CREATE TABLE IF NOT EXISTS ImageLogement (
@@ -149,8 +149,6 @@ ALTER TABLE Reservation ADD FOREIGN KEY (idLogement) REFERENCES Logement(id);
 ALTER TABLE Amenagement ADD FOREIGN KEY (idIcone) REFERENCES Icone(id);
 
 ALTER TABLE Amenagement ADD FOREIGN KEY (idCategorieAmenagement) REFERENCES CategorieAmenagement(id);
-
-ALTER TABLE ReglesLogement ADD FOREIGN KEY (idIcone) REFERENCES Icone(id);
 
 ALTER TABLE ImageLogement ADD FOREIGN KEY (idLogement) REFERENCES Logement(id);
 
