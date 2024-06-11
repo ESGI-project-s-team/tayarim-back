@@ -5,10 +5,12 @@ import fr.esgi.al5.tayarim.dto.logement.LogementCreationDto;
 import fr.esgi.al5.tayarim.dto.logement.LogementDto;
 import fr.esgi.al5.tayarim.dto.logement.LogementUpdateDto;
 import fr.esgi.al5.tayarim.dto.logement.TypeLogementDto;
+import fr.esgi.al5.tayarim.entities.Amenagement;
 import fr.esgi.al5.tayarim.entities.Logement;
 import fr.esgi.al5.tayarim.entities.Proprietaire;
 import fr.esgi.al5.tayarim.entities.ReglesLogement;
 import fr.esgi.al5.tayarim.entities.TypeLogement;
+import fr.esgi.al5.tayarim.exceptions.LogementInvalidAmenagement;
 import fr.esgi.al5.tayarim.exceptions.LogementInvalidCreationBody;
 import fr.esgi.al5.tayarim.exceptions.LogementInvalidReglesLogement;
 import fr.esgi.al5.tayarim.exceptions.LogementInvalidTypeLogement;
@@ -18,6 +20,7 @@ import fr.esgi.al5.tayarim.exceptions.ProprietaireInvalidUpdateBody;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireNotFoundException;
 import fr.esgi.al5.tayarim.mappers.LogementMapper;
 import fr.esgi.al5.tayarim.mappers.TypeLogementMapper;
+import fr.esgi.al5.tayarim.repositories.AmenagementRepository;
 import fr.esgi.al5.tayarim.repositories.LogementRepository;
 import fr.esgi.al5.tayarim.repositories.ProprietaireRepository;
 import fr.esgi.al5.tayarim.repositories.ReglesLogementRepository;
@@ -28,7 +31,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,6 +48,7 @@ public class LogementService {
   private final TypeLogementRepository typeLogementRepository;
 
   private final ReglesLogementRepository reglesLogementRepository;
+  private final AmenagementRepository amenagementRepository;
 
 
   /**
@@ -55,15 +58,18 @@ public class LogementService {
    * @param proprietaireRepository   Le repository des propriétaires.
    * @param typeLogementRepository   Le repository des types de logements.
    * @param reglesLogementRepository Le repository des règles de logements.
+   * @param amenagementRepository    Le repository des aménagements.
    */
   public LogementService(LogementRepository logementRepository,
       ProprietaireRepository proprietaireRepository,
       TypeLogementRepository typeLogementRepository,
-      ReglesLogementRepository reglesLogementRepository) {
+      ReglesLogementRepository reglesLogementRepository,
+      AmenagementRepository amenagementRepository) {
     this.logementRepository = logementRepository;
     this.proprietaireRepository = proprietaireRepository;
     this.typeLogementRepository = typeLogementRepository;
     this.reglesLogementRepository = reglesLogementRepository;
+    this.amenagementRepository = amenagementRepository;
   }
 
   /**
@@ -98,6 +104,8 @@ public class LogementService {
                 || logementCreationDto.getPrixParNuit() == null
                 || (logementCreationDto.getReglesLogement() == null
                 || logementCreationDto.getReglesLogement().isEmpty())
+                || (logementCreationDto.getAmenagements() == null
+                || logementCreationDto.getAmenagements().isEmpty())
         )) {
       throw new LogementInvalidCreationBody();
     }
@@ -110,13 +118,16 @@ public class LogementService {
 
     ArrayList<ReglesLogement> reglesLogements = parseRegle(logementCreationDto.getReglesLogement());
 
+    ArrayList<Amenagement> amenagements = parseAmenagement(logementCreationDto.getAmenagements());
+
     return LogementMapper.entityToDto(
         logementRepository.save(
             LogementMapper.creationDtoToEntity(
                 logementCreationDto,
                 optionalTypeLogement.get(),
                 proprietaire,
-                Set.copyOf(reglesLogements)
+                Set.copyOf(reglesLogements),
+                Set.copyOf(amenagements)
             )
         )
     );
@@ -131,7 +142,7 @@ public class LogementService {
   public List<LogementDto> getAllLogement(@NonNull Long idUser, @NonNull Boolean isAdmin) {
     if (isAdmin) {
       return LogementMapper.entityListToDtoList(
-          logementRepository.findAllWithReglesLogements()
+          logementRepository.findAll()
       );
     }
     Optional<Proprietaire> optionalProprietaire = proprietaireRepository.findById(idUser);
@@ -207,6 +218,8 @@ public class LogementService {
         || logementUpdateDto.getIdTypeLogement() == 0)
         && (logementUpdateDto.getReglesLogement() == null || logementUpdateDto.getReglesLogement()
         .isEmpty())
+        && (logementUpdateDto.getAmenagements() == null || logementUpdateDto.getAmenagements()
+        .isEmpty())
     ) {
       throw new LogementInvalidUpdateBody();
     }
@@ -221,27 +234,31 @@ public class LogementService {
 
     if (
         (!logement.getIsLouable() && logementUpdateDto.getIsLouable())
-            && (
-            (logement.getNombresDeChambres() == null
-                && logementUpdateDto.getNombresDeChambres() == null)
-                || (logement.getNombresDeLits() == null
-                && logementUpdateDto.getNombresDeLits() == null)
-                || (logement.getNombresSallesDeBains() == null
-                && logementUpdateDto.getNombresSallesDeBains() == null)
-                || (logement.getCapaciteMaxPersonne() == null
-                && logementUpdateDto.getCapaciteMaxPersonne() == null)
-                || (logement.getNombresNuitsMin() == null
-                && logementUpdateDto.getNombresNuitsMin() == null)
-                || (logement.getDefaultCheckIn() == null
-                && logementUpdateDto.getDefaultCheckIn() == null)
-                || (logement.getDefaultCheckOut() == null
-                && logementUpdateDto.getDefaultCheckOut() == null)
-                || (logement.getPrixParNuit() == null && logementUpdateDto.getPrixParNuit() == null)
-                || (logement.getReglesLogements() == null && (
-                logementUpdateDto.getReglesLogement() == null
-                    || logementUpdateDto.getReglesLogement().isEmpty())
+            &&
+            (
+                (logement.getNombresDeChambres() == null
+                    && logementUpdateDto.getNombresDeChambres() == null)
+                    || (logement.getNombresDeLits() == null
+                    && logementUpdateDto.getNombresDeLits() == null)
+                    || (logement.getNombresSallesDeBains() == null
+                    && logementUpdateDto.getNombresSallesDeBains() == null)
+                    || (logement.getCapaciteMaxPersonne() == null
+                    && logementUpdateDto.getCapaciteMaxPersonne() == null)
+                    || (logement.getNombresNuitsMin() == null
+                    && logementUpdateDto.getNombresNuitsMin() == null)
+                    || (logement.getDefaultCheckIn() == null
+                    && logementUpdateDto.getDefaultCheckIn() == null)
+                    || (logement.getDefaultCheckOut() == null
+                    && logementUpdateDto.getDefaultCheckOut() == null)
+                    || (logement.getPrixParNuit() == null
+                    && logementUpdateDto.getPrixParNuit() == null)
+                    || (logement.getReglesLogements() == null
+                    && (logementUpdateDto.getReglesLogement() == null
+                    || logementUpdateDto.getReglesLogement().isEmpty()))
+                    || (logement.getAmenagements() == null
+                    && (logementUpdateDto.getAmenagements() == null
+                    || logementUpdateDto.getAmenagements().isEmpty()))
             )
-        )
     ) {
       throw new LogementInvalidUpdateBody();
     }
@@ -328,6 +345,10 @@ public class LogementService {
         logementUpdateDto.getReglesLogement() == null || logementUpdateDto.getReglesLogement()
             .isEmpty() ? logement.getReglesLogements()
             : new HashSet<>(parseRegle(logementUpdateDto.getReglesLogement())));
+    logement.setAmenagements(
+        logementUpdateDto.getAmenagements() == null || logementUpdateDto.getAmenagements().isEmpty()
+            ? logement.getAmenagements()
+            : new HashSet<>(parseAmenagement(logementUpdateDto.getAmenagements())));
 
     return LogementMapper.entityToDto(logementRepository.save(logement));
 
@@ -379,6 +400,20 @@ public class LogementService {
     }
 
     return reglesLogements;
+
+  }
+
+  private ArrayList<Amenagement> parseAmenagement(@NonNull List<Long> idAmenagements) {
+    ArrayList<Amenagement> amenagements = new ArrayList<>();
+    for (Long id : idAmenagements) {
+      Optional<Amenagement> optionalAmenagement = amenagementRepository.findById(id);
+      if (optionalAmenagement.isEmpty()) {
+        throw new LogementInvalidAmenagement();
+      }
+      amenagements.add(optionalAmenagement.get());
+    }
+
+    return amenagements;
 
   }
 }

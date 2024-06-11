@@ -64,5 +64,8 @@ public class LogementDto {
   @NonNull
   private Map<String, String> reglesLogement;
 
+  @NonNull
+  private Map<String, String> amenagements;
+
 
 }

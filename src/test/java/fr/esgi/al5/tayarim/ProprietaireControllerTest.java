@@ -147,7 +147,8 @@ public class ProprietaireControllerTest {
             null,
             "Appartement",
             Map.of("Children allowed", "FaChild", "Smoking allowed", "FaSmoking", "Pets allowed",
-                "MdOutlinePets")
+                "MdOutlinePets"),
+            Map.of("Oven", "PiOvenDuotone", "Wifi", "FaWifi")
         )))
         .commission(20f)
         .build();

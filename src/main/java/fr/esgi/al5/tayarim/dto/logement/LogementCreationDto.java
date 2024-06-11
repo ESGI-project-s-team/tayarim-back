@@ -103,4 +103,8 @@ public class LogementCreationDto {
   @NotNull(message = "error_home_invalid_rules")
   private List<Long> reglesLogement;
 
+  @Size(min = 1, max = 1000, message = "error_home_invalid_facilities")
+  @NotNull(message = "error_home_invalid_facilities")
+  private List<Long> amenagements;
+
 }

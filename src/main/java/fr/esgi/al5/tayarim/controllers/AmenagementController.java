@@ -1,9 +1,10 @@
 package fr.esgi.al5.tayarim.controllers;
 
 import fr.esgi.al5.tayarim.controllers.interfaces.ControllerUtils;
+import fr.esgi.al5.tayarim.dto.amenagement.AmenagementDto;
 import fr.esgi.al5.tayarim.dto.regleslogement.ReglesLogementDto;
+import fr.esgi.al5.tayarim.services.AmenagementService;
 import fr.esgi.al5.tayarim.services.AuthService;
-import fr.esgi.al5.tayarim.services.ReglesLogementService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import java.util.List;
@@ -14,33 +15,35 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Contrôleur pour la gestion des règles de logement.
+ * Contrôleur pour la gestion des amenagements.
  */
 @RestController
-@RequestMapping("/reglesLogement")
-public class ReglesLogementController implements
+@RequestMapping("/amenagements")
+public class AmenagementController implements
     ControllerUtils {
 
-  private final ReglesLogementService reglesLogementService;
+  private final AmenagementService amenagementService;
   private final AuthService authService;
 
-  public ReglesLogementController(ReglesLogementService reglesLogementService,
+  public AmenagementController(AmenagementService amenagementService,
       AuthService authService) {
-    this.reglesLogementService = reglesLogementService;
+    this.amenagementService = amenagementService;
     this.authService = authService;
   }
 
   /**
-   * Récupère toutes les règles de logements.
+   * Récupère toutes les amenagements.
    *
-   * @return {@link ReglesLogementDto}
+   * @return {@link AmenagementDto}
    */
   @GetMapping("")
-  public ResponseEntity<List<ReglesLogementDto>> getAll() {
+  public ResponseEntity<List<AmenagementDto>> getAll() {
     return new ResponseEntity<>(
-        reglesLogementService.getAllReglesLogements(),
+        amenagementService.getAllAmenagements(),
         HttpStatus.OK
     );
   }
+
+
 
 }

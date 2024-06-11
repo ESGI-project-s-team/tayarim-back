@@ -4,7 +4,9 @@ import fr.esgi.al5.tayarim.exceptions.AdministrateurEmailAlreadyExistException;
 import fr.esgi.al5.tayarim.exceptions.AdministrateurInvalidUpdateBody;
 import fr.esgi.al5.tayarim.exceptions.AdministrateurNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.AdministrateurNumTelAlreadyExistException;
+import fr.esgi.al5.tayarim.exceptions.LogementInvalidAmenagement;
 import fr.esgi.al5.tayarim.exceptions.LogementInvalidCreationBody;
+import fr.esgi.al5.tayarim.exceptions.LogementInvalidReglesLogement;
 import fr.esgi.al5.tayarim.exceptions.LogementInvalidTypeLogement;
 import fr.esgi.al5.tayarim.exceptions.LogementInvalidUpdateBody;
 import fr.esgi.al5.tayarim.exceptions.LogementNotFoundException;
@@ -89,6 +91,31 @@ public interface ControllerUtils {
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ExceptionHandler({LogementInvalidTypeLogement.class})
   default Map<String, List<String>> logementInvalidTypeLogement(LogementInvalidTypeLogement ex) {
+    return mapException(ex);
+  }
+
+  /**
+   * Gère les exceptions lorsque le body update du logement est invalide.
+   *
+   * @param ex L'exception capturée.
+   * @return Une carte des erreurs.
+   */
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ExceptionHandler({LogementInvalidReglesLogement.class})
+  default Map<String, List<String>> logementInvalidReglesLogement(
+      LogementInvalidReglesLogement ex) {
+    return mapException(ex);
+  }
+
+  /**
+   * Gère les exceptions lorsque le body update du logement est invalide.
+   *
+   * @param ex L'exception capturée.
+   * @return Une carte des erreurs.
+   */
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ExceptionHandler({LogementInvalidAmenagement.class})
+  default Map<String, List<String>> logementInvalidAmenagement(LogementInvalidAmenagement ex) {
     return mapException(ex);
   }
 

@@ -29,7 +29,7 @@ import lombok.NonNull;
 @Data
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@EqualsAndHashCode(exclude = {"id", "reglesLogements"})
+@EqualsAndHashCode(exclude = {"id", "reglesLogements", "amenagements"})
 public class Logement {
 
   @Id
@@ -110,6 +110,14 @@ public class Logement {
   )
   private Set<ReglesLogement> reglesLogements;
 
+  @ManyToMany
+  @JoinTable(
+      name = "CONTENIR",
+      joinColumns = @JoinColumn(name = "IDLOGEMENT"),
+      inverseJoinColumns = @JoinColumn(name = "IDAMENAGEMENT")
+  )
+  private Set<Amenagement> amenagements;
+
   /**
    * Builder pour l'entité Logmeent.
    *
@@ -144,7 +152,7 @@ public class Logement {
       @NonNull Integer intervalReservation, @NonNull String ville, @NonNull String adresse,
       @NonNull String codePostal, @NonNull String pays, String etage, String numeroDePorte,
       @NonNull TypeLogement typeLogement, @NonNull Proprietaire proprietaire,
-      @NonNull Set<ReglesLogement> reglesLogements) {
+      @NonNull Set<ReglesLogement> reglesLogements, @NonNull Set<Amenagement> amenagements) {
     this.isLouable = isLouable;
     this.titre = titre;
     this.nombresDeChambres = nombresDeChambres;
@@ -167,6 +175,7 @@ public class Logement {
     this.typeLogement = typeLogement;
     this.proprietaire = proprietaire;
     this.reglesLogements = reglesLogements;
+    this.amenagements = amenagements;
   }
 
 }

@@ -82,7 +82,7 @@ CREATE TABLE IF NOT EXISTS Reservation (
 CREATE TABLE IF NOT EXISTS Amenagement (
                                            id INT PRIMARY KEY AUTO_INCREMENT,
                                            nom VARCHAR(100),
-                                           idIcone INT,
+                                           icone VARCHAR(1000),
                                            idCategorieAmenagement INT
 );
 
@@ -145,8 +145,6 @@ ALTER TABLE Logement ADD FOREIGN KEY (idTypeLogement) REFERENCES TypeLogement(id
 ALTER TABLE Logement ADD FOREIGN KEY (idProprietaire) REFERENCES Proprietaire(idUser);
 
 ALTER TABLE Reservation ADD FOREIGN KEY (idLogement) REFERENCES Logement(id);
-
-ALTER TABLE Amenagement ADD FOREIGN KEY (idIcone) REFERENCES Icone(id);
 
 ALTER TABLE Amenagement ADD FOREIGN KEY (idCategorieAmenagement) REFERENCES CategorieAmenagement(id);
 
