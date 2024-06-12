@@ -112,7 +112,7 @@ CREATE TABLE IF NOT EXISTS Avis (
                                     id INT PRIMARY KEY AUTO_INCREMENT,
                                     texte VARCHAR(100),
                                     pseudo VARCHAR(100),
-                                    note INT,
+                                    note FLOAT,
                                     date DATETIME,
                                     idLogement INT
 );
