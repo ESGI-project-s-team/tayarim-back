@@ -15,7 +15,7 @@ public class ReglesLogementDto {
   private Integer id;
 
   @NonNull
-  private String regles;
+  private String nom;
 
   @NonNull
   private String icone;

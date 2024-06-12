@@ -33,7 +33,7 @@ public class LogementMapper {
   public static Logement creationDtoToEntity(@NonNull LogementCreationDto logementCreationDto,
       @NonNull TypeLogement typeLogement,
       @NonNull Proprietaire proprietaire,
-      @NonNull Set<ReglesLogement> reglesLogement, @NonNull Set<Amenagement> amenagements) {
+      @NonNull Set<ReglesLogement> reglesLogements, @NonNull Set<Amenagement> amenagements) {
 
     return new Logement(logementCreationDto.getIsLouable(),
         logementCreationDto.getTitre(),
@@ -58,7 +58,7 @@ public class LogementMapper {
         logementCreationDto.getNumeroDePorte(),
         typeLogement,
         proprietaire,
-        reglesLogement,
+        reglesLogements,
         amenagements);
   }
 
@@ -94,7 +94,7 @@ public class LogementMapper {
         logement.getNumeroDePorte(),
         logement.getTypeLogement().getNom(),
         logement.getReglesLogements().stream().collect(
-            Collectors.toMap(ReglesLogement::getRegles, ReglesLogement::getIcone)
+            Collectors.toMap(ReglesLogement::getNom, ReglesLogement::getIcone)
         ),
         logement.getAmenagements().stream().collect(
             Collectors.toMap(Amenagement::getNom, Amenagement::getIcone)

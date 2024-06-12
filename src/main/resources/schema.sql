@@ -98,7 +98,7 @@ CREATE TABLE IF NOT EXISTS Icone (
 
 CREATE TABLE IF NOT EXISTS ReglesLogement (
                                               id INT PRIMARY KEY AUTO_INCREMENT,
-                                              regles VARCHAR(100),
+                                              nom VARCHAR(100),
                                               icone VARCHAR(1000)
 );
 

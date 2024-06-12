@@ -29,8 +29,8 @@ public class ReglesLogement {
   @Column(name = "ID")
   private Integer id;
 
-  @Column(length = 100, nullable = false, name = "REGLES")
-  private String regles;
+  @Column(length = 100, nullable = false, name = "NOM")
+  private String nom;
 
   @Column(length = 1000, nullable = false, name = "ICONE")
   private String icone;

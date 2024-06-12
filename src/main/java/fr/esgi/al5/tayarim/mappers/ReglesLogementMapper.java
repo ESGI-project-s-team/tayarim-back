@@ -22,7 +22,7 @@ public class ReglesLogementMapper {
   public static ReglesLogementDto entityToDto(@NonNull ReglesLogement reglesLogement) {
     return new ReglesLogementDto(
         reglesLogement.getId(),
-        reglesLogement.getRegles(),
+        reglesLogement.getNom(),
         reglesLogement.getIcone()
     );
   }
