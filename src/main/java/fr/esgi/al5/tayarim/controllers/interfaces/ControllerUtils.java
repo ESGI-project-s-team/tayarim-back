@@ -16,6 +16,7 @@ import fr.esgi.al5.tayarim.exceptions.ProprietaireInvalidUpdateBody;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireNumTelAlreadyExistException;
 import fr.esgi.al5.tayarim.exceptions.ReservationNotFoundException;
+import fr.esgi.al5.tayarim.exceptions.ReservationStatusUpdateError;
 import fr.esgi.al5.tayarim.exceptions.TokenExpireOrInvalidException;
 import fr.esgi.al5.tayarim.exceptions.UnauthorizedException;
 import fr.esgi.al5.tayarim.exceptions.UnsupportedMethodPathException;
@@ -80,6 +81,18 @@ public interface ControllerUtils {
   @ResponseStatus(HttpStatus.NOT_FOUND)
   @ExceptionHandler({ReservationNotFoundException.class})
   default Map<String, List<String>> reservationNotFoundException(ReservationNotFoundException ex) {
+    return mapException(ex);
+  }
+
+  /**
+   * Gère les exceptions lorsque le logement n'est pas trouvé.
+   *
+   * @param ex L'exception capturée.
+   * @return Une carte des erreurs.
+   */
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ExceptionHandler({ReservationStatusUpdateError.class})
+  default Map<String, List<String>> reservationStatusUpdateError(ReservationStatusUpdateError ex) {
     return mapException(ex);
   }
 

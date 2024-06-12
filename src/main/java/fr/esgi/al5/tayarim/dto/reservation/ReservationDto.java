@@ -1,7 +1,6 @@
 package fr.esgi.al5.tayarim.dto.reservation;
 
 import java.time.LocalTime;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NonNull;
@@ -13,36 +12,36 @@ import lombok.NonNull;
 @AllArgsConstructor
 public class ReservationDto {
 
-    @NonNull
-    private Long id;
+  @NonNull
+  private Long id;
 
-    @NonNull
-    private String idCommande;
+  @NonNull
+  private String idCommande;
 
-    @NonNull
-    private String statut;
+  @NonNull
+  private String statut;
 
-    @NonNull
-    private String email;
+  @NonNull
+  private String email;
 
-    @NonNull
-    private String nom;
+  @NonNull
+  private String nom;
 
-    @NonNull
-    private String prenom;
+  @NonNull
+  private String prenom;
 
-    @NonNull
-    private Integer nbPersonnes;
+  @NonNull
+  private Integer nbPersonnes;
 
-    @NonNull
-    private Float montant;
+  @NonNull
+  private Float montant;
 
-    @NonNull
-    private LocalTime checkIn;
+  @NonNull
+  private String checkIn;
 
-    @NonNull
-    private LocalTime checkOut;
+  @NonNull
+  private String checkOut;
 
-    @NonNull
-    private Long idLogement;
+  @NonNull
+  private Long idLogement;
 }

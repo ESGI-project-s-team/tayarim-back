@@ -13,7 +13,6 @@ import jakarta.persistence.OneToMany;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Set;
-
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
@@ -21,8 +20,9 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 /**
- * Entité représentant une Reservation dans le système. représenté par l'entité Reservation. La gestion des Reservation est
- * effectuée en liaison avec les logement à travers une relation ManyToOne.
+ * Entité représentant une Reservation dans le système. représenté par l'entité Reservation. La
+ * gestion des Reservation est effectuée en liaison avec les logement à travers une relation
+ * ManyToOne.
  */
 @Data
 @Entity(name = "RESERVATION")
@@ -68,13 +68,22 @@ public class Reservation {
   /**
    * Builder pour l'entité Reservation.
    *
-   * @param proprietaire         Propriétaire du logement
+   * @param idCommande  L'identifiant de la commande.
+   * @param statut      Le statut de la reservation.
+   * @param email       L'email de la personne effectuant la reservation.
+   * @param nom         Le nom de la personne effectuant la reservation.
+   * @param prenom      Le prenom de la personne effectuant la reservation.
+   * @param nbPersonnes Le nombre de personnes effectuant la reservation.
+   * @param montant     Le montant de la reservation.
+   * @param checkIn     L'heure d'arrivée de la reservation.
+   * @param checkOut    L'heure de départ de la reservation.
+   * @param logement    Le logement associé à la reservation.
    */
   @Builder
-  public Reservation(@NonNull String idCommande, @NonNull String statut, @NonNull String email, 
-    @NonNull String nom, @NonNull String prenom, @NonNull Integer nbPersonnes, 
-    @NonNull Float montant, @NonNull LocalTime checkIn, @NonNull LocalTime checkOut, 
-    @NonNull Logement logement 
+  public Reservation(@NonNull String idCommande, @NonNull String statut, @NonNull String email,
+      @NonNull String nom, @NonNull String prenom, @NonNull Integer nbPersonnes,
+      @NonNull Float montant, @NonNull LocalTime checkIn, @NonNull LocalTime checkOut,
+      @NonNull Logement logement
   ) {
     this.idCommande = idCommande;
     this.statut = statut;

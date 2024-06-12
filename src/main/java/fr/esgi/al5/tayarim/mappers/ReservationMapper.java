@@ -30,54 +30,59 @@ public class ReservationMapper {
   /**
    * Convertit une entité Reservation en un DTO Reservation.
    *
-   * @param logementCreationDto Le Dto Reservation à convertir.
+   * @param reservationCreationDto Le Dto Reservation à convertir.
+   * @param idCommande             L'identifiant de la commande associée à la réservation.
+   * @param checkIn                L'heure d'arrivée.
+   * @param checkOut               L'heure de départ.
+   * @param logement               Le logement associé à la réservation.
    * @return Le DTO Reservation correspondant.
    */
-  public static Reservation creationDtoToEntity(@NonNull ReservationCreationDto reservationCreationDto, @NonNull String idCommande, 
-    @NonNull LocalTime checkIn, @NonNull LocalTime checkOut,
-    @NonNull Logement logement
+  public static Reservation creationDtoToEntity(
+      @NonNull ReservationCreationDto reservationCreationDto, @NonNull String idCommande,
+      @NonNull LocalTime checkIn, @NonNull LocalTime checkOut,
+      @NonNull Logement logement
   ) {
 
     return new Reservation(
-      idCommande,
-      "waiting",
-      reservationCreationDto.getEmail(),
-      reservationCreationDto.getNom(),
-      reservationCreationDto.getPrenom(), 
-      reservationCreationDto.getNbPersonnes(), 
-      reservationCreationDto.getMontant(), 
-      checkIn, 
-      checkOut, 
-      logement
+        idCommande,
+        "waiting",
+        reservationCreationDto.getEmail(),
+        reservationCreationDto.getNom(),
+        reservationCreationDto.getPrenom(),
+        reservationCreationDto.getNbPersonnes(),
+        reservationCreationDto.getMontant(),
+        checkIn,
+        checkOut,
+        logement
     );
   }
 
   /**
    * Convertit une entité Reservation en un DTO Reservation.
    *
-   * @param logement L'entité Reservation à convertir.
+   * @param reservation L'entité Reservation à convertir.
    * @return Le DTO Reservation correspondant.
    */
   public static ReservationDto entityToDto(@NonNull Reservation reservation) {
     return new ReservationDto(
-      reservation.getId(), 
-      reservation.getIdCommande(), 
-      reservation.getStatut(), 
-      reservation.getEmail(), 
-      reservation.getNom(), 
-      reservation.getPrenom(), 
-      reservation.getNbPersonnes(), 
-      reservation.getMontant(), 
-      reservation.getCheckIn(), 
-      reservation.getCheckOut(), 
-      reservation.getLogement().getId()
+        reservation.getId(),
+        reservation.getIdCommande(),
+        reservation.getStatut(),
+        reservation.getEmail(),
+        reservation.getNom(),
+        reservation.getPrenom(),
+        reservation.getNbPersonnes(),
+        reservation.getMontant(),
+        reservation.getCheckIn().toString().substring(0, 5),
+        reservation.getCheckOut().toString().substring(0, 5),
+        reservation.getLogement().getId()
     );
   }
 
   /**
    * Convertit une liste d'entités Reservation en une liste de DTOs Reservation.
    *
-   * @param logements La liste des Reservation à convertir.
+   * @param reservations La liste des Reservation à convertir.
    * @return Une liste de DTOs Reservation.
    */
   public static List<ReservationDto> entityListToDtoList(@NonNull List<Reservation> reservations) {

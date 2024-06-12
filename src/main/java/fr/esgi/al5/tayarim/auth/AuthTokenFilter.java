@@ -47,6 +47,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             && !request.getServletPath().startsWith("/logements")
             && !request.getServletPath().startsWith("/reglesLogements")
             && !request.getServletPath().startsWith("/amenagements")
+            && !request.getServletPath().startsWith("/reservations")
     ) {
       return true;
     }
