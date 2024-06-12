@@ -74,8 +74,8 @@ CREATE TABLE IF NOT EXISTS Reservation (
                                            prenom VARCHAR(100),
                                            nbPersonnes INT,
                                            montant FLOAT,
-                                           checkIn DATETIME,
-                                           checkOut DATETIME,
+                                           checkIn TIME,
+                                           checkOut TIME,
                                            idLogement INT
 );
 
