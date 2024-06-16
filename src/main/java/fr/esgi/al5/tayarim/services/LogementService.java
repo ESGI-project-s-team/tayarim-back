@@ -389,9 +389,13 @@ public class LogementService {
     );
   }
 
-  private ArrayList<ReglesLogement> parseRegle(@NonNull List<Long> idregles) {
+  private ArrayList<ReglesLogement> parseRegle(List<Long> idRegles) {
+    if (idRegles == null){
+      return new ArrayList<>();
+    }
+
     ArrayList<ReglesLogement> reglesLogements = new ArrayList<>();
-    for (Long id : idregles) {
+    for (Long id : idRegles) {
       Optional<ReglesLogement> optionalReglesLogement = reglesLogementRepository.findById(id);
       if (optionalReglesLogement.isEmpty()) {
         throw new LogementInvalidReglesLogement();
@@ -403,7 +407,11 @@ public class LogementService {
 
   }
 
-  private ArrayList<Amenagement> parseAmenagement(@NonNull List<Long> idAmenagements) {
+  private ArrayList<Amenagement> parseAmenagement(List<Long> idAmenagements) {
+    if (idAmenagements == null){
+      return new ArrayList<>();
+    }
+
     ArrayList<Amenagement> amenagements = new ArrayList<>();
     for (Long id : idAmenagements) {
       Optional<Amenagement> optionalAmenagement = amenagementRepository.findById(id);
