@@ -21,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,7 +35,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/reservations")
 public class ReservationController implements
     ControllerUtils,
-    CreateMethodInterface<ReservationDto, ReservationCreationDto>,
     UpdateMethodInterface<ReservationDto, ReservationUpdateDto>,
     GetAllMethodInterface<ReservationDto>,
     GetByIdMethodInterface<ReservationDto> {
@@ -48,10 +48,14 @@ public class ReservationController implements
     this.authService = authService;
   }
 
-  @Override
-  public ResponseEntity<ReservationDto> create(String authHeader,
-      @Valid ReservationCreationDto reservationCreationDto) {
-    authService.verifyToken(getTokenFromHeader(authHeader), false);
+  /**
+   * Crée une nouvelle réservation.
+   *
+   * @param reservationCreationDto Dto de création de réservation.
+   */
+  @PostMapping("")
+  public ResponseEntity<ReservationDto> create(
+      @Valid @RequestBody ReservationCreationDto reservationCreationDto) {
 
     return new ResponseEntity<>(
         reservationService.createReservation(reservationCreationDto),
@@ -90,19 +94,17 @@ public class ReservationController implements
   }
 
   /**
-   * Mets à jour le statut de la réservation.
+   * Récupère les règles d'un logement.
    *
-   * @param authHeader Le token d'authentification.
-   * @param id         L'identifiant de la réservation.
-   * @return Les règles de logement.
+   * @param id Id du logement.
    */
-  @PutMapping("/nextStep/{id}")
-  public ResponseEntity<ReservationDto> nextStep(@RequestAttribute("token") String authHeader,
+  //@Operation(summary = "Authenticate user", security = @SecurityRequirement(name = "bearer-key"))
+  @PutMapping("/cancel/{id}")
+  public ResponseEntity<ReservationDto> cancel(/*@RequestAttribute("token") String authHeader,*/
       @PathVariable Long id) {
-    authService.verifyToken(getTokenFromHeader(authHeader), true);
-
+    //UserTokenInfo userTokenInfo = authService.verifyToken(getTokenFromHeader(authHeader), false);
     return new ResponseEntity<>(
-        reservationService.nextStep(id),
+        reservationService.cancel(id/*, userTokenInfo.getIsAdmin(), userTokenInfo.getId()*/),
         HttpStatus.OK
     );
   }

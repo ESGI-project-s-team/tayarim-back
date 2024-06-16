@@ -25,6 +25,9 @@ public class ReservationDto {
   private String email;
 
   @NonNull
+  private String numTel;
+
+  @NonNull
   private String nom;
 
   @NonNull
@@ -43,5 +46,14 @@ public class ReservationDto {
   private String checkOut;
 
   @NonNull
+  private String dateArrivee;
+
+  @NonNull
+  private String dateDepart;
+
+  @NonNull
   private Long idLogement;
+
+  @NonNull
+  private String dateReservation;
 }

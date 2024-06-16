@@ -51,3 +51,5 @@
 "error_reservation_invalid_checkin": "The check-in time entered is invalid",
 "error_reservation_invalid_checkout": "The check-out time entered is invalid",
 "error_reservation_invalid_home": "The id of the housing is invalid",
+"error_reservation_invalid_arrival": "The arrival time entered is invalid",
+"error_reservation_invalid_departure": "The departure time entered is invalid",

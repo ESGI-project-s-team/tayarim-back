@@ -25,6 +25,10 @@ public class ReservationUpdateDto {
   @Pattern(regexp = "[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,4}", message = "error_reservation_invalid_mail")
   private String email;
 
+  @Pattern(regexp = "^[+]?[(]?\\d{3}[)]?[-\\s.]?\\d{3}[-\\s.]?\\d{4,6}$",
+      message = "error_reservation_invalid_phone")
+  private String numTel;
+
   @Size(min = 1, max = 20, message = "error_reservation_invalid_name")
   @Pattern(regexp = "[a-zA-Z]*", message = "error_reservation_invalid_name")
   private String nom;
@@ -44,6 +48,14 @@ public class ReservationUpdateDto {
 
   @Pattern(regexp = "([01][0-9]|2[0-3]):[0-5][0-9]", message = "error_reservation_invalid_checkout")
   private String checkOut;
+
+  @Pattern(regexp = "[0-9]{4}-(0[1-9]|1[0-2])-([0-2][0-9]|3[0-1])",
+      message = "error_reservation_invalid_arrival")
+  private String dateArrivee;
+
+  @Pattern(regexp = "[0-9]{4}-(0[1-9]|1[0-2])-([0-2][0-9]|3[0-1])",
+      message = "error_reservation_invalid_departure")
+  private String dateDepart;
 
   @Min(value = 1, message = "error_reservation_invalid_home")
   private Long idLogement;

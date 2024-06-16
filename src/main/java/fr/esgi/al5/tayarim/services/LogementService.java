@@ -390,7 +390,7 @@ public class LogementService {
   }
 
   private ArrayList<ReglesLogement> parseRegle(List<Long> idRegles) {
-    if (idRegles == null){
+    if (idRegles == null) {
       return new ArrayList<>();
     }
 
@@ -408,7 +408,7 @@ public class LogementService {
   }
 
   private ArrayList<Amenagement> parseAmenagement(List<Long> idAmenagements) {
-    if (idAmenagements == null){
+    if (idAmenagements == null) {
       return new ArrayList<>();
     }
 

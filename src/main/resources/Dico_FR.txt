@@ -51,3 +51,5 @@
 "error_reservation_invalid_checkin": "L'heure d'arrivée saisie est invalide",
 "error_reservation_invalid_checkout": "L'heure de départ saisie est invalide",
 "error_reservation_invalid_home": "L'id du logement est invalide",
+"error_reservation_invalid_arrival": "L'heure d'arrivée saisie est invalide",
+"error_reservation_invalid_departure": "L'heure de départ saisie est invalide",

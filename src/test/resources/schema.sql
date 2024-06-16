@@ -70,13 +70,17 @@ CREATE TABLE IF NOT EXISTS Reservation (
                                            idCommande VARCHAR(100),
                                            statut VARCHAR(100),
                                            email VARCHAR(100),
+                                           numtel VARCHAR(100),
                                            nom VARCHAR(100),
                                            prenom VARCHAR(100),
                                            nbPersonnes INT,
                                            montant FLOAT,
                                            checkIn TIME,
                                            checkOut TIME,
-                                           idLogement INT
+                                           dateArrivee DATE,
+                                           dateDepart DATE,
+                                           idLogement INT,
+                                           dateReservation DATETIME
 );
 
 CREATE TABLE IF NOT EXISTS Amenagement (

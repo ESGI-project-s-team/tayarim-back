@@ -11,6 +11,7 @@ import fr.esgi.al5.tayarim.entities.ReglesLogement;
 import fr.esgi.al5.tayarim.entities.Reservation;
 import fr.esgi.al5.tayarim.entities.TypeLogement;
 import fr.esgi.al5.tayarim.repositories.ProprietaireRepository;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -32,28 +33,33 @@ public class ReservationMapper {
    *
    * @param reservationCreationDto Le Dto Reservation à convertir.
    * @param idCommande             L'identifiant de la commande associée à la réservation.
-   * @param checkIn                L'heure d'arrivée.
-   * @param checkOut               L'heure de départ.
+   * @param dateArrivee            La date d'arrivée.
+   * @param dateDepart             La date de départ.
    * @param logement               Le logement associé à la réservation.
+   * @param dateReservation        La date de la réservation.
    * @return Le DTO Reservation correspondant.
    */
   public static Reservation creationDtoToEntity(
       @NonNull ReservationCreationDto reservationCreationDto, @NonNull String idCommande,
-      @NonNull LocalTime checkIn, @NonNull LocalTime checkOut,
-      @NonNull Logement logement
+      @NonNull LocalDate dateArrivee, @NonNull LocalDate dateDepart,
+      @NonNull Logement logement, @NonNull LocalDateTime dateReservation
   ) {
 
     return new Reservation(
         idCommande,
-        "waiting",
+        "payed",
         reservationCreationDto.getEmail(),
+        reservationCreationDto.getNumTel(),
         reservationCreationDto.getNom(),
         reservationCreationDto.getPrenom(),
         reservationCreationDto.getNbPersonnes(),
         reservationCreationDto.getMontant(),
-        checkIn,
-        checkOut,
-        logement
+        logement.getDefaultCheckIn(),
+        logement.getDefaultCheckOut(),
+        dateArrivee,
+        dateDepart,
+        logement,
+        dateReservation
     );
   }
 
@@ -69,13 +75,17 @@ public class ReservationMapper {
         reservation.getIdCommande(),
         reservation.getStatut(),
         reservation.getEmail(),
+        reservation.getNumTel(),
         reservation.getNom(),
         reservation.getPrenom(),
         reservation.getNbPersonnes(),
         reservation.getMontant(),
         reservation.getCheckIn().toString().substring(0, 5),
         reservation.getCheckOut().toString().substring(0, 5),
-        reservation.getLogement().getId()
+        reservation.getDateArrivee().toString(),
+        reservation.getDateDepart().toString(),
+        reservation.getLogement().getId(),
+        reservation.getDateArrivee().toString()
     );
   }
 
