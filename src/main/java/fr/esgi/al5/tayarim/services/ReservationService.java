@@ -49,7 +49,7 @@ public class ReservationService {
   }
 
   /**
-   * Tente de crée une Reservation.
+   * Tente de créer une Reservation.
    *
    * @return {@link ReservationDto}
    */
@@ -72,6 +72,14 @@ public class ReservationService {
       newRandomFound = reservationRepository.findByIdCommande(idCommande).isEmpty();
     }
 
+    Logement logement = optionalLogement.get();
+
+    if (reservationCreationDto.getMontant() == null) {
+      reservationCreationDto.setMontant(
+          logement.getPrixParNuit() * (dateDepart.toEpochDay() - dateArrivee.toEpochDay())
+      );
+    }
+
     return ReservationMapper.entityToDto(
         reservationRepository.save(
             ReservationMapper.creationDtoToEntity(
@@ -79,7 +87,7 @@ public class ReservationService {
                 idCommande,
                 dateArrivee,
                 dateDepart,
-                optionalLogement.get(),
+                logement,
                 LocalDateTime.now()
             )
         )
@@ -200,14 +208,20 @@ public class ReservationService {
       return reservation;
     }
 
-    LocalTime now = LocalTime.now();
+    LocalDateTime now = LocalDateTime.now();
     if ((reservation.getStatut().equals("payed") || reservation.getStatut().equals("in progress"))
-        && now.isAfter(reservation.getCheckOut())) {
+        && ((now.toLocalDate().toEpochDay() == reservation.getDateDepart().toEpochDay()
+        && now.toLocalTime().isAfter(reservation.getCheckOut())) || (now.toLocalDate().toEpochDay()
+        > reservation.getDateDepart().toEpochDay()))) {
       reservation.setStatut("done");
       return reservationRepository.save(reservation);
     }
 
-    if (reservation.getStatut().equals("payed") && now.isAfter(reservation.getCheckIn())) {
+    if (reservation.getStatut().equals("payed")
+        && (now.toLocalDate().toEpochDay() == reservation.getDateArrivee().toEpochDay()
+        && now.toLocalTime().isAfter(reservation.getCheckIn()) || (
+        now.toLocalDate().toEpochDay() > reservation.getDateArrivee().toEpochDay()))
+    ) {
       reservation.setStatut("in progress");
       return reservationRepository.save(reservation);
     }

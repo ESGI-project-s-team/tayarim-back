@@ -45,7 +45,6 @@ public class ReservationCreationDto {
   @Min(value = 1, message = "error_reservation_invalid_nbPersonnes")
   private Integer nbPersonnes;
 
-  @NotNull(message = "error_reservation_invalid_amount")
   @Min(value = 1, message = "error_reservation_invalid_amount")
   private Float montant;
 

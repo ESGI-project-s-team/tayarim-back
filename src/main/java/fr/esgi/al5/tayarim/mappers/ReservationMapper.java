@@ -85,7 +85,7 @@ public class ReservationMapper {
         reservation.getDateArrivee().toString(),
         reservation.getDateDepart().toString(),
         reservation.getLogement().getId(),
-        reservation.getDateArrivee().toString()
+        reservation.getDateReservation().toString()
     );
   }
 
