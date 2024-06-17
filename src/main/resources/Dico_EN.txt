@@ -54,3 +54,4 @@
 "error_reservation_invalid_arrival": "The arrival time entered is invalid",
 "error_reservation_invalid_departure": "The departure time entered is invalid",
 "error_reservation_status_update": "Impossible to update the status of the reservation",
+"error_reservation_date_conflict": "The dates of the reservation conflict with another reservation",

@@ -6,6 +6,9 @@ import fr.esgi.al5.tayarim.dto.reservation.ReservationUpdateDto;
 import fr.esgi.al5.tayarim.entities.Logement;
 import fr.esgi.al5.tayarim.entities.Reservation;
 import fr.esgi.al5.tayarim.exceptions.LogementNotFoundException;
+import fr.esgi.al5.tayarim.exceptions.ReservationDateConflictError;
+import fr.esgi.al5.tayarim.exceptions.ReservationDateInvalideError;
+import fr.esgi.al5.tayarim.exceptions.ReservationDateTooShortError;
 import fr.esgi.al5.tayarim.exceptions.ReservationNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.ReservationStatusUpdateError;
 import fr.esgi.al5.tayarim.mappers.ReservationMapper;
@@ -15,6 +18,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import lombok.NonNull;
 import org.springframework.stereotype.Service;
@@ -54,10 +59,44 @@ public class ReservationService {
     LocalDate dateArrivee = LocalDate.parse(reservationCreationDto.getDateArrivee());
     LocalDate dateDepart = LocalDate.parse(reservationCreationDto.getDateDepart());
 
+    if (dateArrivee.toEpochDay() >= dateDepart.toEpochDay()) {
+      throw new ReservationDateInvalideError();
+    }
+
+    if (dateArrivee.toEpochDay() <= LocalDate.now().toEpochDay() + 2) {
+      throw new ReservationDateInvalideError();
+    }
+
     Optional<Logement> optionalLogement = logementRepository.findById(
         reservationCreationDto.getIdLogement());
     if (optionalLogement.isEmpty()) {
       throw new LogementNotFoundException();
+    }
+
+    if (dateDepart.toEpochDay() - dateArrivee.toEpochDay() < optionalLogement.get()
+        .getNombresNuitsMin()) {
+      throw new ReservationDateTooShortError();
+    }
+
+    Map<LocalDate, LocalDate> dates = new java.util.HashMap<>(Map.of());
+
+    reservationRepository.findAllActiveByIdLogement(
+        reservationCreationDto.getIdLogement()
+    ).forEach(reservation -> dates.put(reservation.getDateArrivee(), reservation.getDateDepart()));
+
+    for (Entry<LocalDate, LocalDate> entry : dates.entrySet()) {
+      LocalDate arrivee = entry.getKey();
+      LocalDate depart = entry.getValue();
+
+      if (arrivee.toEpochDay() > (dateDepart.toEpochDay() + 2)) {
+        continue;
+      }
+      if (depart.toEpochDay() < (dateArrivee.toEpochDay() - 2)) {
+        continue;
+      }
+
+      throw new ReservationDateConflictError();
+
     }
 
     boolean newRandomFound = false;

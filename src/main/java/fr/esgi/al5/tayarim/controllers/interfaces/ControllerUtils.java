@@ -15,6 +15,9 @@ import fr.esgi.al5.tayarim.exceptions.ProprietaireEmailAlreadyExistException;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireInvalidUpdateBody;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireNumTelAlreadyExistException;
+import fr.esgi.al5.tayarim.exceptions.ReservationDateConflictError;
+import fr.esgi.al5.tayarim.exceptions.ReservationDateInvalideError;
+import fr.esgi.al5.tayarim.exceptions.ReservationDateTooShortError;
 import fr.esgi.al5.tayarim.exceptions.ReservationNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.ReservationStatusUpdateError;
 import fr.esgi.al5.tayarim.exceptions.TokenExpireOrInvalidException;
@@ -95,6 +98,43 @@ public interface ControllerUtils {
   default Map<String, List<String>> reservationStatusUpdateError(ReservationStatusUpdateError ex) {
     return mapException(ex);
   }
+
+  /**
+   * Gère les exceptions lorsque le logement n'est pas trouvé.
+   *
+   * @param ex L'exception capturée.
+   * @return Une carte des erreurs.
+   */
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ExceptionHandler({ReservationDateConflictError.class})
+  default Map<String, List<String>> reservationDateConflictError(ReservationDateConflictError ex) {
+    return mapException(ex);
+  }
+
+  /**
+   * Gère les exceptions lorsque le logement n'est pas trouvé.
+   *
+   * @param ex L'exception capturée.
+   * @return Une carte des erreurs.
+   */
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ExceptionHandler({ReservationDateInvalideError.class})
+  default Map<String, List<String>> reservationDateInvalideError(ReservationDateInvalideError ex) {
+    return mapException(ex);
+  }
+
+  /**
+   * Gère les exceptions lorsque le logement n'est pas trouvé.
+   *
+   * @param ex L'exception capturée.
+   * @return Une carte des erreurs.
+   */
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ExceptionHandler({ReservationDateTooShortError.class})
+  default Map<String, List<String>> reservationDateTooShortError(ReservationDateTooShortError ex) {
+    return mapException(ex);
+  }
+
 
   /**
    * Gère les exceptions lorsque le body update du logement est invalide.

@@ -54,3 +54,4 @@
 "error_reservation_invalid_arrival": "L'heure d'arrivée saisie est invalide",
 "error_reservation_invalid_departure": "L'heure de départ saisie est invalide",
 "error_reservation_status_update": "Impossible de mettre à jour le statut de la réservation",
+"error_reservation_date_conflict": "Il y a un conflit de date avec une autre réservation",
