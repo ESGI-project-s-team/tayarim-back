@@ -55,5 +55,8 @@ public class ReservationDto {
   private Long idLogement;
 
   @NonNull
+  private String titreLogement;
+
+  @NonNull
   private String dateReservation;
 }

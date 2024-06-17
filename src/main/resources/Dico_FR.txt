@@ -53,3 +53,4 @@
 "error_reservation_invalid_home": "L'id du logement est invalide",
 "error_reservation_invalid_arrival": "L'heure d'arrivée saisie est invalide",
 "error_reservation_invalid_departure": "L'heure de départ saisie est invalide",
+"error_reservation_status_update": "Impossible de mettre à jour le statut de la réservation",

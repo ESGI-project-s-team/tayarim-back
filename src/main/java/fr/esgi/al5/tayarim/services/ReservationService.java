@@ -1,7 +1,5 @@
 package fr.esgi.al5.tayarim.services;
 
-import fr.esgi.al5.tayarim.dto.logement.LogementDto;
-import fr.esgi.al5.tayarim.dto.regleslogement.ReglesLogementDto;
 import fr.esgi.al5.tayarim.dto.reservation.ReservationCreationDto;
 import fr.esgi.al5.tayarim.dto.reservation.ReservationDto;
 import fr.esgi.al5.tayarim.dto.reservation.ReservationUpdateDto;
@@ -10,10 +8,8 @@ import fr.esgi.al5.tayarim.entities.Reservation;
 import fr.esgi.al5.tayarim.exceptions.LogementNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.ReservationNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.ReservationStatusUpdateError;
-import fr.esgi.al5.tayarim.mappers.ReglesLogementMapper;
 import fr.esgi.al5.tayarim.mappers.ReservationMapper;
 import fr.esgi.al5.tayarim.repositories.LogementRepository;
-import fr.esgi.al5.tayarim.repositories.ReglesLogementRepository;
 import fr.esgi.al5.tayarim.repositories.ReservationRepository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
