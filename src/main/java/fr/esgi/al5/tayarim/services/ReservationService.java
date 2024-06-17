@@ -59,44 +59,10 @@ public class ReservationService {
     LocalDate dateArrivee = LocalDate.parse(reservationCreationDto.getDateArrivee());
     LocalDate dateDepart = LocalDate.parse(reservationCreationDto.getDateDepart());
 
-    if (dateArrivee.toEpochDay() >= dateDepart.toEpochDay()) {
-      throw new ReservationDateInvalideError();
-    }
-
-    if (dateArrivee.toEpochDay() <= LocalDate.now().toEpochDay() + 2) {
-      throw new ReservationDateInvalideError();
-    }
-
     Optional<Logement> optionalLogement = logementRepository.findById(
         reservationCreationDto.getIdLogement());
     if (optionalLogement.isEmpty()) {
       throw new LogementNotFoundException();
-    }
-
-    if (dateDepart.toEpochDay() - dateArrivee.toEpochDay() < optionalLogement.get()
-        .getNombresNuitsMin()) {
-      throw new ReservationDateTooShortError();
-    }
-
-    Map<LocalDate, LocalDate> dates = new java.util.HashMap<>(Map.of());
-
-    reservationRepository.findAllActiveByIdLogement(
-        reservationCreationDto.getIdLogement()
-    ).forEach(reservation -> dates.put(reservation.getDateArrivee(), reservation.getDateDepart()));
-
-    for (Entry<LocalDate, LocalDate> entry : dates.entrySet()) {
-      LocalDate arrivee = entry.getKey();
-      LocalDate depart = entry.getValue();
-
-      if (arrivee.toEpochDay() > (dateDepart.toEpochDay() + 2)) {
-        continue;
-      }
-      if (depart.toEpochDay() < (dateArrivee.toEpochDay() - 2)) {
-        continue;
-      }
-
-      throw new ReservationDateConflictError();
-
     }
 
     boolean newRandomFound = false;
@@ -106,6 +72,9 @@ public class ReservationService {
       idCommande = "RESA-".concat(idCommande.substring(idCommande.length() - 6));
       newRandomFound = reservationRepository.findByIdCommande(idCommande).isEmpty();
     }
+
+    checkDateConclict(idCommande, dateArrivee, dateDepart, reservationCreationDto.getIdLogement(),
+        optionalLogement.get().getNombresNuitsMin());
 
     Logement logement = optionalLogement.get();
 
@@ -155,6 +124,12 @@ public class ReservationService {
             : reservationUpdateDto.getEmail()
     );
 
+    reservation.setNumTel(
+        (reservationUpdateDto.getNumTel() == null || reservationUpdateDto.getNumTel().isBlank())
+            ? reservation.getNumTel()
+            : reservationUpdateDto.getNumTel()
+    );
+
     reservation.setNom(
         (reservationUpdateDto.getNom() == null || reservationUpdateDto.getNom().isBlank())
             ? reservation.getNom()
@@ -179,17 +154,23 @@ public class ReservationService {
             : reservationUpdateDto.getMontant()
     );
 
-    reservation.setCheckIn(
-        (reservationUpdateDto.getCheckIn() == null || reservationUpdateDto.getCheckIn().isBlank())
-            ? reservation.getCheckIn()
-            : LocalTime.parse(reservationUpdateDto.getCheckIn())
+    reservation.setDateArrivee(
+        (reservationUpdateDto.getDateArrivee() == null || reservationUpdateDto.getDateArrivee()
+            .isBlank())
+            ? reservation.getDateArrivee()
+            : LocalDate.parse(reservationUpdateDto.getDateArrivee())
     );
 
-    reservation.setCheckOut(
-        (reservationUpdateDto.getCheckOut() == null || reservationUpdateDto.getCheckOut().isBlank())
-            ? reservation.getCheckOut()
-            : LocalTime.parse(reservationUpdateDto.getCheckOut())
+    reservation.setDateDepart(
+        (reservationUpdateDto.getDateDepart() == null || reservationUpdateDto.getDateDepart()
+            .isBlank())
+            ? reservation.getDateDepart()
+            : LocalDate.parse(reservationUpdateDto.getDateDepart())
     );
+
+    checkDateConclict(reservation.getIdCommande(), reservation.getDateArrivee(),
+        reservation.getDateDepart(), reservation.getLogement().getId(),
+        reservation.getLogement().getNombresNuitsMin());
 
     return ReservationMapper.entityToDto(reservationRepository.save(reservation));
 
@@ -293,6 +274,56 @@ public class ReservationService {
     reservation.setStatut("cancelled");
 
     return ReservationMapper.entityToDto(reservationRepository.save(reservation));
+  }
+
+  /**
+   * Vérifie les conflits de dates.
+   */
+  public void checkDateConclict(@NonNull String actualResa, @NonNull LocalDate dateArrivee,
+      @NonNull LocalDate dateDepart, @NonNull Long idLogement, @NonNull Integer nombresNuitsMin) {
+    if (dateArrivee.toEpochDay() >= dateDepart.toEpochDay()) {
+      System.out.println("ICI");
+      System.out.println(dateArrivee.toEpochDay());
+      System.out.println(dateDepart.toEpochDay());
+      throw new ReservationDateInvalideError();
+    }
+
+    if (dateArrivee.toEpochDay() <= LocalDate.now().toEpochDay() + 2) {
+      System.out.println("LA");
+      System.out.println(dateArrivee.toEpochDay());
+      System.out.println(LocalDate.now().toEpochDay());
+      throw new ReservationDateInvalideError();
+    }
+
+    if (dateDepart.toEpochDay() - dateArrivee.toEpochDay() < nombresNuitsMin) {
+      throw new ReservationDateTooShortError();
+    }
+
+    Map<String, List<LocalDate>> dates = new java.util.HashMap<>(Map.of());
+
+    reservationRepository.findAllActiveByIdLogement(
+        idLogement
+    ).forEach(reservation -> dates.put(reservation.getIdCommande(),
+        List.of(reservation.getDateArrivee(), reservation.getDateDepart())));
+
+    for (Entry<String, List<LocalDate>> entry : dates.entrySet()) {
+      if (entry.getKey().equals(actualResa)) {
+        continue;
+      }
+
+      LocalDate arrivee = entry.getValue().get(0);
+      LocalDate depart = entry.getValue().get(1);
+
+      if (arrivee.toEpochDay() > (dateDepart.toEpochDay() + 2)) {
+        continue;
+      }
+      if (depart.toEpochDay() < (dateArrivee.toEpochDay() - 2)) {
+        continue;
+      }
+
+      throw new ReservationDateConflictError();
+
+    }
   }
 
 }

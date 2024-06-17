@@ -43,12 +43,6 @@ public class ReservationUpdateDto {
   @Min(value = 1, message = "error_reservation_invalid_amount")
   private Float montant;
 
-  @Pattern(regexp = "([01][0-9]|2[0-3]):[0-5][0-9]", message = "error_reservation_invalid_checkin")
-  private String checkIn;
-
-  @Pattern(regexp = "([01][0-9]|2[0-3]):[0-5][0-9]", message = "error_reservation_invalid_checkout")
-  private String checkOut;
-
   @Pattern(regexp = "[0-9]{4}-(0[1-9]|1[0-2])-([0-2][0-9]|3[0-1])",
       message = "error_reservation_invalid_arrival")
   private String dateArrivee;
