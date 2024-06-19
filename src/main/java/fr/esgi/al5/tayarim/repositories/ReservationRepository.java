@@ -27,8 +27,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
       + "WHERE p.id = :idProprietaire")
   List<Reservation> findAllByIdProprietaire(@Param("idProprietaire") @NonNull Long idProprietaire);
 
-  @Query("SELECT r FROM RESERVATION r "
-      + "JOIN r.logement l "
-      + "WHERE l.id = :idLogement AND r.statut IN ('payed', 'in progress')")
-  List<Reservation> findAllActiveByIdLogement(@Param("idLogement") @NonNull Long idLogement);
+  List<Reservation> findAllByLogementIdAndStatutIn(@NonNull Long idLogement,
+      @NonNull List<String> statuts);
 }

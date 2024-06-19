@@ -124,8 +124,8 @@ CREATE TABLE IF NOT EXISTS Avis (
 
 CREATE TABLE IF NOT EXISTS Indisponibilite (
                                                id INT PRIMARY KEY AUTO_INCREMENT,
-                                               dateDebut DATETIME,
-                                               dateFin DATETIME,
+                                               dateDebut DATE,
+                                               dateFin DATE,
                                                idLogement INT
 );
 

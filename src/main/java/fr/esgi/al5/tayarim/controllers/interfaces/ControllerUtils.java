@@ -4,6 +4,9 @@ import fr.esgi.al5.tayarim.exceptions.AdministrateurEmailAlreadyExistException;
 import fr.esgi.al5.tayarim.exceptions.AdministrateurInvalidUpdateBody;
 import fr.esgi.al5.tayarim.exceptions.AdministrateurNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.AdministrateurNumTelAlreadyExistException;
+import fr.esgi.al5.tayarim.exceptions.IndisponibiliteDateInvalidError;
+import fr.esgi.al5.tayarim.exceptions.IndisponibiliteLogementNotFoundError;
+import fr.esgi.al5.tayarim.exceptions.IndisponibiliteUnauthorizedError;
 import fr.esgi.al5.tayarim.exceptions.LogementInvalidAmenagement;
 import fr.esgi.al5.tayarim.exceptions.LogementInvalidCreationBody;
 import fr.esgi.al5.tayarim.exceptions.LogementInvalidReglesLogement;
@@ -19,6 +22,7 @@ import fr.esgi.al5.tayarim.exceptions.ReservationDateConflictError;
 import fr.esgi.al5.tayarim.exceptions.ReservationDateInvalideError;
 import fr.esgi.al5.tayarim.exceptions.ReservationDateTooShortError;
 import fr.esgi.al5.tayarim.exceptions.ReservationNotFoundException;
+import fr.esgi.al5.tayarim.exceptions.ReservationPeopleCapacityError;
 import fr.esgi.al5.tayarim.exceptions.ReservationStatusUpdateError;
 import fr.esgi.al5.tayarim.exceptions.TokenExpireOrInvalidException;
 import fr.esgi.al5.tayarim.exceptions.UnauthorizedException;
@@ -72,6 +76,46 @@ public interface ControllerUtils {
   @ExceptionHandler(UnsupportedMethodPathException.class)
   default Map<String, List<String>> unsupportedMethodPathException(
       UnsupportedMethodPathException ex) {
+    return mapException(ex);
+  }
+
+
+  /**
+   * Gère les exceptions lorsque le logement n'est pas trouvé.
+   *
+   * @param ex L'exception capturée.
+   * @return Une carte des erreurs.
+   */
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  @ExceptionHandler({IndisponibiliteLogementNotFoundError.class})
+  default Map<String, List<String>> indisponibiliteLogementNotFoundError(
+      IndisponibiliteLogementNotFoundError ex) {
+    return mapException(ex);
+  }
+
+  /**
+   * Gère les exceptions lorsque le logement n'est pas trouvé.
+   *
+   * @param ex L'exception capturée.
+   * @return Une carte des erreurs.
+   */
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ExceptionHandler({IndisponibiliteDateInvalidError.class})
+  default Map<String, List<String>> indisponibiliteDateInvalidError(
+      IndisponibiliteDateInvalidError ex) {
+    return mapException(ex);
+  }
+
+  /**
+   * Gère les exceptions lorsque le logement n'est pas trouvé.
+   *
+   * @param ex L'exception capturée.
+   * @return Une carte des erreurs.
+   */
+  @ResponseStatus(HttpStatus.UNAUTHORIZED)
+  @ExceptionHandler({IndisponibiliteUnauthorizedError.class})
+  default Map<String, List<String>> indisponibiliteUnauthorizedError(
+      IndisponibiliteUnauthorizedError ex) {
     return mapException(ex);
   }
 
@@ -132,6 +176,19 @@ public interface ControllerUtils {
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ExceptionHandler({ReservationDateTooShortError.class})
   default Map<String, List<String>> reservationDateTooShortError(ReservationDateTooShortError ex) {
+    return mapException(ex);
+  }
+
+  /**
+   * Gère les exceptions lorsque le logement n'est pas trouvé.
+   *
+   * @param ex L'exception capturée.
+   * @return Une carte des erreurs.
+   */
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ExceptionHandler({ReservationPeopleCapacityError.class})
+  default Map<String, List<String>> reservationPeopleCapacityError(
+      ReservationPeopleCapacityError ex) {
     return mapException(ex);
   }
 
