@@ -115,28 +115,34 @@ public class ReservationService {
 
   }
 
-    @Transactional
-    public ReservationDto updateReservationPaymentIntent(@NonNull Long id,
-                                            @NonNull String paymentIntent) {
-        Optional<Reservation> optionalReservation = reservationRepository.findById(id);
-        if (optionalReservation.isEmpty()) {
-            throw new ReservationNotFoundException();
-        } else {
-            Reservation reservation = optionalReservation.get();
-            reservation.setPaymentIntent(paymentIntent);
-            return ReservationMapper.entityToDto(reservationRepository.save(reservation));
-        }
+  /**
+   * Tente de mettre à jour le paymentIntent.
+   *
+   * @param id            id de la reservation
+   * @param paymentIntent paymentIntent de la réservation
+   */
+  @Transactional
+  public ReservationDto updateReservationPaymentIntent(@NonNull Long id,
+      @NonNull String paymentIntent) {
+    Optional<Reservation> optionalReservation = reservationRepository.findById(id);
+    if (optionalReservation.isEmpty()) {
+      throw new ReservationNotFoundException();
+    } else {
+      Reservation reservation = optionalReservation.get();
+      reservation.setPaymentIntent(paymentIntent);
+      return ReservationMapper.entityToDto(reservationRepository.save(reservation));
     }
+  }
 
 
-    /**
-     * Tente de crée une Reservation.
-     *
-     * @return {@link ReservationDto}
-     */
-    @Transactional
-    public ReservationDto updateReservation(@NonNull Long id,
-                                            @NonNull ReservationUpdateDto reservationUpdateDto, @NonNull Boolean isAdmin) {
+  /**
+   * Tente de crée une Reservation.
+   *
+   * @return {@link ReservationDto}
+   */
+  @Transactional
+  public ReservationDto updateReservation(@NonNull Long id,
+      @NonNull ReservationUpdateDto reservationUpdateDto, @NonNull Boolean isAdmin) {
 
     // tester sans les verif de tous les champs à nul, avec un body vide
 

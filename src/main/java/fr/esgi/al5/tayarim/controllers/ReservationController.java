@@ -10,19 +10,24 @@ import fr.esgi.al5.tayarim.dto.regleslogement.ReglesLogementDto;
 import fr.esgi.al5.tayarim.dto.reservation.ReservationCreationDto;
 import fr.esgi.al5.tayarim.dto.reservation.ReservationDto;
 import fr.esgi.al5.tayarim.dto.reservation.ReservationUpdateDto;
+import fr.esgi.al5.tayarim.dto.reservation.ReservationUpdatePaymentIntentDto;
 import fr.esgi.al5.tayarim.services.AuthService;
 import fr.esgi.al5.tayarim.services.ReglesLogementService;
 import fr.esgi.al5.tayarim.services.ReservationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
-
 import java.util.List;
-
 import lombok.NonNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Contrôleur pour la gestion des reservations.
@@ -73,6 +78,22 @@ public class ReservationController implements
 
     return new ResponseEntity<>(
         reservationService.updateReservation(id, reservationUpdateDto, userTokenInfo.getIsAdmin()),
+        HttpStatus.OK
+    );
+  }
+
+  /**
+   * Met à jour le paiement d'une réservation.
+   *
+   * @param id                   Id de la réservation.
+   * @param paymentIntentRequest Dto de mise à jour du paiement.
+   */
+  @PutMapping("/paymentIntent/{id}")
+  public ResponseEntity<ReservationDto> updatePaymentIntent(@PathVariable Long id,
+      @NonNull @RequestBody ReservationUpdatePaymentIntentDto paymentIntentRequest) {
+    return new ResponseEntity<>(
+        reservationService.updateReservationPaymentIntent(id,
+            paymentIntentRequest.getPaymentIntent()),
         HttpStatus.OK
     );
   }
