@@ -1,18 +1,15 @@
 package fr.esgi.al5.tayarim.dto.reservation;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-/**
- * Classe de mise à jour du paymentIntent pour la réservation.
- */
-@Setter
-@Getter
+@Data // Generates getters, setters, toString, equals, and hashCode methods
+@RequiredArgsConstructor
+@AllArgsConstructor // Generates an all-args constructor
+@Builder
 public class ReservationUpdatePaymentIntentDto {
-
-  @JsonProperty("paymentIntent")
-  private String paymentIntent;
+    //@JsonProperty("paymentIntent")
+    private String paymentIntent;
 
 }
 
