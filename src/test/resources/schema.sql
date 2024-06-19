@@ -80,7 +80,9 @@ CREATE TABLE IF NOT EXISTS Reservation (
                                            dateArrivee DATE,
                                            dateDepart DATE,
                                            idLogement INT,
-                                           dateReservation DATETIME
+                                           dateReservation DATETIME,
+                                           paymentIntent VARCHAR(255)
+
 );
 
 CREATE TABLE IF NOT EXISTS Amenagement (

@@ -71,7 +71,8 @@ public class ReservationService {
       throw new LogementNotFoundException();
     }
 
-    if (reservationCreationDto.getNbPersonnes() > optionalLogement.get().getCapaciteMaxPersonne()) {
+    if (!isAdmin && reservationCreationDto.getNbPersonnes() > optionalLogement.get()
+        .getCapaciteMaxPersonne()) {
       throw new ReservationPeopleCapacityError();
     }
 
@@ -152,6 +153,13 @@ public class ReservationService {
     }
 
     Reservation reservation = optionalReservation.get();
+
+    if (!isAdmin
+        && reservationUpdateDto.getNbPersonnes() != null
+        && reservationUpdateDto.getNbPersonnes() > reservation.getLogement()
+        .getCapaciteMaxPersonne()) {
+      throw new ReservationPeopleCapacityError();
+    }
 
     reservation.setEmail(
         (reservationUpdateDto.getEmail() == null || reservationUpdateDto.getEmail().isBlank())
