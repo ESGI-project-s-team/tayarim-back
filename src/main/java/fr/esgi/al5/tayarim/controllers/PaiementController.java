@@ -4,10 +4,11 @@ import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.PaymentIntent;
 import com.stripe.param.PaymentIntentCreateParams;
+import fr.esgi.al5.tayarim.dto.paiement.PaiementCancelDto;
+import fr.esgi.al5.tayarim.dto.paiement.PaiementCaptureDto;
+import fr.esgi.al5.tayarim.dto.paiement.PaiementDto;
 import java.util.HashMap;
 import java.util.Map;
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 
 /**
  * Contrôleur pour la gestion des paiements.
@@ -38,7 +40,7 @@ public class PaiementController {
    */
   @PostMapping("/create-payment-intent")
   public ResponseEntity<Map<String, String>> createPaymentIntent(
-      @RequestBody PaymentRequest paymentRequest) {
+      @RequestBody PaiementDto paymentRequest) {
     Stripe.apiKey = stripeApiKey;
 
     try {
@@ -66,7 +68,7 @@ public class PaiementController {
    * @param captureRequest Requête de capture.
    */
   @PostMapping("/capture-payment")
-  public ResponseEntity<Void> capturePayment(@RequestBody CaptureRequest captureRequest) {
+  public ResponseEntity<Void> capturePayment(@RequestBody PaiementCaptureDto captureRequest) {
     Stripe.apiKey = stripeApiKey;
 
     try {
@@ -84,7 +86,7 @@ public class PaiementController {
    * @param cancelRequest Requête d'annulation.
    */
   @PostMapping("/cancel-payment")
-  public ResponseEntity<Void> cancelPayment(@RequestBody CancelRequest cancelRequest) {
+  public ResponseEntity<Void> cancelPayment(@RequestBody PaiementCancelDto cancelRequest) {
     Stripe.apiKey = stripeApiKey;
     try {
       PaymentIntent paymentIntent = PaymentIntent.retrieve(cancelRequest.getPaymentIntentId());
@@ -96,28 +98,6 @@ public class PaiementController {
   }
 }
 
-@Setter
-@Getter
-class PaymentRequest {
-
-  private Long amount;
-
-}
-
-@Setter
-@Getter
-class CaptureRequest {
-
-  private String paymentIntentId;
-}
-
-@Setter
-@Getter
-class CancelRequest {
-
-  private String paymentIntentId;
-
-}
 
 
 
