@@ -45,7 +45,6 @@ public class PaiementController {
             responseData.put("clientSecret", paymentIntent.getClientSecret());
             return ResponseEntity.ok(responseData);
         } catch (StripeException e) {
-            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
@@ -59,7 +58,6 @@ public class PaiementController {
             paymentIntent.capture();
             return ResponseEntity.ok().build();
         } catch (StripeException e) {
-            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -67,13 +65,11 @@ public class PaiementController {
     @PostMapping("/cancel-payment")
     public ResponseEntity<Void> cancelPayment(@RequestBody CancelRequest cancelRequest) {
         Stripe.apiKey = stripeApiKey;
-
         try {
             PaymentIntent paymentIntent = PaymentIntent.retrieve(cancelRequest.getPaymentIntentId());
             paymentIntent.cancel();
             return ResponseEntity.ok().build();
         } catch (StripeException e) {
-            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
