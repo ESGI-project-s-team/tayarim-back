@@ -58,10 +58,11 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     }
 
     Map<String, List<String>> mapOfExcludeMethodPath = new HashMap<>();
-    mapOfExcludeMethodPath.put("POST", List.of("/auth/login", "/auth/refresh", "/reservations"));
+    mapOfExcludeMethodPath.put("POST",
+        List.of("/auth/login", "/auth/refresh", "/reservations", "/logements/search"));
     mapOfExcludeMethodPath.put("PUT", List.of("/reservations/paymentIntent/\\d+"));
     mapOfExcludeMethodPath.put("GET",
-        List.of("/logements/types", "/reglesLogement", "/amenagements", "/logements/search",
+        List.of("/logements/types", "/reglesLogement", "/amenagements",
             "/logements/dates/\\d+"));
 
     String method = request.getMethod().toUpperCase();
