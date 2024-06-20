@@ -29,6 +29,7 @@ import fr.esgi.al5.tayarim.repositories.AmenagementRepository;
 import fr.esgi.al5.tayarim.repositories.LogementRepository;
 import fr.esgi.al5.tayarim.repositories.ProprietaireRepository;
 import fr.esgi.al5.tayarim.repositories.ReglesLogementRepository;
+import fr.esgi.al5.tayarim.repositories.ReservationRepository;
 import fr.esgi.al5.tayarim.repositories.TypeLogementRepository;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -60,6 +61,8 @@ public class LogementService {
 
   private final ReservationService reservationService;
 
+  private final ReservationRepository reservationRepository;
+
 
   /**
    * Constructeur pour le service de logement.
@@ -70,18 +73,21 @@ public class LogementService {
    * @param reglesLogementRepository Le repository des règles de logements.
    * @param amenagementRepository    Le repository des aménagements.
    * @param reservationService       Le service des réservations.
+   * @param reservationRepository    Le repository des réservations
    */
   public LogementService(LogementRepository logementRepository,
       ProprietaireRepository proprietaireRepository,
       TypeLogementRepository typeLogementRepository,
       ReglesLogementRepository reglesLogementRepository,
-      AmenagementRepository amenagementRepository, ReservationService reservationService) {
+      AmenagementRepository amenagementRepository, ReservationService reservationService,
+      ReservationRepository reservationRepository) {
     this.logementRepository = logementRepository;
     this.proprietaireRepository = proprietaireRepository;
     this.typeLogementRepository = typeLogementRepository;
     this.reglesLogementRepository = reglesLogementRepository;
     this.amenagementRepository = amenagementRepository;
     this.reservationService = reservationService;
+    this.reservationRepository = reservationRepository;
   }
 
   /**
@@ -462,6 +468,43 @@ public class LogementService {
     }
 
     return LogementMapper.entityListToDtoList(logements);
+  }
+
+  /**
+   * Récupère les dates occupées d'un logement.
+   *
+   * @param id Id du logement.
+   * @return Les dates occupées.
+   */
+  @Transactional
+  public List<String> getOccupiedDates(@NonNull Long id) {
+    Optional<Logement> optionalLogement = logementRepository.findById(id);
+    if (optionalLogement.isEmpty()) {
+      throw new LogementNotFoundException();
+    }
+
+    Logement logement = optionalLogement.get();
+
+    List<Reservation> reservations = reservationRepository.findAllByLogementIdAndStatutIn(
+        logement.getId(),
+        List.of("payed", "in progress"));
+
+    ArrayList<String> dates = new ArrayList<>();
+
+    for (Reservation reservation : reservations) {
+      LocalDate currentDate = reservation.getDateArrivee().minusDays(2);
+      LocalDate dateDepart = reservation.getDateDepart().plusDays(2);
+
+      while (!currentDate.isAfter(dateDepart)) {
+        if (!dates.contains(currentDate.toString())) {
+          dates.add(currentDate.toString());
+        }
+        currentDate = currentDate.plusDays(1);
+      }
+    }
+
+    return dates.stream().toList();
+
   }
 
   private ArrayList<ReglesLogement> parseRegle(List<Long> idRegles) {

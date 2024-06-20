@@ -168,4 +168,15 @@ public class LogementController implements
     );
   }
 
+  /**
+   * Récupère les dates occupées d'un logement.
+   */
+  @GetMapping("/dates/{id}")
+  public ResponseEntity<List<String>> getOccupiedDates(@PathVariable Long id) {
+    return new ResponseEntity<>(
+        logementService.getOccupiedDates(id),
+        HttpStatus.OK
+    );
+  }
+
 }
