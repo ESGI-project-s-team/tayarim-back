@@ -66,3 +66,5 @@
 "error_search_invalid_date_arrival": "L'heure d'arrivée saisie est invalide",
 "error_search_invalid_date_departure": "L'heure de départ saisie est invalide",
 "error_search_nbPersonnes_invalid": "Le nombre de personnes saisie est invalide",
+"error_search_date_missing": "Les deux dates sont nécessaires pour filtrer par date",
+"error_search_date_invalid": "Les dates entrées sont invalides",

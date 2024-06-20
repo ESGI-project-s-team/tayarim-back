@@ -10,6 +10,7 @@ import fr.esgi.al5.tayarim.entities.Amenagement;
 import fr.esgi.al5.tayarim.entities.Logement;
 import fr.esgi.al5.tayarim.entities.Proprietaire;
 import fr.esgi.al5.tayarim.entities.ReglesLogement;
+import fr.esgi.al5.tayarim.entities.Reservation;
 import fr.esgi.al5.tayarim.entities.TypeLogement;
 import fr.esgi.al5.tayarim.exceptions.LogementInvalidAmenagement;
 import fr.esgi.al5.tayarim.exceptions.LogementInvalidCreationBody;
@@ -19,6 +20,9 @@ import fr.esgi.al5.tayarim.exceptions.LogementInvalidUpdateBody;
 import fr.esgi.al5.tayarim.exceptions.LogementNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireInvalidUpdateBody;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireNotFoundException;
+import fr.esgi.al5.tayarim.exceptions.ReservationDateConflictError;
+import fr.esgi.al5.tayarim.exceptions.SearchDateInvalidError;
+import fr.esgi.al5.tayarim.exceptions.SearchDateMissingError;
 import fr.esgi.al5.tayarim.mappers.LogementMapper;
 import fr.esgi.al5.tayarim.mappers.TypeLogementMapper;
 import fr.esgi.al5.tayarim.repositories.AmenagementRepository;
@@ -26,6 +30,7 @@ import fr.esgi.al5.tayarim.repositories.LogementRepository;
 import fr.esgi.al5.tayarim.repositories.ProprietaireRepository;
 import fr.esgi.al5.tayarim.repositories.ReglesLogementRepository;
 import fr.esgi.al5.tayarim.repositories.TypeLogementRepository;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -35,6 +40,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.NonNull;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 
@@ -52,6 +58,8 @@ public class LogementService {
   private final ReglesLogementRepository reglesLogementRepository;
   private final AmenagementRepository amenagementRepository;
 
+  private final ReservationService reservationService;
+
 
   /**
    * Constructeur pour le service de logement.
@@ -61,17 +69,19 @@ public class LogementService {
    * @param typeLogementRepository   Le repository des types de logements.
    * @param reglesLogementRepository Le repository des règles de logements.
    * @param amenagementRepository    Le repository des aménagements.
+   * @param reservationService       Le service des réservations.
    */
   public LogementService(LogementRepository logementRepository,
       ProprietaireRepository proprietaireRepository,
       TypeLogementRepository typeLogementRepository,
       ReglesLogementRepository reglesLogementRepository,
-      AmenagementRepository amenagementRepository) {
+      AmenagementRepository amenagementRepository, ReservationService reservationService) {
     this.logementRepository = logementRepository;
     this.proprietaireRepository = proprietaireRepository;
     this.typeLogementRepository = typeLogementRepository;
     this.reglesLogementRepository = reglesLogementRepository;
     this.amenagementRepository = amenagementRepository;
+    this.reservationService = reservationService;
   }
 
   /**
@@ -396,7 +406,15 @@ public class LogementService {
    *
    * @param logementSearchDto dto de recherche de logement
    */
+
+  @Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
   public List<LogementDto> search(@NonNull LogementSearchDto logementSearchDto) {
+
+    if ((logementSearchDto.getDateArrivee() != null && logementSearchDto.getDateDepart() == null)
+        || (logementSearchDto.getDateArrivee() == null
+        && logementSearchDto.getDateDepart() != null)) {
+      throw new SearchDateMissingError();
+    }
 
     List<Logement> logements = logementRepository.findAll();
 
@@ -406,11 +424,9 @@ public class LogementService {
 
     if (!logementSearchDto.getDestination().isBlank()) {
       logements = logements.stream()
-          .filter(logement ->
-              (logement.getAdresse().contains(logementSearchDto.getDestination()))
-                  || (logement.getVille().contains(logementSearchDto.getDestination()))
-                  || (logement.getPays().contains(logementSearchDto.getDestination()))
-          )
+          .filter(logement -> logement.getAdresse().contains(logementSearchDto.getDestination())
+              || logement.getVille().contains(logementSearchDto.getDestination())
+              || logement.getPays().contains(logementSearchDto.getDestination()))
           .collect(Collectors.toList());
     }
 
@@ -421,9 +437,31 @@ public class LogementService {
           .collect(Collectors.toList());
     }
 
+    if (logementSearchDto.getDateArrivee() != null && logementSearchDto.getDateDepart() != null) {
+      LocalDate dateArrivee = LocalDate.parse(logementSearchDto.getDateArrivee());
+      LocalDate dateDepart = LocalDate.parse(logementSearchDto.getDateDepart());
+
+      if (dateArrivee.isAfter(dateDepart)) {
+        throw new SearchDateInvalidError();
+      }
+
+      logements = logements.stream().filter(logement -> {
+        try {
+          reservationService.checkDateConclict(
+              "RESA-SEARCHING",
+              dateArrivee,
+              dateDepart,
+              logement.getId(),
+              false
+          );
+          return true;
+        } catch (ReservationDateConflictError ignored) {
+          return false;
+        }
+      }).collect(Collectors.toList());
+    }
+
     return LogementMapper.entityListToDtoList(logements);
-
-
   }
 
   private ArrayList<ReglesLogement> parseRegle(List<Long> idRegles) {

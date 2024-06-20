@@ -66,3 +66,5 @@
 "error_search_invalid_date_arrival": "The arrival time entered is invalid",
 "error_search_invalid_date_departure": "The departure time entered is invalid",
 "error_search_nbPersonnes_invalid": "The number of people entered is invalid",
+"error_search_date_missing": "Both dates are required to filter by date",
+"error_search_date_invalid": "the dates entered are invalid",

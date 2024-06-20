@@ -24,6 +24,8 @@ import fr.esgi.al5.tayarim.exceptions.ReservationDateTooShortError;
 import fr.esgi.al5.tayarim.exceptions.ReservationNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.ReservationPeopleCapacityError;
 import fr.esgi.al5.tayarim.exceptions.ReservationStatusUpdateError;
+import fr.esgi.al5.tayarim.exceptions.SearchDateInvalidError;
+import fr.esgi.al5.tayarim.exceptions.SearchDateMissingError;
 import fr.esgi.al5.tayarim.exceptions.TokenExpireOrInvalidException;
 import fr.esgi.al5.tayarim.exceptions.UnauthorizedException;
 import fr.esgi.al5.tayarim.exceptions.UnsupportedMethodPathException;
@@ -79,6 +81,31 @@ public interface ControllerUtils {
     return mapException(ex);
   }
 
+  /**
+   * Gère les exceptions lorsque le logement n'est pas trouvé.
+   *
+   * @param ex L'exception capturée.
+   * @return Une carte des erreurs.
+   */
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ExceptionHandler({SearchDateMissingError.class})
+  default Map<String, List<String>> searchDateMissingError(
+      SearchDateMissingError ex) {
+    return mapException(ex);
+  }
+
+  /**
+   * Gère les exceptions lorsque le logement n'est pas trouvé.
+   *
+   * @param ex L'exception capturée.
+   * @return Une carte des erreurs.
+   */
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ExceptionHandler({SearchDateInvalidError.class})
+  default Map<String, List<String>> searchDateInvalidError(
+      SearchDateInvalidError ex) {
+    return mapException(ex);
+  }
 
   /**
    * Gère les exceptions lorsque le logement n'est pas trouvé.
