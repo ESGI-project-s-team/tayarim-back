@@ -417,7 +417,7 @@ public class LogementService {
    */
 
   @Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
-  public List<LogementDto> search(@NonNull LogementSearchDto logementSearchDto) {
+  public List<LogementDto> search(LogementSearchDto logementSearchDto) {
 
     if ((logementSearchDto.getDateArrivee() != null && logementSearchDto.getDateDepart() == null)
         || (logementSearchDto.getDateArrivee() == null
@@ -431,7 +431,8 @@ public class LogementService {
         .filter(Logement::getIsLouable)
         .collect(Collectors.toList());
 
-    if (!logementSearchDto.getDestination().isBlank()) {
+    if (logementSearchDto.getDestination() != null && !logementSearchDto.getDestination()
+        .isBlank()) {
       logements = logements.stream()
           .filter(logement -> logement.getAdresse().contains(logementSearchDto.getDestination())
               || logement.getVille().contains(logementSearchDto.getDestination())

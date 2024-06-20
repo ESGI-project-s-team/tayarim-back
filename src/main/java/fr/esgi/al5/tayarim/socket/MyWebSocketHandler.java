@@ -31,8 +31,8 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
   /**
    * Constructeur pour le service de socket.
    *
-   * @param authService   service d'authentification
-   * @param objectMapper  mapper json
+   * @param authService  service d'authentification
+   * @param objectMapper mapper json
    */
   public MyWebSocketHandler(AuthService authService, ObjectMapper objectMapper) {
     this.authService = authService;
@@ -65,8 +65,8 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
   @Override
   public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
     Long idToRemove = -1L;
-    for(Entry<Long, WebSocketSession> e : sessions.entrySet()){
-      if(e.getValue().getId().equals(session.getId())){
+    for (Entry<Long, WebSocketSession> e : sessions.entrySet()) {
+      if (e.getValue().getId().equals(session.getId())) {
         idToRemove = e.getKey();
         break;
       }
