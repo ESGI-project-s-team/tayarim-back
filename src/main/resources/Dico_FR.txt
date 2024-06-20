@@ -16,7 +16,7 @@
 "error_admin_invalid_mail": "l'adresse e-mail est invalide (ex: 'test@gmail.com')",
 "error_admin_invalid_phone": "Le numéro de téléphone est invalide (ex: '+33612345678')",
 "error_admin_invalid_password": "Le mot de passe est invalide, \n Un mot de passe doit contenir: \n Au moins 8 charactere, \n Au moins 1 majuscule, \n Au moins 1 chiffre, \n Au moins 1 charactere special ($,*,?,!, ...)",
-"error_admin_notExist": "Cet administrateur n'existe pas",
+"error_admin_notExist": "Cet utilistateur n'existe pas",
 "error_user_notExist": "Cet utilistateur n'existe pas",
 "error_home_invalid_owner_id": "L'id du proprietaire est invalide",
 "error_home_invalid_room_number": "Le nombre de chambre saisie est invalide",

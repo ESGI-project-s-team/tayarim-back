@@ -6,6 +6,6 @@ package fr.esgi.al5.tayarim.exceptions;
 public class AdministrateurNotFoundException extends RuntimeException {
 
   public AdministrateurNotFoundException() {
-    super("error_admin_notExist");
+    super("error_user_notExist");
   }
 }
