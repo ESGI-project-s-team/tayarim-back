@@ -62,3 +62,7 @@
 "error_indisponibilite_date_invalid": "La date de début est supérieure à la date de fin",
 "error_indisponibilite_home_not_found": "Le logement n'existe pas",
 "error_indisponibilite_unauthorized": "Vous n'êtes pas authorisé à effectuer cette action",
+"error_search_destination_invalid": "La destination saisie est invalide",
+"error_search_invalid_date_arrival": "L'heure d'arrivée saisie est invalide",
+"error_search_invalid_date_departure": "L'heure de départ saisie est invalide",
+"error_search_nbPersonnes_invalid": "Le nombre de personnes saisie est invalide",

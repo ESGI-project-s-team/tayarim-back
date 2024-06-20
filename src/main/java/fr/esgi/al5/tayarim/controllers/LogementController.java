@@ -9,6 +9,7 @@ import fr.esgi.al5.tayarim.controllers.interfaces.GetByIdMethodInterface;
 import fr.esgi.al5.tayarim.controllers.interfaces.UpdateMethodInterface;
 import fr.esgi.al5.tayarim.dto.logement.LogementCreationDto;
 import fr.esgi.al5.tayarim.dto.logement.LogementDto;
+import fr.esgi.al5.tayarim.dto.logement.LogementSearchDto;
 import fr.esgi.al5.tayarim.dto.logement.LogementUpdateDto;
 import fr.esgi.al5.tayarim.dto.logement.TypeLogementDto;
 import fr.esgi.al5.tayarim.services.AuthService;
@@ -151,6 +152,18 @@ public class LogementController implements
 
     return new ResponseEntity<>(
         logementService.getAllTypeLogement(),
+        HttpStatus.OK
+    );
+  }
+
+  /**
+   * Récupère les logements pour la recherche basé sur certain critères.
+   */
+  @GetMapping("/search")
+  public ResponseEntity<List<LogementDto>> search(
+      @Valid @RequestBody LogementSearchDto logementSearchDto) {
+    return new ResponseEntity<>(
+        logementService.search(logementSearchDto),
         HttpStatus.OK
     );
   }

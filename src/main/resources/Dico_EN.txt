@@ -62,3 +62,7 @@
 "error_indisponibilite_date_invalid": "The start date is greater than the end date",
 "error_indisponibilite_home_not_found": "The housing does not exist",
 "error_indisponibilite_unauthorized": "You are not authorized to perform this action",
+"error_search_destination_invalid": "The destination entered is invalid",
+"error_search_invalid_date_arrival": "The arrival time entered is invalid",
+"error_search_invalid_date_departure": "The departure time entered is invalid",
+"error_search_nbPersonnes_invalid": "The number of people entered is invalid",

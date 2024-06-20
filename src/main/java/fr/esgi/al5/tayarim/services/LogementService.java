@@ -3,6 +3,7 @@ package fr.esgi.al5.tayarim.services;
 
 import fr.esgi.al5.tayarim.dto.logement.LogementCreationDto;
 import fr.esgi.al5.tayarim.dto.logement.LogementDto;
+import fr.esgi.al5.tayarim.dto.logement.LogementSearchDto;
 import fr.esgi.al5.tayarim.dto.logement.LogementUpdateDto;
 import fr.esgi.al5.tayarim.dto.logement.TypeLogementDto;
 import fr.esgi.al5.tayarim.entities.Amenagement;
@@ -31,6 +32,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -387,6 +389,41 @@ public class LogementService {
     return TypeLogementMapper.entityListToDtoList(
         typeLogementRepository.findAll()
     );
+  }
+
+  /**
+   * Tnte de récupèrer des logements basé sur certain critère.
+   *
+   * @param logementSearchDto dto de recherche de logement
+   */
+  public List<LogementDto> search(@NonNull LogementSearchDto logementSearchDto) {
+
+    List<Logement> logements = logementRepository.findAll();
+
+    logements = logements.stream()
+        .filter(Logement::getIsLouable)
+        .collect(Collectors.toList());
+
+    if (!logementSearchDto.getDestination().isBlank()) {
+      logements = logements.stream()
+          .filter(logement ->
+              (logement.getAdresse().contains(logementSearchDto.getDestination()))
+                  || (logement.getVille().contains(logementSearchDto.getDestination()))
+                  || (logement.getPays().contains(logementSearchDto.getDestination()))
+          )
+          .collect(Collectors.toList());
+    }
+
+    if (logementSearchDto.getNbPersonnes() != null) {
+      logements = logements.stream()
+          .filter(
+              logement -> logement.getCapaciteMaxPersonne() >= logementSearchDto.getNbPersonnes())
+          .collect(Collectors.toList());
+    }
+
+    return LogementMapper.entityListToDtoList(logements);
+
+
   }
 
   private ArrayList<ReglesLogement> parseRegle(List<Long> idRegles) {
