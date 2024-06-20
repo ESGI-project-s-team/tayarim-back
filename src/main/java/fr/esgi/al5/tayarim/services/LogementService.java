@@ -21,6 +21,8 @@ import fr.esgi.al5.tayarim.exceptions.LogementNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireInvalidUpdateBody;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.ReservationDateConflictError;
+import fr.esgi.al5.tayarim.exceptions.ReservationDateInvalideError;
+import fr.esgi.al5.tayarim.exceptions.ReservationDateTooShortError;
 import fr.esgi.al5.tayarim.exceptions.SearchDateInvalidError;
 import fr.esgi.al5.tayarim.exceptions.SearchDateMissingError;
 import fr.esgi.al5.tayarim.mappers.LogementMapper;
@@ -457,6 +459,12 @@ public class LogementService {
 
       logements = logements.stream().filter(logement -> {
         try {
+          reservationService.checkDateCondition(
+              dateArrivee,
+              dateDepart,
+              logement.getNombresNuitsMin(),
+              false
+          );
           reservationService.checkDateConclict(
               "RESA-SEARCHING",
               dateArrivee,
@@ -465,7 +473,8 @@ public class LogementService {
               false
           );
           return true;
-        } catch (ReservationDateConflictError ignored) {
+        } catch (ReservationDateInvalideError | ReservationDateConflictError
+                 | ReservationDateTooShortError e) {
           return false;
         }
       }).collect(Collectors.toList());
