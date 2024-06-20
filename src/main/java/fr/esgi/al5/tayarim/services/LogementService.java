@@ -31,6 +31,7 @@ import fr.esgi.al5.tayarim.repositories.ProprietaireRepository;
 import fr.esgi.al5.tayarim.repositories.ReglesLogementRepository;
 import fr.esgi.al5.tayarim.repositories.ReservationRepository;
 import fr.esgi.al5.tayarim.repositories.TypeLogementRepository;
+import fr.esgi.al5.tayarim.socket.MyWebSocketHandler;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -138,16 +139,18 @@ public class LogementService {
 
     ArrayList<Amenagement> amenagements = parseAmenagement(logementCreationDto.getAmenagements());
 
-    return LogementMapper.entityToDto(
-        logementRepository.save(
-            LogementMapper.creationDtoToEntity(
-                logementCreationDto,
-                optionalTypeLogement.get(),
-                proprietaire,
-                Set.copyOf(reglesLogements),
-                Set.copyOf(amenagements)
-            )
+    Logement logement = logementRepository.save(
+        LogementMapper.creationDtoToEntity(
+            logementCreationDto,
+            optionalTypeLogement.get(),
+            proprietaire,
+            Set.copyOf(reglesLogements),
+            Set.copyOf(amenagements)
         )
+    );
+
+    return LogementMapper.entityToDto(
+        logement
     );
   }
 

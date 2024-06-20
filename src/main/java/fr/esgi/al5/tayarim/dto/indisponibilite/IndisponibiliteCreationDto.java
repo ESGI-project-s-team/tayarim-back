@@ -3,6 +3,7 @@ package fr.esgi.al5.tayarim.dto.indisponibilite;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import java.time.LocalDate;
 import lombok.AllArgsConstructor;
@@ -31,7 +32,7 @@ public class IndisponibiliteCreationDto {
       message = "error_indisponibilite_invalid_end_date")
   private String dateFin;
 
-  @NotBlank(message = "error_indisponibilite_invalid_home")
+  @NotNull(message = "error_indisponibilite_invalid_home")
   @Min(value = 1, message = "error_indisponibilite_invalid_home")
   private Long idLogement;
 

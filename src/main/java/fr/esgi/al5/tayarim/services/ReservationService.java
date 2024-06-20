@@ -16,6 +16,7 @@ import fr.esgi.al5.tayarim.mappers.ReservationMapper;
 import fr.esgi.al5.tayarim.repositories.IndisponibiliteRepository;
 import fr.esgi.al5.tayarim.repositories.LogementRepository;
 import fr.esgi.al5.tayarim.repositories.ReservationRepository;
+import fr.esgi.al5.tayarim.socket.MyWebSocketHandler;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -38,6 +39,7 @@ public class ReservationService {
   private final LogementRepository logementRepository;
 
   private final IndisponibiliteRepository indisponibiliteRepository;
+  private final MyWebSocketHandler myWebSocketHandler;
 
 
   /**
@@ -46,12 +48,15 @@ public class ReservationService {
    * @param reservationRepository     Le repository des Reservation.
    * @param logementRepository        Le repository des r logements.
    * @param indisponibiliteRepository Le repository des indisponibilites.
+   * @param myWebSocketHandler        Le service de socket.
    */
   public ReservationService(ReservationRepository reservationRepository,
-      LogementRepository logementRepository, IndisponibiliteRepository indisponibiliteRepository) {
+      LogementRepository logementRepository, IndisponibiliteRepository indisponibiliteRepository,
+      MyWebSocketHandler myWebSocketHandler) {
     this.reservationRepository = reservationRepository;
     this.logementRepository = logementRepository;
     this.indisponibiliteRepository = indisponibiliteRepository;
+    this.myWebSocketHandler = myWebSocketHandler;
   }
 
   /**
@@ -60,7 +65,7 @@ public class ReservationService {
    * @return {@link ReservationDto}
    */
   public ReservationDto createReservation(@NonNull ReservationCreationDto reservationCreationDto,
-      @NonNull Boolean isAdmin) {
+      @NonNull Boolean isAdmin, @NonNull Boolean isClient) {
 
     LocalDate dateArrivee = LocalDate.parse(reservationCreationDto.getDateArrivee());
     LocalDate dateDepart = LocalDate.parse(reservationCreationDto.getDateDepart());
@@ -100,17 +105,24 @@ public class ReservationService {
       );
     }
 
-    return ReservationMapper.entityToDto(
-        reservationRepository.save(
-            ReservationMapper.creationDtoToEntity(
-                reservationCreationDto,
-                idCommande,
-                dateArrivee,
-                dateDepart,
-                logement,
-                LocalDateTime.now()
-            )
+    Reservation reservation = reservationRepository.save(
+        ReservationMapper.creationDtoToEntity(
+            reservationCreationDto,
+            idCommande,
+            dateArrivee,
+            dateDepart,
+            logement,
+            LocalDateTime.now()
         )
+    );
+
+    if (isAdmin || isClient) {
+      myWebSocketHandler.sendNotif(logement.getProprietaire().getId(), LocalDate.now(),
+          "notification_reservation_creation", "Reservation");
+    }
+
+    return ReservationMapper.entityToDto(
+        reservation
     );
 
 

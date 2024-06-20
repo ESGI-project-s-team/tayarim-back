@@ -2,20 +2,16 @@ package fr.esgi.al5.tayarim.controllers;
 
 import fr.esgi.al5.tayarim.auth.UserTokenInfo;
 import fr.esgi.al5.tayarim.controllers.interfaces.ControllerUtils;
-import fr.esgi.al5.tayarim.controllers.interfaces.CreateMethodInterface;
 import fr.esgi.al5.tayarim.controllers.interfaces.GetAllMethodInterface;
 import fr.esgi.al5.tayarim.controllers.interfaces.GetByIdMethodInterface;
 import fr.esgi.al5.tayarim.controllers.interfaces.UpdateMethodInterface;
-import fr.esgi.al5.tayarim.dto.regleslogement.ReglesLogementDto;
 import fr.esgi.al5.tayarim.dto.reservation.ReservationCreationDto;
 import fr.esgi.al5.tayarim.dto.reservation.ReservationDto;
 import fr.esgi.al5.tayarim.dto.reservation.ReservationUpdateDto;
 import fr.esgi.al5.tayarim.dto.reservation.ReservationUpdatePaymentIntentDto;
 import fr.esgi.al5.tayarim.services.AuthService;
-import fr.esgi.al5.tayarim.services.ReglesLogementService;
 import fr.esgi.al5.tayarim.services.ReservationService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import fr.esgi.al5.tayarim.socket.MyWebSocketHandler;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.NonNull;
@@ -60,13 +56,15 @@ public class ReservationController implements
       @Valid @RequestBody ReservationCreationDto reservationCreationDto) {
 
     boolean isAdmin = false;
+    boolean isClient = true;
 
     if (authHeader != null) {
       isAdmin = authService.verifyToken(getTokenFromHeader(authHeader), false).getIsAdmin();
+      isClient = false;
     }
 
     return new ResponseEntity<>(
-        reservationService.createReservation(reservationCreationDto, isAdmin),
+        reservationService.createReservation(reservationCreationDto, isAdmin, isClient),
         HttpStatus.OK
     );
   }

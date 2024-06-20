@@ -2,6 +2,7 @@ package fr.esgi.al5.tayarim.services;
 
 import fr.esgi.al5.tayarim.dto.indisponibilite.IndisponibiliteCreationDto;
 import fr.esgi.al5.tayarim.dto.indisponibilite.IndisponibiliteDto;
+import fr.esgi.al5.tayarim.entities.Indisponibilite;
 import fr.esgi.al5.tayarim.entities.Logement;
 import fr.esgi.al5.tayarim.exceptions.IndisponibiliteDateInvalidError;
 import fr.esgi.al5.tayarim.exceptions.IndisponibiliteLogementNotFoundError;
@@ -13,6 +14,7 @@ import fr.esgi.al5.tayarim.mappers.IndisponibiliteMapper;
 import fr.esgi.al5.tayarim.repositories.IndisponibiliteRepository;
 import fr.esgi.al5.tayarim.repositories.LogementRepository;
 import fr.esgi.al5.tayarim.repositories.ReservationRepository;
+import fr.esgi.al5.tayarim.socket.MyWebSocketHandler;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +38,8 @@ public class IndisponibiliteService {
 
   private final ReservationRepository reservationRepository;
 
+  private final MyWebSocketHandler myWebSocketHandler;
+
 
   /**
    * Constructeur pour le service de Indisponibilite.
@@ -43,12 +47,15 @@ public class IndisponibiliteService {
    * @param indisponibiliteRepository Le repository des Indisponibilite.
    * @param logementRepository        Le repository des Logements.
    * @param reservationRepository     Le repository des Reservation.
+   * @param myWebSocketHandler        Le service de socket.
    */
   public IndisponibiliteService(IndisponibiliteRepository indisponibiliteRepository,
-      LogementRepository logementRepository, ReservationRepository reservationRepository) {
+      LogementRepository logementRepository, ReservationRepository reservationRepository,
+      MyWebSocketHandler myWebSocketHandler) {
     this.indisponibiliteRepository = indisponibiliteRepository;
     this.logementRepository = logementRepository;
     this.reservationRepository = reservationRepository;
+    this.myWebSocketHandler = myWebSocketHandler;
   }
 
   /**
@@ -70,9 +77,14 @@ public class IndisponibiliteService {
     if (!isAdmin && !optionalLogement.get().getProprietaire().getId().equals(idUser)) {
       throw new IndisponibiliteUnauthorizedError();
     }
-
-    LocalDate dateDebut = LocalDate.parse(indisponibiliteCreationDto.getDateDebut());
-    LocalDate dateFin = LocalDate.parse(indisponibiliteCreationDto.getDateFin());
+    LocalDate dateDebut;
+    LocalDate dateFin;
+    try {
+      dateDebut = LocalDate.parse(indisponibiliteCreationDto.getDateDebut());
+      dateFin = LocalDate.parse(indisponibiliteCreationDto.getDateFin());
+    } catch (Exception e) {
+      throw new IndisponibiliteDateInvalidError();
+    }
 
     if (dateDebut.isAfter(dateFin)) {
       throw new IndisponibiliteDateInvalidError();
@@ -88,14 +100,20 @@ public class IndisponibiliteService {
         dateFin,
         logement.getId(), isAdmin);
 
-    return IndisponibiliteMapper.entityToDto(
-        indisponibiliteRepository.save(
-            IndisponibiliteMapper.creationDtoToEntity(
-                dateDebut,
-                dateFin,
-                logement
-            )
+    Indisponibilite indisponibilite = indisponibiliteRepository.save(
+        IndisponibiliteMapper.creationDtoToEntity(
+            dateDebut,
+            dateFin,
+            logement
         )
+    );
+    if (isAdmin) {
+      myWebSocketHandler.sendNotif(logement.getProprietaire().getId(), LocalDate.now(),
+          "notification_indisponibilite_creation", "Indisponibilite");
+    }
+
+    return IndisponibiliteMapper.entityToDto(
+        indisponibilite
     );
   }
 
