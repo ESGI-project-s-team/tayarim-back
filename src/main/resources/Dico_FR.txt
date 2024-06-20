@@ -56,6 +56,7 @@
 "error_reservation_status_update": "Impossible de mettre à jour le statut de la réservation",
 "error_reservation_date_conflict": "Il y a un conflit de date avec une autre réservation",
 "error_reservation_people_capacity_invalid": "Le nombre de personnes dépasse la capacité du logement",
+"error_reservation_date_invalide": "La date de départ est inférieure à la date d'arrivée",
 "error_indisponibilite_invalid_start_date": "La date de début est invalide",
 "error_indisponibilite_invalid_end_date": "La date de fin est invalide",
 "error_indisponibilite_invalid_home": "L'id du logement est invalide",
