@@ -43,7 +43,7 @@ public class ImageLogement {
   private Boolean isMainImage;
 
   /**
-   * Builder pour l'entitée ImageLogement
+   * Builder pour l'entitée ImageLogement.
    *
    * @param url         URL de l'image
    * @param logement    Logement associé à l'image

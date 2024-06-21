@@ -175,7 +175,7 @@ public class LogementService {
 
     List<Logement> logements = logementRepository.findAllByProprietaire(optionalProprietaire.get());
 
-    for (Logement logement : logements){
+    for (Logement logement : logements) {
       System.out.println(logement.getImages().size());
     }
 

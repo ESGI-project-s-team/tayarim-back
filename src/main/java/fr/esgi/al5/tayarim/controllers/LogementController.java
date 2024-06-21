@@ -38,7 +38,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class LogementController implements
     CreateMethodInterface<LogementDto, LogementCreationDto>,
     GetAllMethodInterface<LogementDto>,
-    GetByIdMethodInterface<LogementDto>,
     UpdateMethodInterface<LogementDto, LogementUpdateDto>,
     DeleteMethodInterface<LogementDto>,
     ControllerUtils {
@@ -93,15 +92,13 @@ public class LogementController implements
   /**
    * Obtient un logement par son identifiant.
    *
-   * @param authHeader L'en-tête d'autorisation contenant le token JWT.
    * @param id         L'identifiant du propriétaire.
    * @return Une ResponseEntity contenant les détails du propriétaire et le statut HTTP.
    */
-  @Override
+  @Operation(summary = "Authenticate user", security = @SecurityRequirement(name = "bearer-key"))
+  @GetMapping("/{id}")
   public ResponseEntity<LogementDto> getById(
-      String authHeader,
-      Long id) {
-    authService.verifyToken(getTokenFromHeader(authHeader), false);
+      @PathVariable Long id) {
     return new ResponseEntity<>(logementService.getLogementById(id), HttpStatus.OK);
   }
 

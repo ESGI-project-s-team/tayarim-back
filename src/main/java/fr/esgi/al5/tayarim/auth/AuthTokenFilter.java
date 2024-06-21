@@ -64,7 +64,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     mapOfExcludeMethodPath.put("PUT", List.of("/reservations/paymentIntent/\\d+"));
     mapOfExcludeMethodPath.put("GET",
         List.of("/logements/types", "/reglesLogement", "/amenagements",
-            "/logements/dates/\\d+"));
+            "/logements/dates/\\d+", "/logements/\\d+"));
 
     String method = request.getMethod().toUpperCase();
     String path = request.getServletPath();
