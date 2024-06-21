@@ -1,17 +1,23 @@
 package fr.esgi.al5.tayarim.services;
 
 
+import com.google.cloud.storage.BlobId;
+import com.google.cloud.storage.BlobInfo;
+import fr.esgi.al5.tayarim.TayarimApplication;
 import fr.esgi.al5.tayarim.dto.logement.LogementCreationDto;
 import fr.esgi.al5.tayarim.dto.logement.LogementDto;
 import fr.esgi.al5.tayarim.dto.logement.LogementSearchDto;
 import fr.esgi.al5.tayarim.dto.logement.LogementUpdateDto;
 import fr.esgi.al5.tayarim.dto.logement.TypeLogementDto;
 import fr.esgi.al5.tayarim.entities.Amenagement;
+import fr.esgi.al5.tayarim.entities.ImageLogement;
 import fr.esgi.al5.tayarim.entities.Logement;
 import fr.esgi.al5.tayarim.entities.Proprietaire;
 import fr.esgi.al5.tayarim.entities.ReglesLogement;
 import fr.esgi.al5.tayarim.entities.Reservation;
 import fr.esgi.al5.tayarim.entities.TypeLogement;
+import fr.esgi.al5.tayarim.exceptions.LogementImageBucketUploadError;
+import fr.esgi.al5.tayarim.exceptions.LogementImageInvalidError;
 import fr.esgi.al5.tayarim.exceptions.LogementInvalidAmenagement;
 import fr.esgi.al5.tayarim.exceptions.LogementInvalidCreationBody;
 import fr.esgi.al5.tayarim.exceptions.LogementInvalidReglesLogement;
@@ -25,15 +31,18 @@ import fr.esgi.al5.tayarim.exceptions.ReservationDateInvalideError;
 import fr.esgi.al5.tayarim.exceptions.ReservationDateTooShortError;
 import fr.esgi.al5.tayarim.exceptions.SearchDateInvalidError;
 import fr.esgi.al5.tayarim.exceptions.SearchDateMissingError;
+import fr.esgi.al5.tayarim.mappers.ImageLogementMapper;
 import fr.esgi.al5.tayarim.mappers.LogementMapper;
 import fr.esgi.al5.tayarim.mappers.TypeLogementMapper;
 import fr.esgi.al5.tayarim.repositories.AmenagementRepository;
+import fr.esgi.al5.tayarim.repositories.ImageLogementRepository;
 import fr.esgi.al5.tayarim.repositories.LogementRepository;
 import fr.esgi.al5.tayarim.repositories.ProprietaireRepository;
 import fr.esgi.al5.tayarim.repositories.ReglesLogementRepository;
 import fr.esgi.al5.tayarim.repositories.ReservationRepository;
 import fr.esgi.al5.tayarim.repositories.TypeLogementRepository;
-import fr.esgi.al5.tayarim.socket.MyWebSocketHandler;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -46,6 +55,7 @@ import lombok.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 
 /**
@@ -66,6 +76,8 @@ public class LogementService {
 
   private final ReservationRepository reservationRepository;
 
+  private final ImageLogementRepository imageLogementRepository;
+
 
   /**
    * Constructeur pour le service de logement.
@@ -77,13 +89,15 @@ public class LogementService {
    * @param amenagementRepository    Le repository des aménagements.
    * @param reservationService       Le service des réservations.
    * @param reservationRepository    Le repository des réservations
+   * @param imageLogementRepository  Le repository des images de logement
    */
   public LogementService(LogementRepository logementRepository,
       ProprietaireRepository proprietaireRepository,
       TypeLogementRepository typeLogementRepository,
       ReglesLogementRepository reglesLogementRepository,
       AmenagementRepository amenagementRepository, ReservationService reservationService,
-      ReservationRepository reservationRepository) {
+      ReservationRepository reservationRepository,
+      ImageLogementRepository imageLogementRepository) {
     this.logementRepository = logementRepository;
     this.proprietaireRepository = proprietaireRepository;
     this.typeLogementRepository = typeLogementRepository;
@@ -91,6 +105,7 @@ public class LogementService {
     this.amenagementRepository = amenagementRepository;
     this.reservationService = reservationService;
     this.reservationRepository = reservationRepository;
+    this.imageLogementRepository = imageLogementRepository;
   }
 
   /**
@@ -101,6 +116,10 @@ public class LogementService {
    */
   @Transactional
   public LogementDto createLogement(@NonNull LogementCreationDto logementCreationDto) {
+
+    if (logementCreationDto.getFiles() != null && logementCreationDto.getFiles().isEmpty()) {
+      throw new LogementImageInvalidError();
+    }
 
     Optional<Proprietaire> optionalProprietaire = proprietaireRepository.findById(
         logementCreationDto.getIdProprietaire());
@@ -147,9 +166,49 @@ public class LogementService {
             optionalTypeLogement.get(),
             proprietaire,
             Set.copyOf(reglesLogements),
-            Set.copyOf(amenagements)
+            Set.copyOf(amenagements),
+            List.of()
         )
     );
+
+    if (logementCreationDto.getFiles() != null && !logementCreationDto.getFiles().isEmpty()) {
+      int cpt = 0;
+      List<String> urls = new ArrayList<>();
+      ArrayList<ImageLogement> images = new ArrayList<>();
+      for (MultipartFile file : logementCreationDto.getFiles()) {
+        cpt++;
+
+        try {
+          // Obtenez les octets du fichier
+          byte[] bytes = file.getBytes();
+
+          String fileName = "House images/".concat(logement.getId().toString()).concat("_")
+              .concat(Integer.toString(cpt));
+
+          // Téléchargez le fichier dans GCS
+          TayarimApplication.bucket.create(fileName, bytes);
+
+          urls.add(fileName);
+
+
+        } catch (IOException e) {
+          e.printStackTrace();
+          logementRepository.delete(logement);
+          throw new LogementImageBucketUploadError();
+        }
+
+      }
+
+      for (String fileName : urls) {
+        images.add(imageLogementRepository.save(new ImageLogement(fileName, logement, (cpt == 1))));
+      }
+
+      logement.setImages(images);
+
+      logementRepository.save(logement);
+    }
+
+    System.out.println("end");
 
     return LogementMapper.entityToDto(
         logement

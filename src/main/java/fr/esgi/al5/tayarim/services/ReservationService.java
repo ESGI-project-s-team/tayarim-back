@@ -1,8 +1,12 @@
 package fr.esgi.al5.tayarim.services;
 
+import com.stripe.Stripe;
+import com.stripe.exception.StripeException;
+import com.stripe.model.PaymentIntent;
 import fr.esgi.al5.tayarim.dto.reservation.ReservationCreationDto;
 import fr.esgi.al5.tayarim.dto.reservation.ReservationDto;
 import fr.esgi.al5.tayarim.dto.reservation.ReservationUpdateDto;
+import fr.esgi.al5.tayarim.dto.reservation.ReservationUpdatePaymentIntentDto;
 import fr.esgi.al5.tayarim.entities.Logement;
 import fr.esgi.al5.tayarim.entities.Reservation;
 import fr.esgi.al5.tayarim.exceptions.LogementNotFoundException;
@@ -12,6 +16,7 @@ import fr.esgi.al5.tayarim.exceptions.ReservationDateTooShortError;
 import fr.esgi.al5.tayarim.exceptions.ReservationNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.ReservationPeopleCapacityError;
 import fr.esgi.al5.tayarim.exceptions.ReservationStatusUpdateError;
+import fr.esgi.al5.tayarim.exceptions.ReservationStripeError;
 import fr.esgi.al5.tayarim.mappers.ReservationMapper;
 import fr.esgi.al5.tayarim.repositories.IndisponibiliteRepository;
 import fr.esgi.al5.tayarim.repositories.LogementRepository;
@@ -24,7 +29,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import lombok.NonNull;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 
@@ -34,6 +43,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = true)
 public class ReservationService {
+
+  /**
+   * Clé secrète de l'API Stripe.
+   */
+  @Value("${stripe.secret-key}")
+  private String stripeApiKey;
 
   private final ReservationRepository reservationRepository;
   private final LogementRepository logementRepository;
@@ -309,9 +324,10 @@ public class ReservationService {
    *
    * @return {@link ReservationDto}
    */
-  @Transactional
+  @Transactional(propagation = Propagation.NOT_SUPPORTED)
   public ReservationDto cancel(
-      @NonNull Long id/*, @NonNull Boolean isAdmin, @NonNull Long idUser*/) {
+      @NonNull Long id,
+      @NonNull ReservationUpdatePaymentIntentDto reservationUpdatePaymentIntentDto) {
 
     Optional<Reservation> optionalReservation = reservationRepository.findById(id);
     if (optionalReservation.isEmpty()) {
@@ -325,8 +341,17 @@ public class ReservationService {
     */
 
     Reservation reservation = optionalReservation.get();
-    if (reservation.getStatut().equals("cancelled") || reservation.getStatut().equals("done")) {
+    if (!reservation.getStatut().equals("payed")) {
       throw new ReservationStatusUpdateError();
+    }
+
+    Stripe.apiKey = stripeApiKey;
+    try {
+      PaymentIntent paymentIntent = PaymentIntent.retrieve(
+          reservationUpdatePaymentIntentDto.getPaymentIntent());
+      paymentIntent.cancel();
+    } catch (StripeException e) {
+      throw new ReservationStripeError();
     }
 
     reservation.setStatut("cancelled");
@@ -398,6 +423,33 @@ public class ReservationService {
       throw new ReservationDateConflictError();
 
     }
+  }
+
+  /**
+   * Valide une réservation.
+   *
+   * @param id Id de la réservation.
+   */
+  @Transactional(propagation = Propagation.NOT_SUPPORTED)
+  public ReservationDto validate(@NonNull Long id) {
+    Optional<Reservation> optionalReservation = reservationRepository.findById(id);
+
+    if (optionalReservation.isEmpty()) {
+      throw new ReservationNotFoundException();
+    }
+
+    Reservation reservation = optionalReservation.get();
+
+    try {
+      PaymentIntent paymentIntent = PaymentIntent.retrieve(reservation.getPaymentIntent());
+      paymentIntent.capture();
+    } catch (StripeException e) {
+      throw new ReservationStripeError();
+    }
+
+    reservation.setStatut("payed");
+
+    return ReservationMapper.entityToDto(reservationRepository.save(reservation));
   }
 
 }

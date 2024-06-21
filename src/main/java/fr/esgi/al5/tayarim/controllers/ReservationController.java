@@ -5,6 +5,7 @@ import fr.esgi.al5.tayarim.controllers.interfaces.ControllerUtils;
 import fr.esgi.al5.tayarim.controllers.interfaces.GetAllMethodInterface;
 import fr.esgi.al5.tayarim.controllers.interfaces.GetByIdMethodInterface;
 import fr.esgi.al5.tayarim.controllers.interfaces.UpdateMethodInterface;
+import fr.esgi.al5.tayarim.dto.paiement.PaiementCancelDto;
 import fr.esgi.al5.tayarim.dto.reservation.ReservationCreationDto;
 import fr.esgi.al5.tayarim.dto.reservation.ReservationDto;
 import fr.esgi.al5.tayarim.dto.reservation.ReservationUpdateDto;
@@ -12,6 +13,8 @@ import fr.esgi.al5.tayarim.dto.reservation.ReservationUpdatePaymentIntentDto;
 import fr.esgi.al5.tayarim.services.AuthService;
 import fr.esgi.al5.tayarim.services.ReservationService;
 import fr.esgi.al5.tayarim.socket.MyWebSocketHandler;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.NonNull;
@@ -116,17 +119,18 @@ public class ReservationController implements
   }
 
   /**
-   * Récupère les règles d'un logement.
+   * Annule une reservation.
    *
    * @param id Id du logement.
    */
-  //@Operation(summary = "Authenticate user", security = @SecurityRequirement(name = "bearer-key"))
+  @Operation(summary = "Authenticate user", security = @SecurityRequirement(name = "bearer-key"))
   @PutMapping("/cancel/{id}")
-  public ResponseEntity<ReservationDto> cancel(/*@RequestAttribute("token") String authHeader,*/
-      @PathVariable Long id) {
-    //UserTokenInfo userTokenInfo = authService.verifyToken(getTokenFromHeader(authHeader), false);
+  public ResponseEntity<ReservationDto> cancel(@RequestAttribute("token") String authHeader,
+      @PathVariable Long id,
+      @RequestBody ReservationUpdatePaymentIntentDto reservationUpdatePaymentIntentDto) {
+    UserTokenInfo userTokenInfo = authService.verifyToken(getTokenFromHeader(authHeader), true);
     return new ResponseEntity<>(
-        reservationService.cancel(id/*, userTokenInfo.getIsAdmin(), userTokenInfo.getId()*/),
+        reservationService.cancel(id, reservationUpdatePaymentIntentDto),
         HttpStatus.OK
     );
   }

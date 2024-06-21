@@ -12,6 +12,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * DTO pour la création de nouveaux logement dans le système. Contient des champs avec des
@@ -104,5 +105,8 @@ public class LogementCreationDto {
 
   @Size(min = 1, max = 1000, message = "error_home_invalid_facilities")
   private List<Long> amenagements;
+
+  @Size(min = 1, max = 1000, message = "error_home_invalid_photos_list_length")
+  private List<MultipartFile> files;
 
 }

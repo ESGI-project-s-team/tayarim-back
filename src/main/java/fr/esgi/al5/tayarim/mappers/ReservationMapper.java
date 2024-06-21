@@ -47,7 +47,7 @@ public class ReservationMapper {
 
     return new Reservation(
         idCommande,
-        "payed",
+        "reserved",
         reservationCreationDto.getEmail(),
         reservationCreationDto.getNumTel(),
         reservationCreationDto.getNom(),

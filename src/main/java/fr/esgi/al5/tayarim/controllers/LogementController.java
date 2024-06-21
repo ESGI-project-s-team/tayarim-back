@@ -19,16 +19,21 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Contrôleur responsable de la gestion des logements.
@@ -36,7 +41,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/logements")
 public class LogementController implements
-    CreateMethodInterface<LogementDto, LogementCreationDto>,
     GetAllMethodInterface<LogementDto>,
     UpdateMethodInterface<LogementDto, LogementUpdateDto>,
     DeleteMethodInterface<LogementDto>,
@@ -62,11 +66,12 @@ public class LogementController implements
    * @param logementCreationDto Le DTO contenant les informations de creation d'un logement.
    * @return Un ResponseEntity contenant le DTO de réponse à la creation de logement.
    */
-  @Override
+  @Operation(summary = "Authenticate user", security = @SecurityRequirement(name = "bearer-key"))
+  @PostMapping(path = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<LogementDto> create(
-      String authHeader,
-      LogementCreationDto logementCreationDto) {
-
+      @RequestAttribute("token") String authHeader,
+      @Valid @ModelAttribute LogementCreationDto logementCreationDto) {
+    System.out.println("test");
     authService.verifyToken(getTokenFromHeader(authHeader), true);
     return new ResponseEntity<>(
         logementService.createLogement(logementCreationDto),

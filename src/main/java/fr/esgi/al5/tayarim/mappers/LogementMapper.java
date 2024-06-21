@@ -3,6 +3,7 @@ package fr.esgi.al5.tayarim.mappers;
 import fr.esgi.al5.tayarim.dto.logement.LogementCreationDto;
 import fr.esgi.al5.tayarim.dto.logement.LogementDto;
 import fr.esgi.al5.tayarim.entities.Amenagement;
+import fr.esgi.al5.tayarim.entities.ImageLogement;
 import fr.esgi.al5.tayarim.entities.Logement;
 import fr.esgi.al5.tayarim.entities.Proprietaire;
 import fr.esgi.al5.tayarim.entities.ReglesLogement;
@@ -33,7 +34,8 @@ public class LogementMapper {
   public static Logement creationDtoToEntity(@NonNull LogementCreationDto logementCreationDto,
       @NonNull TypeLogement typeLogement,
       @NonNull Proprietaire proprietaire,
-      @NonNull Set<ReglesLogement> reglesLogements, @NonNull Set<Amenagement> amenagements) {
+      @NonNull Set<ReglesLogement> reglesLogements, @NonNull Set<Amenagement> amenagements,
+      @NonNull List<ImageLogement> images) {
 
     return new Logement(logementCreationDto.getIsLouable(),
         logementCreationDto.getTitre(),
@@ -60,7 +62,7 @@ public class LogementMapper {
         proprietaire,
         reglesLogements,
         amenagements,
-        List.of());
+        images);
   }
 
   /**

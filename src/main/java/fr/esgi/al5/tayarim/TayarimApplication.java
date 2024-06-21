@@ -17,8 +17,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Base64;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 
 /**
@@ -39,8 +42,7 @@ public class TayarimApplication {
    */
   public static void main(String[] args) throws IOException {
 
-
-    var context = SpringApplication.run(TayarimApplication.class, args);
+    ApplicationContext context = SpringApplication.run(TayarimApplication.class, args);
 
     // Access the Environment object
     Environment env = context.getEnvironment();
