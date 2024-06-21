@@ -111,7 +111,8 @@ CREATE TABLE IF NOT EXISTS ReglesLogement (
 CREATE TABLE IF NOT EXISTS ImageLogement (
                                              id INT PRIMARY KEY AUTO_INCREMENT,
                                              url VARCHAR(100),
-                                             idLogement INT
+                                             idLogement INT,
+                                             isMainImage BOOLEAN
 );
 
 CREATE TABLE IF NOT EXISTS Avis (

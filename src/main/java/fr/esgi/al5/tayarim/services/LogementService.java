@@ -146,6 +146,8 @@ public class LogementService {
                 || logementCreationDto.getReglesLogement().isEmpty())
                 || (logementCreationDto.getAmenagements() == null
                 || logementCreationDto.getAmenagements().isEmpty())
+                || (logementCreationDto.getFiles() == null || logementCreationDto.getFiles()
+                .isEmpty())
         )) {
       throw new LogementInvalidCreationBody();
     }
@@ -199,7 +201,9 @@ public class LogementService {
 
       }
 
+      cpt = 0;
       for (String fileName : urls) {
+        cpt++;
         images.add(imageLogementRepository.save(new ImageLogement(fileName, logement, (cpt == 1))));
       }
 
@@ -501,9 +505,12 @@ public class LogementService {
     if (logementSearchDto.getDestination() != null && !logementSearchDto.getDestination()
         .isBlank()) {
       logements = logements.stream()
-          .filter(logement -> logement.getAdresse().contains(logementSearchDto.getDestination())
-              || logement.getVille().contains(logementSearchDto.getDestination())
-              || logement.getPays().contains(logementSearchDto.getDestination()))
+          .filter(logement -> logement.getAdresse().toUpperCase()
+              .contains(logementSearchDto.getDestination().toUpperCase())
+              || logement.getVille().toUpperCase()
+              .contains(logementSearchDto.getDestination().toUpperCase())
+              || logement.getPays().toUpperCase()
+              .contains(logementSearchDto.getDestination().toUpperCase()))
           .collect(Collectors.toList());
     }
 
