@@ -1,6 +1,7 @@
 package fr.esgi.al5.tayarim.entities;
 
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -11,8 +12,10 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Set;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -118,6 +121,9 @@ public class Logement {
   )
   private Set<Amenagement> amenagements;
 
+  @OneToMany(cascade = CascadeType.ALL, mappedBy = "logement")
+  private List<ImageLogement> images;
+
   /**
    * Builder pour l'entité Logmeent.
    *
@@ -141,6 +147,9 @@ public class Logement {
    * @param numeroDePorte        Numéro de porte du logement
    * @param typeLogement         Identifiant du type de logement
    * @param proprietaire         Propriétaire du logement
+   * @param reglesLogements      Ensemble des règles du logement
+   * @param amenagements         Ensemble des aménagements du logement
+   * @param images               Ensemble des images du logement
    */
   @Builder
   public Logement(@NonNull Boolean isLouable, @NonNull String titre,
@@ -152,7 +161,8 @@ public class Logement {
       @NonNull Integer intervalReservation, @NonNull String ville, @NonNull String adresse,
       @NonNull String codePostal, @NonNull String pays, String etage, String numeroDePorte,
       @NonNull TypeLogement typeLogement, @NonNull Proprietaire proprietaire,
-      @NonNull Set<ReglesLogement> reglesLogements, @NonNull Set<Amenagement> amenagements) {
+      @NonNull Set<ReglesLogement> reglesLogements, @NonNull Set<Amenagement> amenagements,
+      @NonNull List<ImageLogement> images) {
     this.isLouable = isLouable;
     this.titre = titre;
     this.nombresDeChambres = nombresDeChambres;
@@ -176,6 +186,7 @@ public class Logement {
     this.proprietaire = proprietaire;
     this.reglesLogements = reglesLogements;
     this.amenagements = amenagements;
+    this.images = images;
   }
 
 }

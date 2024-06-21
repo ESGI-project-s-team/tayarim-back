@@ -42,7 +42,7 @@ public class ReservationMapper {
   public static Reservation creationDtoToEntity(
       @NonNull ReservationCreationDto reservationCreationDto, @NonNull String idCommande,
       @NonNull LocalDate dateArrivee, @NonNull LocalDate dateDepart,
-      @NonNull Logement logement, @NonNull LocalDateTime dateReservation
+      @NonNull Logement logement, @NonNull LocalDateTime dateReservation, String paymentIntent
   ) {
 
     return new Reservation(
@@ -60,7 +60,7 @@ public class ReservationMapper {
         dateDepart,
         logement,
         dateReservation,
-        null
+        paymentIntent
     );
   }
 
@@ -87,7 +87,8 @@ public class ReservationMapper {
         reservation.getDateDepart().toString(),
         reservation.getLogement().getId(),
         reservation.getLogement().getTitre(),
-        reservation.getDateReservation().toString()
+        reservation.getDateReservation().toString(),
+        reservation.getPaymentIntent()
     );
   }
 

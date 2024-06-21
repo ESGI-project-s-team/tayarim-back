@@ -112,7 +112,8 @@ public class ReservationService {
             dateArrivee,
             dateDepart,
             logement,
-            LocalDateTime.now()
+            LocalDateTime.now(),
+            reservationCreationDto.getPaymentIntent()
         )
     );
 

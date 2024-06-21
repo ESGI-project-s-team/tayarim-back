@@ -59,7 +59,8 @@ public class LogementMapper {
         typeLogement,
         proprietaire,
         reglesLogements,
-        amenagements);
+        amenagements,
+        List.of());
   }
 
   /**
@@ -98,7 +99,8 @@ public class LogementMapper {
         ),
         logement.getAmenagements().stream().collect(
             Collectors.toMap(Amenagement::getNom, Amenagement::getIcone)
-        )
+        ),
+        ImageLogementMapper.entityListToDtoList(logement.getImages())
     );
   }
 

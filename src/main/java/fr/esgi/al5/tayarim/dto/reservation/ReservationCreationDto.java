@@ -62,4 +62,7 @@ public class ReservationCreationDto {
   @Min(value = 1, message = "error_reservation_invalid_home")
   private Long idLogement;
 
+  @Size(min = 1, message = "error_reservation_invalid_payment_intent")
+  private String paymentIntent;
+
 }

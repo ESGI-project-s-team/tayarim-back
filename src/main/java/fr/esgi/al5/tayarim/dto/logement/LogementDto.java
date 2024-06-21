@@ -67,5 +67,7 @@ public class LogementDto {
   @NonNull
   private Map<String, String> amenagements;
 
+  @NonNull
+  private List<ImageLogementDto> images;
 
 }

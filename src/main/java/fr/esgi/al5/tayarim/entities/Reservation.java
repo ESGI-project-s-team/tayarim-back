@@ -77,7 +77,7 @@ public class Reservation {
   @Column(name = "DATERESERVATION", nullable = false)
   private LocalDateTime dateReservation;
 
-  @Column(name = "PAYMENTINTENT", nullable = true)
+  @Column(name = "PAYMENTINTENT")
   private String paymentIntent;
 
   /**
@@ -96,6 +96,7 @@ public class Reservation {
    * @param dateDepart      La date de départ de la reservation.
    * @param logement        Le logement associé à la reservation.
    * @param dateReservation La date de la reservation.
+   * @param paymentIntent   L'identifiant du paiement associé à la reservation.
    */
   @Builder
   public Reservation(@NonNull String idCommande, @NonNull String statut, @NonNull String email,

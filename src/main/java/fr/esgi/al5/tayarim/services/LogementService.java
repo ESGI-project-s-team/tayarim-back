@@ -173,8 +173,14 @@ public class LogementService {
       throw new ProprietaireNotFoundException();
     }
 
+    List<Logement> logements = logementRepository.findAllByProprietaire(optionalProprietaire.get());
+
+    for (Logement logement : logements){
+      System.out.println(logement.getImages().size());
+    }
+
     return LogementMapper.entityListToDtoList(
-        logementRepository.findAllByProprietaire(optionalProprietaire.get())
+        logements
     );
   }
 
