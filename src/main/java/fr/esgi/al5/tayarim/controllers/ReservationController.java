@@ -126,11 +126,10 @@ public class ReservationController implements
   @Operation(summary = "Authenticate user", security = @SecurityRequirement(name = "bearer-key"))
   @PutMapping("/cancel/{id}")
   public ResponseEntity<ReservationDto> cancel(@RequestAttribute("token") String authHeader,
-      @PathVariable Long id,
-      @RequestBody ReservationUpdatePaymentIntentDto reservationUpdatePaymentIntentDto) {
+      @PathVariable Long id) {
     UserTokenInfo userTokenInfo = authService.verifyToken(getTokenFromHeader(authHeader), true);
     return new ResponseEntity<>(
-        reservationService.cancel(id, reservationUpdatePaymentIntentDto),
+        reservationService.cancel(id),
         HttpStatus.OK
     );
   }

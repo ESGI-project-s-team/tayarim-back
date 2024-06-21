@@ -326,8 +326,7 @@ public class ReservationService {
    */
   @Transactional(propagation = Propagation.NOT_SUPPORTED)
   public ReservationDto cancel(
-      @NonNull Long id,
-      @NonNull ReservationUpdatePaymentIntentDto reservationUpdatePaymentIntentDto) {
+      @NonNull Long id) {
 
     Optional<Reservation> optionalReservation = reservationRepository.findById(id);
     if (optionalReservation.isEmpty()) {
@@ -348,7 +347,7 @@ public class ReservationService {
     Stripe.apiKey = stripeApiKey;
     try {
       PaymentIntent paymentIntent = PaymentIntent.retrieve(
-          reservationUpdatePaymentIntentDto.getPaymentIntent());
+          reservation.getPaymentIntent());
       paymentIntent.cancel();
     } catch (StripeException e) {
       throw new ReservationStripeError();

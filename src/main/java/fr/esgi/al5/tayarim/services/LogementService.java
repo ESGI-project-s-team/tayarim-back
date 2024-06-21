@@ -167,8 +167,8 @@ public class LogementService {
             logementCreationDto,
             optionalTypeLogement.get(),
             proprietaire,
-            Set.copyOf(reglesLogements),
-            Set.copyOf(amenagements),
+            new HashSet<>(reglesLogements),
+            new HashSet<>(amenagements),
             List.of()
         )
     );
