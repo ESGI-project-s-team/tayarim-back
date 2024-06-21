@@ -69,3 +69,8 @@
 "error_search_nbPersonnes_invalid": "The number of people entered is invalid",
 "error_search_date_missing": "Both dates are required to filter by date",
 "error_search_date_invalid": "the dates entered are invalid",
+"error_logement_bucket": "An error occurred while uploading the image",
+"error_reservation_date_too_short": "The duration of the reservation is too short",
+"error_reservation_date_invalide": "The start date is greater than the end date",
+"error_logement_image_invalid": "The image is invalid",
+"error_home_invalid_photos_list_length": "The number of photos entered is invalid",
