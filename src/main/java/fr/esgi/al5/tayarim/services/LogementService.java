@@ -312,6 +312,7 @@ public class LogementService {
         .isEmpty())
         && (logementUpdateDto.getAmenagements() == null || logementUpdateDto.getAmenagements()
         .isEmpty())
+        && (logementUpdateDto.getFiles() == null || logementUpdateDto.getFiles().isEmpty())
     ) {
       throw new LogementInvalidUpdateBody();
     }
@@ -325,7 +326,8 @@ public class LogementService {
     Logement logement = optionalLogement.get();
 
     if (
-        (!logement.getIsLouable() && logementUpdateDto.getIsLouable())
+        (!logement.getIsLouable() && (logementUpdateDto.getIsLouable() != null
+            && logementUpdateDto.getIsLouable()))
             &&
             (
                 (logement.getNombresDeChambres() == null
@@ -350,6 +352,10 @@ public class LogementService {
                     || (logement.getAmenagements() == null
                     && (logementUpdateDto.getAmenagements() == null
                     || logementUpdateDto.getAmenagements().isEmpty()))
+                    || (logement.getImages() == null
+                    && (logementUpdateDto.getFiles() == null
+                    || logementUpdateDto.getFiles().isEmpty()))
+
             )
     ) {
       throw new LogementInvalidUpdateBody();
@@ -441,6 +447,43 @@ public class LogementService {
         logementUpdateDto.getAmenagements() == null || logementUpdateDto.getAmenagements().isEmpty()
             ? logement.getAmenagements()
             : new HashSet<>(parseAmenagement(logementUpdateDto.getAmenagements())));
+
+    if (logementUpdateDto.getFiles() != null && !logementUpdateDto.getFiles().isEmpty()) {
+      imageLogementRepository.deleteAll(logement.getImages());
+      int cpt = 0;
+      List<String> urls = new ArrayList<>();
+      ArrayList<ImageLogement> images = new ArrayList<>();
+      for (MultipartFile file : logementUpdateDto.getFiles()) {
+        cpt++;
+
+        try {
+          // Obtenez les octets du fichier
+          byte[] bytes = file.getBytes();
+
+          String fileName = "House images/".concat(logement.getId().toString()).concat("_")
+              .concat(Integer.toString(cpt));
+
+          // Téléchargez le fichier dans GCS
+          TayarimApplication.bucket.create(fileName, bytes);
+
+          urls.add(fileName);
+
+        } catch (IOException e) {
+          e.printStackTrace();
+          throw new LogementImageBucketUploadError();
+        }
+
+      }
+
+      cpt = 0;
+
+      for (String fileName : urls) {
+        cpt++;
+        images.add(imageLogementRepository.save(new ImageLogement(fileName, logement, (cpt == 1))));
+      }
+
+      logement.setImages(images);
+    }
 
     return LogementMapper.entityToDto(logementRepository.save(logement));
 

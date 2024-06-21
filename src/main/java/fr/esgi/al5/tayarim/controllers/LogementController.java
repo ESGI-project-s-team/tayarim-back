@@ -42,7 +42,6 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/logements")
 public class LogementController implements
     GetAllMethodInterface<LogementDto>,
-    UpdateMethodInterface<LogementDto, LogementUpdateDto>,
     DeleteMethodInterface<LogementDto>,
     ControllerUtils {
 
@@ -116,10 +115,11 @@ public class LogementController implements
    * @return Une ResponseEntity contenant le propriétaire mis à jour et le statut HTTP.
    */
 
-  @Override
+  @Operation(summary = "Authenticate user", security = @SecurityRequirement(name = "bearer-key"))
+  @PutMapping(path = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<LogementDto> update(
-      String authHeader, Long id,
-      LogementUpdateDto logementUpdateDto) {
+      @RequestAttribute("token") String authHeader, @PathVariable Long id,
+      @Valid @ModelAttribute LogementUpdateDto logementUpdateDto) {
     UserTokenInfo userTokenInfo = authService.verifyToken(getTokenFromHeader(authHeader), true);
     return new ResponseEntity<>(
         logementService.updateLogement(id, logementUpdateDto),
