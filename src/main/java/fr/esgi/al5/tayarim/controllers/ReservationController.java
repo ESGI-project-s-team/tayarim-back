@@ -59,15 +59,14 @@ public class ReservationController implements
       @Valid @RequestBody ReservationCreationDto reservationCreationDto) {
 
     boolean isAdmin = false;
-    boolean isClient = true;
 
     if (authHeader != null) {
-      isAdmin = authService.verifyToken(getTokenFromHeader(authHeader), false).getIsAdmin();
-      isClient = false;
+      authService.verifyToken(getTokenFromHeader(authHeader), true);
+      isAdmin = true;
     }
 
     return new ResponseEntity<>(
-        reservationService.createReservation(reservationCreationDto, isAdmin, isClient),
+        reservationService.createReservation(reservationCreationDto, isAdmin),
         HttpStatus.OK
     );
   }

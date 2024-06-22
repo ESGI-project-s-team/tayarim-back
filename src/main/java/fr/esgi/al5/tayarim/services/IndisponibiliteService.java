@@ -2,6 +2,7 @@ package fr.esgi.al5.tayarim.services;
 
 import fr.esgi.al5.tayarim.dto.indisponibilite.IndisponibiliteCreationDto;
 import fr.esgi.al5.tayarim.dto.indisponibilite.IndisponibiliteDto;
+import fr.esgi.al5.tayarim.entities.Administrateur;
 import fr.esgi.al5.tayarim.entities.Indisponibilite;
 import fr.esgi.al5.tayarim.entities.Logement;
 import fr.esgi.al5.tayarim.exceptions.IndisponibiliteDateInvalidError;
@@ -10,8 +11,8 @@ import fr.esgi.al5.tayarim.exceptions.IndisponibiliteNotFoundError;
 import fr.esgi.al5.tayarim.exceptions.IndisponibiliteUnauthorizedError;
 import fr.esgi.al5.tayarim.exceptions.ReservationDateConflictError;
 import fr.esgi.al5.tayarim.exceptions.ReservationDateInvalideError;
-import fr.esgi.al5.tayarim.exceptions.ReservationDateTooShortError;
 import fr.esgi.al5.tayarim.mappers.IndisponibiliteMapper;
+import fr.esgi.al5.tayarim.repositories.AdministrateurRepository;
 import fr.esgi.al5.tayarim.repositories.IndisponibiliteRepository;
 import fr.esgi.al5.tayarim.repositories.LogementRepository;
 import fr.esgi.al5.tayarim.repositories.ReservationRepository;
@@ -41,6 +42,8 @@ public class IndisponibiliteService {
 
   private final MyWebSocketHandler myWebSocketHandler;
 
+  private final AdministrateurRepository administrateurRepository;
+
 
   /**
    * Constructeur pour le service de Indisponibilite.
@@ -49,14 +52,16 @@ public class IndisponibiliteService {
    * @param logementRepository        Le repository des Logements.
    * @param reservationRepository     Le repository des Reservation.
    * @param myWebSocketHandler        Le service de socket.
+   * @param administrateurRepository  Le service d'administrateur
    */
   public IndisponibiliteService(IndisponibiliteRepository indisponibiliteRepository,
       LogementRepository logementRepository, ReservationRepository reservationRepository,
-      MyWebSocketHandler myWebSocketHandler) {
+      MyWebSocketHandler myWebSocketHandler, AdministrateurRepository administrateurRepository) {
     this.indisponibiliteRepository = indisponibiliteRepository;
     this.logementRepository = logementRepository;
     this.reservationRepository = reservationRepository;
     this.myWebSocketHandler = myWebSocketHandler;
+    this.administrateurRepository = administrateurRepository;
   }
 
   /**
@@ -111,6 +116,11 @@ public class IndisponibiliteService {
     if (isAdmin) {
       myWebSocketHandler.sendNotif(logement.getProprietaire().getId(), LocalDate.now(),
           "notification_indisponibilite_creation", "Indisponibilite");
+    } else {
+      for (Administrateur administrateur : administrateurRepository.findAll()) {
+        myWebSocketHandler.sendNotif(administrateur.getId(), LocalDate.now(),
+            "notification_indisponibilite_creation", "Indisponibilite");
+      }
     }
 
     return IndisponibiliteMapper.entityToDto(
@@ -173,9 +183,6 @@ public class IndisponibiliteService {
       throw new ReservationDateInvalideError();
     }
 
-    if (!isAdmin && dateDepart.toEpochDay() - dateArrivee.toEpochDay() < nombresNuitsMin) {
-      throw new ReservationDateTooShortError();
-    }
   }
 
   /**

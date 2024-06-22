@@ -6,9 +6,10 @@ import com.stripe.model.PaymentIntent;
 import fr.esgi.al5.tayarim.dto.reservation.ReservationCreationDto;
 import fr.esgi.al5.tayarim.dto.reservation.ReservationDto;
 import fr.esgi.al5.tayarim.dto.reservation.ReservationUpdateDto;
-import fr.esgi.al5.tayarim.dto.reservation.ReservationUpdatePaymentIntentDto;
+import fr.esgi.al5.tayarim.entities.Administrateur;
 import fr.esgi.al5.tayarim.entities.Logement;
 import fr.esgi.al5.tayarim.entities.Reservation;
+import fr.esgi.al5.tayarim.exceptions.AdministrateurNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.LogementNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.ReservationDateConflictError;
 import fr.esgi.al5.tayarim.exceptions.ReservationDateInvalideError;
@@ -18,6 +19,7 @@ import fr.esgi.al5.tayarim.exceptions.ReservationPeopleCapacityError;
 import fr.esgi.al5.tayarim.exceptions.ReservationStatusUpdateError;
 import fr.esgi.al5.tayarim.exceptions.ReservationStripeError;
 import fr.esgi.al5.tayarim.mappers.ReservationMapper;
+import fr.esgi.al5.tayarim.repositories.AdministrateurRepository;
 import fr.esgi.al5.tayarim.repositories.IndisponibiliteRepository;
 import fr.esgi.al5.tayarim.repositories.LogementRepository;
 import fr.esgi.al5.tayarim.repositories.ReservationRepository;
@@ -30,8 +32,6 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,6 +56,8 @@ public class ReservationService {
   private final IndisponibiliteRepository indisponibiliteRepository;
   private final MyWebSocketHandler myWebSocketHandler;
 
+  private final AdministrateurRepository administrateurRepository;
+
 
   /**
    * Constructeur pour le service de Reservation.
@@ -64,14 +66,16 @@ public class ReservationService {
    * @param logementRepository        Le repository des r logements.
    * @param indisponibiliteRepository Le repository des indisponibilites.
    * @param myWebSocketHandler        Le service de socket.
+   * @param administrateurRepository  Le service d'administrateur
    */
   public ReservationService(ReservationRepository reservationRepository,
       LogementRepository logementRepository, IndisponibiliteRepository indisponibiliteRepository,
-      MyWebSocketHandler myWebSocketHandler) {
+      MyWebSocketHandler myWebSocketHandler, AdministrateurRepository administrateurRepository) {
     this.reservationRepository = reservationRepository;
     this.logementRepository = logementRepository;
     this.indisponibiliteRepository = indisponibiliteRepository;
     this.myWebSocketHandler = myWebSocketHandler;
+    this.administrateurRepository = administrateurRepository;
   }
 
   /**
@@ -80,10 +84,9 @@ public class ReservationService {
    * @return {@link ReservationDto}
    */
   public ReservationDto createReservation(@NonNull ReservationCreationDto reservationCreationDto,
-      @NonNull Boolean isAdmin, @NonNull Boolean isClient) {
+      @NonNull Boolean isAdmin) {
 
-    LocalDate dateArrivee = LocalDate.parse(reservationCreationDto.getDateArrivee());
-    LocalDate dateDepart = LocalDate.parse(reservationCreationDto.getDateDepart());
+
 
     Optional<Logement> optionalLogement = logementRepository.findById(
         reservationCreationDto.getIdLogement());
@@ -104,10 +107,11 @@ public class ReservationService {
       newRandomFound = reservationRepository.findByIdCommande(idCommande).isEmpty();
     }
 
-    if (!isAdmin) {
-      checkDateCondition(dateArrivee, dateDepart, optionalLogement.get().getNombresNuitsMin(),
-          isAdmin);
-    }
+    LocalDate dateArrivee = LocalDate.parse(reservationCreationDto.getDateArrivee());
+    LocalDate dateDepart = LocalDate.parse(reservationCreationDto.getDateDepart());
+
+    checkDateCondition(dateArrivee, dateDepart, optionalLogement.get().getNombresNuitsMin(),
+        false);
 
     checkDateConclict(idCommande, dateArrivee, dateDepart, reservationCreationDto.getIdLogement(),
         isAdmin);
@@ -132,9 +136,14 @@ public class ReservationService {
         )
     );
 
-    if (isAdmin || isClient) {
-      myWebSocketHandler.sendNotif(logement.getProprietaire().getId(), LocalDate.now(),
-          "notification_reservation_creation", "Reservation");
+    myWebSocketHandler.sendNotif(logement.getProprietaire().getId(), LocalDate.now(),
+        "notification_reservation_creation", "Reservation");
+
+    if (!isAdmin) {
+      for (Administrateur administrateur : administrateurRepository.findAll()) {
+        myWebSocketHandler.sendNotif(administrateur.getId(), LocalDate.now(),
+            "notification_reservation_creation", "Reservation");
+      }
     }
 
     return ReservationMapper.entityToDto(
