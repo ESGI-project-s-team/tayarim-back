@@ -6,6 +6,7 @@ import fr.esgi.al5.tayarim.entities.Indisponibilite;
 import fr.esgi.al5.tayarim.entities.Logement;
 import fr.esgi.al5.tayarim.exceptions.IndisponibiliteDateInvalidError;
 import fr.esgi.al5.tayarim.exceptions.IndisponibiliteLogementNotFoundError;
+import fr.esgi.al5.tayarim.exceptions.IndisponibiliteNotFoundError;
 import fr.esgi.al5.tayarim.exceptions.IndisponibiliteUnauthorizedError;
 import fr.esgi.al5.tayarim.exceptions.ReservationDateConflictError;
 import fr.esgi.al5.tayarim.exceptions.ReservationDateInvalideError;
@@ -139,6 +140,27 @@ public class IndisponibiliteService {
   }
 
   /**
+   * Supprime une Indisponibilite par son id.
+   *
+   * @param id L'id de la Indisponibilite.
+   * @return La Indisponibilite.
+   */
+  @Transactional
+  public IndisponibiliteDto delete(@NonNull Long id) {
+
+    Optional<Indisponibilite> optionalIndisponibilite = indisponibiliteRepository.findById(id);
+    if (optionalIndisponibilite.isEmpty()) {
+      throw new IndisponibiliteNotFoundError();
+    }
+
+    IndisponibiliteDto indisponibiliteDto = IndisponibiliteMapper.entityToDto(
+        optionalIndisponibilite.get());
+
+    indisponibiliteRepository.deleteById(id);
+    return indisponibiliteDto;
+  }
+
+  /**
    * Vérifie les conditions d'application des dates.
    */
   public void checkDateCondition(@NonNull LocalDate dateArrivee,
@@ -165,7 +187,7 @@ public class IndisponibiliteService {
     Map<String, List<LocalDate>> dates = new java.util.HashMap<>(Map.of());
 
     reservationRepository.findAllByLogementIdAndStatutIn(
-        idLogement, List.of("payed", "in progress")
+        idLogement, List.of("reserved", "payed", "in progress")
     ).forEach(reservation -> dates.put(reservation.getIdCommande(),
         List.of(reservation.getDateArrivee(), reservation.getDateDepart())));
 

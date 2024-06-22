@@ -1,8 +1,6 @@
 package fr.esgi.al5.tayarim.services;
 
 
-import com.google.cloud.storage.BlobId;
-import com.google.cloud.storage.BlobInfo;
 import fr.esgi.al5.tayarim.TayarimApplication;
 import fr.esgi.al5.tayarim.dto.logement.LogementCreationDto;
 import fr.esgi.al5.tayarim.dto.logement.LogementDto;
@@ -11,6 +9,7 @@ import fr.esgi.al5.tayarim.dto.logement.LogementUpdateDto;
 import fr.esgi.al5.tayarim.dto.logement.TypeLogementDto;
 import fr.esgi.al5.tayarim.entities.Amenagement;
 import fr.esgi.al5.tayarim.entities.ImageLogement;
+import fr.esgi.al5.tayarim.entities.Indisponibilite;
 import fr.esgi.al5.tayarim.entities.Logement;
 import fr.esgi.al5.tayarim.entities.Proprietaire;
 import fr.esgi.al5.tayarim.entities.ReglesLogement;
@@ -31,28 +30,25 @@ import fr.esgi.al5.tayarim.exceptions.ReservationDateInvalideError;
 import fr.esgi.al5.tayarim.exceptions.ReservationDateTooShortError;
 import fr.esgi.al5.tayarim.exceptions.SearchDateInvalidError;
 import fr.esgi.al5.tayarim.exceptions.SearchDateMissingError;
-import fr.esgi.al5.tayarim.mappers.ImageLogementMapper;
 import fr.esgi.al5.tayarim.mappers.LogementMapper;
 import fr.esgi.al5.tayarim.mappers.TypeLogementMapper;
 import fr.esgi.al5.tayarim.repositories.AmenagementRepository;
 import fr.esgi.al5.tayarim.repositories.ImageLogementRepository;
+import fr.esgi.al5.tayarim.repositories.IndisponibiliteRepository;
 import fr.esgi.al5.tayarim.repositories.LogementRepository;
 import fr.esgi.al5.tayarim.repositories.ProprietaireRepository;
 import fr.esgi.al5.tayarim.repositories.ReglesLogementRepository;
 import fr.esgi.al5.tayarim.repositories.ReservationRepository;
 import fr.esgi.al5.tayarim.repositories.TypeLogementRepository;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.NonNull;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -79,18 +75,21 @@ public class LogementService {
 
   private final ImageLogementRepository imageLogementRepository;
 
+  private final IndisponibiliteRepository indisponibiliteRepository;
+
 
   /**
    * Constructeur pour le service de logement.
    *
-   * @param logementRepository       Le repository des logements.
-   * @param proprietaireRepository   Le repository des propriétaires.
-   * @param typeLogementRepository   Le repository des types de logements.
-   * @param reglesLogementRepository Le repository des règles de logements.
-   * @param amenagementRepository    Le repository des aménagements.
-   * @param reservationService       Le service des réservations.
-   * @param reservationRepository    Le repository des réservations
-   * @param imageLogementRepository  Le repository des images de logement
+   * @param logementRepository        Le repository des logements.
+   * @param proprietaireRepository    Le repository des propriétaires.
+   * @param typeLogementRepository    Le repository des types de logements.
+   * @param reglesLogementRepository  Le repository des règles de logements.
+   * @param amenagementRepository     Le repository des aménagements.
+   * @param reservationService        Le service des réservations.
+   * @param reservationRepository     Le repository des réservations
+   * @param imageLogementRepository   Le repository des images de logement
+   * @param indisponibiliteRepository Le repository des indisponibilites
    */
   public LogementService(LogementRepository logementRepository,
       ProprietaireRepository proprietaireRepository,
@@ -98,7 +97,8 @@ public class LogementService {
       ReglesLogementRepository reglesLogementRepository,
       AmenagementRepository amenagementRepository, ReservationService reservationService,
       ReservationRepository reservationRepository,
-      ImageLogementRepository imageLogementRepository) {
+      ImageLogementRepository imageLogementRepository,
+      IndisponibiliteRepository indisponibiliteRepository) {
     this.logementRepository = logementRepository;
     this.proprietaireRepository = proprietaireRepository;
     this.typeLogementRepository = typeLogementRepository;
@@ -107,6 +107,7 @@ public class LogementService {
     this.reservationService = reservationService;
     this.reservationRepository = reservationRepository;
     this.imageLogementRepository = imageLogementRepository;
+    this.indisponibiliteRepository = indisponibiliteRepository;
   }
 
   /**
@@ -511,10 +512,7 @@ public class LogementService {
       logement.setImages(images);
     }
 
-
-
     System.out.println("end update");
-
 
     return LogementMapper.entityToDto(logementRepository.save(logement));
 
@@ -646,7 +644,7 @@ public class LogementService {
 
     List<Reservation> reservations = reservationRepository.findAllByLogementIdAndStatutIn(
         logement.getId(),
-        List.of("payed", "in progress"));
+        List.of("reserved", "payed", "in progress"));
 
     ArrayList<String> dates = new ArrayList<>();
 
@@ -655,6 +653,22 @@ public class LogementService {
       LocalDate dateDepart = reservation.getDateDepart().plusDays(2);
 
       while (!currentDate.isAfter(dateDepart)) {
+        System.out.println(currentDate.toString());
+        if (!dates.contains(currentDate.toString())) {
+          dates.add(currentDate.toString());
+        }
+        currentDate = currentDate.plusDays(1);
+      }
+    }
+
+    List<Indisponibilite> indisponibilites = indisponibiliteRepository.findAllByLogementId(
+        logement.getId());
+
+    for (Indisponibilite indisponibilite : indisponibilites) {
+      LocalDate currentDate = indisponibilite.getDateDebut();
+      LocalDate dateFin = indisponibilite.getDateFin();
+
+      while (!currentDate.isAfter(dateFin)) {
         if (!dates.contains(currentDate.toString())) {
           dates.add(currentDate.toString());
         }

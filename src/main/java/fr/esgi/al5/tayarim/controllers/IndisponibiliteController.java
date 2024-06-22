@@ -3,6 +3,7 @@ package fr.esgi.al5.tayarim.controllers;
 import fr.esgi.al5.tayarim.auth.UserTokenInfo;
 import fr.esgi.al5.tayarim.controllers.interfaces.ControllerUtils;
 import fr.esgi.al5.tayarim.controllers.interfaces.CreateMethodInterface;
+import fr.esgi.al5.tayarim.controllers.interfaces.DeleteMethodInterface;
 import fr.esgi.al5.tayarim.controllers.interfaces.GetAllMethodInterface;
 import fr.esgi.al5.tayarim.controllers.interfaces.GetByIdMethodInterface;
 import fr.esgi.al5.tayarim.dto.indisponibilite.IndisponibiliteCreationDto;
@@ -24,7 +25,8 @@ public class IndisponibiliteController implements
     ControllerUtils,
     CreateMethodInterface<IndisponibiliteDto, IndisponibiliteCreationDto>,
     GetAllMethodInterface<IndisponibiliteDto>,
-    GetByIdMethodInterface<IndisponibiliteDto> {
+    GetByIdMethodInterface<IndisponibiliteDto>,
+    DeleteMethodInterface<IndisponibiliteDto> {
 
   private final IndisponibiliteService indisponibiliteService;
   private final AuthService authService;
@@ -50,7 +52,7 @@ public class IndisponibiliteController implements
 
   @Override
   public ResponseEntity<List<IndisponibiliteDto>> getAll(String authHeader) {
-    authService.verifyToken(getTokenFromHeader(authHeader), true);
+    authService.verifyToken(getTokenFromHeader(authHeader), false);
     return new ResponseEntity<>(
         indisponibiliteService.getAll(),
         HttpStatus.OK
@@ -59,9 +61,18 @@ public class IndisponibiliteController implements
 
   @Override
   public ResponseEntity<IndisponibiliteDto> getById(String authHeader, Long id) {
-    authService.verifyToken(getTokenFromHeader(authHeader), true);
+    authService.verifyToken(getTokenFromHeader(authHeader), false);
     return new ResponseEntity<>(
         indisponibiliteService.getById(id),
+        HttpStatus.OK
+    );
+  }
+
+  @Override
+  public ResponseEntity<IndisponibiliteDto> delete(String authHeader, Long id) {
+    authService.verifyToken(getTokenFromHeader(authHeader), false);
+    return new ResponseEntity<>(
+        indisponibiliteService.delete(id),
         HttpStatus.OK
     );
   }

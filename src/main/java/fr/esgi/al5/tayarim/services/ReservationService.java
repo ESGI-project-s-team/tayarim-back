@@ -340,7 +340,7 @@ public class ReservationService {
     */
 
     Reservation reservation = optionalReservation.get();
-    if (!reservation.getStatut().equals("payed")) {
+    if (!reservation.getStatut().equals("reserved") && !reservation.getStatut().equals("payed")) {
       throw new ReservationStatusUpdateError();
     }
 
@@ -385,7 +385,7 @@ public class ReservationService {
     Map<String, List<LocalDate>> dates = new java.util.HashMap<>(Map.of());
 
     reservationRepository.findAllByLogementIdAndStatutIn(
-        idLogement, List.of("payed", "in progress")
+        idLogement, List.of("reservation", "payed", "in progress")
     ).forEach(reservation -> dates.put(reservation.getIdCommande(),
         List.of(reservation.getDateArrivee(), reservation.getDateDepart())));
 

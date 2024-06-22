@@ -75,3 +75,4 @@
 "error_logement_image_invalid": "L'image est invalide",
 "error_home_invalid_photos_list_length": "La liste des photos est invalide",
 "error_home_invalid_current_photos_list_length": "La liste des photos actuelles est invalide",
+"error_indisponibilite_not_exist": "Cette indisponibilité n'existe pas",
