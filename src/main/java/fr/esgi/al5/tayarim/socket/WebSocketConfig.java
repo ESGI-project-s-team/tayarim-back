@@ -13,15 +13,16 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 @Configuration
 @EnableWebSocket
 public class WebSocketConfig implements WebSocketConfigurer {
-  private final MyWebSocketHandler myWebSocketHandler;
+    private final MyWebSocketHandler myWebSocketHandler;
 
-  public WebSocketConfig(MyWebSocketHandler myWebSocketHandler) {
-    this.myWebSocketHandler = myWebSocketHandler;
-  }
+    public WebSocketConfig(MyWebSocketHandler myWebSocketHandler) {
+        this.myWebSocketHandler = myWebSocketHandler;
+    }
 
-  @Override
-  public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-    System.out.println("entered here");
-    registry.addHandler(myWebSocketHandler, "/socket");
-  }
+    @Override
+    public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
+        System.out.println("entered here");
+        registry.addHandler(myWebSocketHandler, "/socket")
+                .setAllowedOrigins("*");
+    }
 }
