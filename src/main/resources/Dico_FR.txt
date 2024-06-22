@@ -74,3 +74,4 @@
 "error_reservation_date_invalide": "La date de départ est inférieure à la date d'arrivée",
 "error_logement_image_invalid": "L'image est invalide",
 "error_home_invalid_photos_list_length": "La liste des photos est invalide",
+"error_home_invalid_current_photos_list_length": "La liste des photos actuelles est invalide",

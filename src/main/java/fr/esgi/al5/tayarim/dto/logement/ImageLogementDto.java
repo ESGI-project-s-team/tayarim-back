@@ -13,7 +13,7 @@ import lombok.NonNull;
 public class ImageLogementDto {
 
   @NonNull
-  private Integer id;
+  private Long id;
 
   @NonNull
   private String url;

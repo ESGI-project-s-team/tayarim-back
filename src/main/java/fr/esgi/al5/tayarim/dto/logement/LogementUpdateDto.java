@@ -92,4 +92,7 @@ public class LogementUpdateDto {
 
   @Size(min = 1, max = 1000, message = "error_home_invalid_photos_list_length")
   private List<MultipartFile> files;
+
+  @Size(min = 1, max = 1000, message = "error_home_invalid_current_photos_list_length")
+  private List<Long> currentImages;
 }

@@ -30,7 +30,7 @@ public class ImageLogement {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "ID")
-  private Integer id;
+  private Long id;
 
   @Column(length = 1000, nullable = false, name = "URL")
   private String url;

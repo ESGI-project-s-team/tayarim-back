@@ -52,6 +52,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.NonNull;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -313,6 +314,8 @@ public class LogementService {
         && (logementUpdateDto.getAmenagements() == null || logementUpdateDto.getAmenagements()
         .isEmpty())
         && (logementUpdateDto.getFiles() == null || logementUpdateDto.getFiles().isEmpty())
+        && (logementUpdateDto.getCurrentImages() == null || logementUpdateDto.getCurrentImages()
+        .isEmpty())
     ) {
       throw new LogementInvalidUpdateBody();
     }
@@ -449,13 +452,25 @@ public class LogementService {
             : new HashSet<>(parseAmenagement(logementUpdateDto.getAmenagements())));
 
     if (logementUpdateDto.getFiles() != null && !logementUpdateDto.getFiles().isEmpty()) {
-      imageLogementRepository.deleteAll(logement.getImages());
+
+      List<ImageLogement> oldImages = logement.getImages();
+
+      int total = imageLogementRepository.deleteUnusedImage(
+          logement.getId(),
+          logementUpdateDto.getCurrentImages()
+      );
+
       int cpt = 0;
       List<String> urls = new ArrayList<>();
       ArrayList<ImageLogement> images = new ArrayList<>();
+      for (ImageLogement image : oldImages) {
+        cpt++;
+        if (logementUpdateDto.getCurrentImages().contains(image.getId())) {
+          images.add(image);
+        }
+      }
       for (MultipartFile file : logementUpdateDto.getFiles()) {
         cpt++;
-
         try {
           // Obtenez les octets du fichier
           byte[] bytes = file.getBytes();
