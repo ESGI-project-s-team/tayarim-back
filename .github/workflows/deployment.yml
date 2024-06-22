@@ -23,9 +23,7 @@ jobs:
         with:
           file: ./Dockerfile_back
           push: true
-          tags:
-            eu.gcr.io/tayarim-project/tayarim_back:${{ github.sha }}
-            eu.gcr.io/tayarim-project/tayarim_back:latest
+          tags: eu.gcr.io/tayarim-project/tayarim_back:${{ github.sha }}, eu.gcr.io/tayarim-project/tayarim_back:latest
 
 #  update-cloud-sql:
 #    runs-on: ubuntu-latest
