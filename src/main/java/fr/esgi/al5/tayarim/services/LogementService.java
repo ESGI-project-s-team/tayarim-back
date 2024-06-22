@@ -653,7 +653,6 @@ public class LogementService {
       LocalDate dateDepart = reservation.getDateDepart().plusDays(2);
 
       while (!currentDate.isAfter(dateDepart)) {
-        System.out.println(currentDate.toString());
         if (!dates.contains(currentDate.toString())) {
           dates.add(currentDate.toString());
         }
