@@ -70,7 +70,7 @@ public class ReservationService {
    * @param indisponibiliteRepository Le repository des indisponibilites.
    * @param myWebSocketHandler        Le service de socket.
    * @param administrateurRepository  Le service d'administrateur
-   * @param notificationRepository
+   * @param notificationRepository    Le repository des notifications
    */
   public ReservationService(ReservationRepository reservationRepository,
       LogementRepository logementRepository, IndisponibiliteRepository indisponibiliteRepository,
@@ -128,22 +128,16 @@ public class ReservationService {
       );
     }
 
-    Reservation reservation = reservationRepository.save(
-        ReservationMapper.creationDtoToEntity(
-            reservationCreationDto,
-            idCommande,
-            dateArrivee,
-            dateDepart,
-            logement,
-            LocalDateTime.now(),
-            reservationCreationDto.getPaymentIntent()
-        )
-    );
+    String status;
+    if (isAdmin) {
+      status = "payed";
+    } else {
+      status = "reserved";
+    }
 
     myWebSocketHandler.sendNotif(logement.getProprietaire().getId(), LocalDate.now(),
         "notification_reservation_creation", "Reservation");
 
-    System.out.println("aaaa");
     notificationRepository.save(new Notification(
         "Reservation",
         "notification_reservation_creation",
@@ -164,9 +158,21 @@ public class ReservationService {
             administrateur,
             false
         ));
-        System.out.println("bbbb");
       }
     }
+
+    Reservation reservation = reservationRepository.save(
+        ReservationMapper.creationDtoToEntity(
+            reservationCreationDto,
+            idCommande,
+            status,
+            dateArrivee,
+            dateDepart,
+            logement,
+            LocalDateTime.now(),
+            reservationCreationDto.getPaymentIntent()
+        )
+    );
 
     return ReservationMapper.entityToDto(
         reservation

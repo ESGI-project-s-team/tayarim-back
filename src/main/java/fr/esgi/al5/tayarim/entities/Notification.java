@@ -49,14 +49,15 @@ public class Notification {
   /**
    * Constructeur pour l'entité TypeLogement.
    *
-   * @param type Type de logement
-   * @param message Message de la notification
-   * @param date Date de la notification
+   * @param type        Type de logement
+   * @param message     Message de la notification
+   * @param date        Date de la notification
    * @param utilisateur Utilisateur concerné par la notification
-   * @param isRead Indicateur de lecture de la notification
+   * @param isRead      Indicateur de lecture de la notification
    */
   @Builder
-  public Notification(String type, String message, LocalDate date, Utilisateur utilisateur, Boolean isRead) {
+  public Notification(String type, String message, LocalDate date, Utilisateur utilisateur,
+      Boolean isRead) {
     this.type = type;
     this.message = message;
     this.date = date;

@@ -233,20 +233,11 @@ public class IndisponibiliteService {
       LocalDate arrivee = entry.getValue().get(0);
       LocalDate depart = entry.getValue().get(1);
 
-      if (!isAdmin) {
-        if (arrivee.toEpochDay() > (dateDepart.toEpochDay() + 2)) {
-          continue;
-        }
-        if (depart.toEpochDay() < (dateArrivee.toEpochDay() - 2)) {
-          continue;
-        }
-      } else {
-        if (arrivee.toEpochDay() > dateDepart.toEpochDay()) {
-          continue;
-        }
-        if (depart.toEpochDay() < dateArrivee.toEpochDay()) {
-          continue;
-        }
+      if (arrivee.toEpochDay() > dateDepart.toEpochDay()) {
+        continue;
+      }
+      if (depart.toEpochDay() < dateArrivee.toEpochDay()) {
+        continue;
       }
 
       throw new ReservationDateConflictError();

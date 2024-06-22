@@ -59,7 +59,8 @@ public class NotificationService {
 
   /**
    * Constructeur pour le service de Reservation.
-   * @param notificationRepository  Le repository des notifications.
+   *
+   * @param notificationRepository Le repository des notifications.
    */
   public NotificationService(NotificationRepository notificationRepository) {
 
@@ -68,11 +69,13 @@ public class NotificationService {
 
   /**
    * Récupère toutes les notifications.
+   *
    * @return Liste des notifications.
    */
   public List<NotificationDto> getAll(@NonNull Long id) {
 
-    return NotificationMapper.entityListToDtoList(notificationRepository.findAllByUtilisateurId(id));
+    return NotificationMapper.entityListToDtoList(
+        notificationRepository.findAllByUtilisateurId(id));
 
   }
 
@@ -94,7 +97,6 @@ public class NotificationService {
     return NotificationMapper.entityToDto(notificationRepository.save(notification));
 
   }
-
 
 
 }

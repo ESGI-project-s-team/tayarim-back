@@ -41,13 +41,14 @@ public class ReservationMapper {
    */
   public static Reservation creationDtoToEntity(
       @NonNull ReservationCreationDto reservationCreationDto, @NonNull String idCommande,
+      @NonNull String status,
       @NonNull LocalDate dateArrivee, @NonNull LocalDate dateDepart,
       @NonNull Logement logement, @NonNull LocalDateTime dateReservation, String paymentIntent
   ) {
 
     return new Reservation(
         idCommande,
-        "reserved",
+        status,
         reservationCreationDto.getEmail(),
         reservationCreationDto.getNumTel(),
         reservationCreationDto.getNom(),
