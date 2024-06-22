@@ -174,7 +174,7 @@ public class LogementService {
         )
     );
 
-    if (logementCreationDto.getFiles() != null && !logementCreationDto.getFiles().isEmpty()) {
+    if (logementCreationDto.getFiles() != null) {
       int cpt = 0;
       List<String> urls = new ArrayList<>();
       ArrayList<ImageLogement> images = new ArrayList<>();
@@ -451,31 +451,35 @@ public class LogementService {
             ? logement.getAmenagements()
             : new HashSet<>(parseAmenagement(logementUpdateDto.getAmenagements())));
 
-    if (logementUpdateDto.getFiles() != null && !logementUpdateDto.getFiles().isEmpty()) {
+    int cpt = 0;
+    List<String> urls = new ArrayList<>();
+    ArrayList<ImageLogement> images = new ArrayList<>();
 
-      int cpt = 0;
-      List<String> urls = new ArrayList<>();
-      ArrayList<ImageLogement> images = new ArrayList<>();
+    if (logementUpdateDto.getCurrentImages() == null || logementUpdateDto.getCurrentImages()
+        .isEmpty()) {
+      System.out.println("current null");
+      imageLogementRepository.deleteAllByLogementId(logement.getId());
+      logement.setImages(images);
+    } else {
+      System.out.println("current here");
+      List<ImageLogement> oldImages = logement.getImages();
 
-      if (logementUpdateDto.getCurrentImages() == null || logementUpdateDto.getCurrentImages()
-          .isEmpty()) {
-        imageLogementRepository.deleteAllByLogementId(logement.getId());
-      } else {
-        List<ImageLogement> oldImages = logement.getImages();
+      imageLogementRepository.deleteUnusedImage(
+          logement.getId(),
+          logementUpdateDto.getCurrentImages()
+      );
 
-        imageLogementRepository.deleteUnusedImage(
-            logement.getId(),
-            logementUpdateDto.getCurrentImages()
-        );
-
-        for (ImageLogement image : oldImages) {
-          cpt++;
-          if (logementUpdateDto.getCurrentImages().contains(image.getId())) {
-            images.add(image);
-          }
+      for (ImageLogement image : oldImages) {
+        cpt++;
+        if (logementUpdateDto.getCurrentImages().contains(image.getId())) {
+          images.add(image);
         }
       }
+      logement.setImages(images);
+    }
 
+    if (logementUpdateDto.getFiles() != null) {
+      System.out.println("getFiles here");
       for (MultipartFile file : logementUpdateDto.getFiles()) {
         cpt++;
         try {
@@ -506,6 +510,11 @@ public class LogementService {
 
       logement.setImages(images);
     }
+
+
+
+    System.out.println("end update");
+
 
     return LogementMapper.entityToDto(logementRepository.save(logement));
 
