@@ -18,6 +18,7 @@ import fr.esgi.al5.tayarim.exceptions.LogementInvalidReglesLogement;
 import fr.esgi.al5.tayarim.exceptions.LogementInvalidTypeLogement;
 import fr.esgi.al5.tayarim.exceptions.LogementInvalidUpdateBody;
 import fr.esgi.al5.tayarim.exceptions.LogementNotFoundException;
+import fr.esgi.al5.tayarim.exceptions.NotificationNotFoundError;
 import fr.esgi.al5.tayarim.exceptions.PasswordHashNotPossibleException;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireEmailAlreadyExistException;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireInvalidUpdateBody;
@@ -86,6 +87,21 @@ public interface ControllerUtils {
       UnsupportedMethodPathException ex) {
     return mapException(ex);
   }
+
+  /**
+   * Gère les exceptions lorsque le corps de mise à jour de l'administrateur est invalide.
+   *
+   * @param ex L'exception capturée.
+   * @return Une carte des erreurs avec le message approprié.
+   */
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  @ExceptionHandler(NotificationNotFoundError.class)
+  default Map<String, List<String>> notificationNotFoundError(
+      NotificationNotFoundError ex) {
+    return mapException(ex);
+  }
+
+
 
   /**
    * Gère les exceptions lorsque le corps de mise à jour de l'administrateur est invalide.

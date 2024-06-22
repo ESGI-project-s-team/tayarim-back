@@ -9,7 +9,7 @@ import lombok.NonNull;
  */
 @Data
 @AllArgsConstructor
-public class NotificationDto {
+public class SocketNotificationDto {
 
   @NonNull
   private String dateTime;

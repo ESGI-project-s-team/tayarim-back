@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS Notification;
 DROP TABLE IF EXISTS Contenir;
 DROP TABLE IF EXISTS Respecter;
 DROP TABLE IF EXISTS Indisponibilite;
@@ -153,6 +154,15 @@ CREATE TABLE IF NOT EXISTS Contenir (
                                         PRIMARY KEY(idLogement,idAmenagement)
 );
 
+CREATE TABLE IF NOT EXISTS Notification (
+                                            id INT PRIMARY KEY AUTO_INCREMENT,
+                                            message VARCHAR(100),
+                                            date DATETIME,
+                                            idUser INT,
+                                            type VARCHAR(100),
+                                            isRead BOOLEAN
+);
+
 ALTER TABLE Proprietaire ADD FOREIGN KEY (idUser) REFERENCES Utilisateur(id);
 
 ALTER TABLE Administrateur ADD FOREIGN KEY (idUser) REFERENCES Utilisateur(id);
@@ -180,3 +190,5 @@ ALTER TABLE Respecter ADD FOREIGN KEY (idReglesLogement) REFERENCES ReglesLogeme
 ALTER TABLE Contenir ADD FOREIGN KEY (idLogement) REFERENCES Logement(id);
 
 ALTER TABLE Contenir ADD FOREIGN KEY (idAmenagement) REFERENCES Amenagement(id);
+
+ALTER TABLE Notification ADD FOREIGN KEY (idUser) REFERENCES Utilisateur(id);

@@ -8,8 +8,8 @@ import fr.esgi.al5.tayarim.dto.reservation.ReservationDto;
 import fr.esgi.al5.tayarim.dto.reservation.ReservationUpdateDto;
 import fr.esgi.al5.tayarim.entities.Administrateur;
 import fr.esgi.al5.tayarim.entities.Logement;
+import fr.esgi.al5.tayarim.entities.Notification;
 import fr.esgi.al5.tayarim.entities.Reservation;
-import fr.esgi.al5.tayarim.exceptions.AdministrateurNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.LogementNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.ReservationDateConflictError;
 import fr.esgi.al5.tayarim.exceptions.ReservationDateInvalideError;
@@ -22,6 +22,7 @@ import fr.esgi.al5.tayarim.mappers.ReservationMapper;
 import fr.esgi.al5.tayarim.repositories.AdministrateurRepository;
 import fr.esgi.al5.tayarim.repositories.IndisponibiliteRepository;
 import fr.esgi.al5.tayarim.repositories.LogementRepository;
+import fr.esgi.al5.tayarim.repositories.NotificationRepository;
 import fr.esgi.al5.tayarim.repositories.ReservationRepository;
 import fr.esgi.al5.tayarim.socket.MyWebSocketHandler;
 import java.time.LocalDate;
@@ -58,6 +59,8 @@ public class ReservationService {
 
   private final AdministrateurRepository administrateurRepository;
 
+  private final NotificationRepository notificationRepository;
+
 
   /**
    * Constructeur pour le service de Reservation.
@@ -67,15 +70,18 @@ public class ReservationService {
    * @param indisponibiliteRepository Le repository des indisponibilites.
    * @param myWebSocketHandler        Le service de socket.
    * @param administrateurRepository  Le service d'administrateur
+   * @param notificationRepository
    */
   public ReservationService(ReservationRepository reservationRepository,
       LogementRepository logementRepository, IndisponibiliteRepository indisponibiliteRepository,
-      MyWebSocketHandler myWebSocketHandler, AdministrateurRepository administrateurRepository) {
+      MyWebSocketHandler myWebSocketHandler, AdministrateurRepository administrateurRepository,
+      NotificationRepository notificationRepository) {
     this.reservationRepository = reservationRepository;
     this.logementRepository = logementRepository;
     this.indisponibiliteRepository = indisponibiliteRepository;
     this.myWebSocketHandler = myWebSocketHandler;
     this.administrateurRepository = administrateurRepository;
+    this.notificationRepository = notificationRepository;
   }
 
   /**
@@ -85,8 +91,6 @@ public class ReservationService {
    */
   public ReservationDto createReservation(@NonNull ReservationCreationDto reservationCreationDto,
       @NonNull Boolean isAdmin) {
-
-
 
     Optional<Logement> optionalLogement = logementRepository.findById(
         reservationCreationDto.getIdLogement());
@@ -139,10 +143,28 @@ public class ReservationService {
     myWebSocketHandler.sendNotif(logement.getProprietaire().getId(), LocalDate.now(),
         "notification_reservation_creation", "Reservation");
 
+    System.out.println("aaaa");
+    notificationRepository.save(new Notification(
+        "Reservation",
+        "notification_reservation_creation",
+        LocalDate.now(),
+        logement.getProprietaire(),
+        false
+    ));
+
     if (!isAdmin) {
       for (Administrateur administrateur : administrateurRepository.findAll()) {
         myWebSocketHandler.sendNotif(administrateur.getId(), LocalDate.now(),
             "notification_reservation_creation", "Reservation");
+
+        notificationRepository.save(new Notification(
+            "Reservation",
+            "notification_reservation_creation",
+            LocalDate.now(),
+            administrateur,
+            false
+        ));
+        System.out.println("bbbb");
       }
     }
 

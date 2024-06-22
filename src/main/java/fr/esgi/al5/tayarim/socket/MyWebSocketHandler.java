@@ -89,12 +89,12 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
 
     if (session != null) {
       try {
-        NotificationDto notificationDto = new NotificationDto(
+        SocketNotificationDto socketNotificationDto = new SocketNotificationDto(
             temp.toString().substring(0, 10),
             message,
             type
         );
-        String jsonMessage = objectMapper.writeValueAsString(notificationDto);
+        String jsonMessage = objectMapper.writeValueAsString(socketNotificationDto);
         session.sendMessage(new TextMessage(jsonMessage));
       } catch (IOException e) {
         throw new RuntimeException(e);
