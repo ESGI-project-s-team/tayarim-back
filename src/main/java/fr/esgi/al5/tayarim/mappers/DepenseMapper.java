@@ -20,6 +20,7 @@ public class DepenseMapper {
 
   /**
    * Convertit un DTO de création de Depense en une entité Depense.
+   *
    * @return L'entité Depense correspondant.
    */
   public static Depense creationDtoToEntity(@NonNull DepenseCreationDto depenseCreationDto,
@@ -31,6 +32,7 @@ public class DepenseMapper {
         logement
     );
   }
+
   /**
    * Convertit une entité Depense en un DTO Depense.
    *

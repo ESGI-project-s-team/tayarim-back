@@ -8,6 +8,7 @@ import fr.esgi.al5.tayarim.entities.Logement;
 import fr.esgi.al5.tayarim.exceptions.DepenseDateInvalidError;
 import fr.esgi.al5.tayarim.exceptions.DepenseNotFoundError;
 import fr.esgi.al5.tayarim.exceptions.LogementNotFoundException;
+import fr.esgi.al5.tayarim.exceptions.UnauthorizedException;
 import fr.esgi.al5.tayarim.mappers.DepenseMapper;
 import fr.esgi.al5.tayarim.repositories.DepenseRepository;
 import fr.esgi.al5.tayarim.repositories.LogementRepository;
@@ -59,6 +60,7 @@ public class DepenseService {
    * @param depenseCreationDto Le DTO de la depense à créer.
    * @return Le DTO de la depense créée.
    */
+  @Transactional
   public DepenseDto create(@NonNull DepenseCreationDto depenseCreationDto) {
 
     Optional<Logement> optionalLogement = logementRepository.findById(
@@ -98,7 +100,7 @@ public class DepenseService {
    */
   public List<DepenseDto> getAll(@NonNull Long id, @NonNull Boolean isAdmin) {
 
-    if(isAdmin){
+    if (isAdmin) {
       return DepenseMapper.entityListToDtoList(depenseRepository.findAll());
     }
 
@@ -109,10 +111,16 @@ public class DepenseService {
   /**
    * Recupère une dépense par son id.
    */
-  public DepenseDto getById(@NonNull Long id) {
+  public DepenseDto getById(@NonNull Long id, @NonNull Long idUser, @NonNull Boolean isAdmin) {
     Optional<Depense> optionalDepense = depenseRepository.findById(id);
     if (optionalDepense.isEmpty()) {
       throw new DepenseNotFoundError();
+    }
+
+    Depense depense = optionalDepense.get();
+
+    if (!isAdmin && depense.getLogement().getProprietaire().getId().equals(idUser)) {
+      throw new UnauthorizedException();
     }
 
     return DepenseMapper.entityToDto(optionalDepense.get());
@@ -121,6 +129,7 @@ public class DepenseService {
   /**
    * Met à jour une dépense par son id.
    */
+  @Transactional
   public DepenseDto update(@NonNull DepenseUpdateDto depenseUpdateDto, @NonNull Long id) {
     Optional<Depense> optionalDepense = depenseRepository.findById(id);
     if (optionalDepense.isEmpty()) {
@@ -146,6 +155,7 @@ public class DepenseService {
   /**
    * Supprime une dépense.
    */
+  @Transactional
   public DepenseDto delete(@NonNull Long id) {
     Optional<Depense> optionalDepense = depenseRepository.findById(id);
     if (optionalDepense.isEmpty()) {

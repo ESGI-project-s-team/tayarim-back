@@ -75,9 +75,9 @@ public class DepenseController implements
 
   @Override
   public ResponseEntity<DepenseDto> getById(String authHeader, Long id) {
-    authService.verifyToken(getTokenFromHeader(authHeader), false);
+    UserTokenInfo userTokenInfo = authService.verifyToken(getTokenFromHeader(authHeader), false);
     return new ResponseEntity<>(
-        depenseService.getById(id),
+        depenseService.getById(id, userTokenInfo.getId(), userTokenInfo.getIsAdmin()),
         HttpStatus.OK
     );
   }

@@ -4,6 +4,7 @@ DROP TABLE IF EXISTS Indisponibilite;
 DROP TABLE IF EXISTS Avis;
 DROP TABLE IF EXISTS ImageLogement;
 DROP TABLE IF EXISTS Reservation;
+DROP TABLE IF EXISTS Depense;
 DROP TABLE IF EXISTS Logement;
 DROP TABLE IF EXISTS TypeLogement;
 DROP TABLE IF EXISTS Amenagement;
@@ -97,6 +98,15 @@ CREATE TABLE IF NOT EXISTS CategorieAmenagement (
                                                     nom VARCHAR(100)
 );
 
+CREATE TABLE IF NOT EXISTS Depense (
+                                       id INT PRIMARY KEY AUTO_INCREMENT,
+                                       libelle VARCHAR(200),
+                                       prix FLOAT,
+                                       date DATE,
+                                       idLogement INT
+);
+
+
 CREATE TABLE IF NOT EXISTS Icone (
                                      id INT PRIMARY KEY AUTO_INCREMENT,
                                      svg VARCHAR(100)
@@ -154,6 +164,8 @@ ALTER TABLE Logement ADD FOREIGN KEY (idProprietaire) REFERENCES Proprietaire(id
 ALTER TABLE Reservation ADD FOREIGN KEY (idLogement) REFERENCES Logement(id);
 
 ALTER TABLE Amenagement ADD FOREIGN KEY (idCategorieAmenagement) REFERENCES CategorieAmenagement(id);
+
+ALTER TABLE Depense ADD FOREIGN KEY (idLogement) REFERENCES Logement(id);
 
 ALTER TABLE ImageLogement ADD FOREIGN KEY (idLogement) REFERENCES Logement(id);
 
