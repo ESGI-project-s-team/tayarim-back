@@ -22,6 +22,8 @@ public interface ImageLogementRepository extends JpaRepository<ImageLogement, Lo
       + "FROM IMAGELOGEMENT i "
       + "WHERE i.logement.id = :idLogement "
       + "AND i.id NOT IN (:ids)")
-  int deleteUnusedImage(@Param("idLogement") Long idLogement, @Param("ids") List<Long> ids);
+  void deleteUnusedImage(@Param("idLogement") Long idLogement, @Param("ids") List<Long> ids);
+
+  void deleteAllByLogementId(Long idLogement);
 
 }

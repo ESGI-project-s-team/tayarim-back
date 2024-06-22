@@ -453,22 +453,29 @@ public class LogementService {
 
     if (logementUpdateDto.getFiles() != null && !logementUpdateDto.getFiles().isEmpty()) {
 
-      List<ImageLogement> oldImages = logement.getImages();
-
-      int total = imageLogementRepository.deleteUnusedImage(
-          logement.getId(),
-          logementUpdateDto.getCurrentImages()
-      );
-
       int cpt = 0;
       List<String> urls = new ArrayList<>();
       ArrayList<ImageLogement> images = new ArrayList<>();
-      for (ImageLogement image : oldImages) {
-        cpt++;
-        if (logementUpdateDto.getCurrentImages().contains(image.getId())) {
-          images.add(image);
+
+      if (logementUpdateDto.getCurrentImages() == null || logementUpdateDto.getCurrentImages()
+          .isEmpty()) {
+        imageLogementRepository.deleteAllByLogementId(logement.getId());
+      } else {
+        List<ImageLogement> oldImages = logement.getImages();
+
+        imageLogementRepository.deleteUnusedImage(
+            logement.getId(),
+            logementUpdateDto.getCurrentImages()
+        );
+
+        for (ImageLogement image : oldImages) {
+          cpt++;
+          if (logementUpdateDto.getCurrentImages().contains(image.getId())) {
+            images.add(image);
+          }
         }
       }
+
       for (MultipartFile file : logementUpdateDto.getFiles()) {
         cpt++;
         try {
