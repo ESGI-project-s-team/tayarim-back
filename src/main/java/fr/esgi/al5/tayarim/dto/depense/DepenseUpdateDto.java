@@ -17,23 +17,14 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @AllArgsConstructor // Generates an all-args constructor
 @Builder
-public class DepenseCreationDto {
+public class DepenseUpdateDto {
 
   @Valid
 
-  @NotBlank(message = "error_expense_invalid_libelle")
   @Size(min = 1, max = 200, message = "error_expense_invalid_libelle")
   private String libelle;
 
-  @NotNull(message = "error_expense_invalid_prix")
   @Min(value = 1, message = "error_expense_invalid_prix")
   private Float prix;
 
-  @NotBlank(message = "error_expense_invalid_date")
-  @Size(min = 1, max = 10, message = "error_expense_invalid_date")
-  private String date;
-
-  @NotNull(message = "error_expense_invalid_idLogement")
-  @Min(value = 1, message = "error_expense_invalid_idLogement")
-  private Long idLogement;
 }

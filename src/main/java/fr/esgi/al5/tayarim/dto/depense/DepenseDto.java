@@ -23,8 +23,8 @@ public class DepenseDto {
   @Size(min = 1, max = 200, message = "error_depense_invalid_libelle")
   private String libelle;
 
-  @Min(value = 1, message = "error_depense_invalid_montant")
-  private Float montant;
+  @Min(value = 1, message = "error_depense_invalid_prix")
+  private Float prix;
 
   @NotBlank(message = "error_depense_invalid_date")
   @Size(min = 1, max = 10, message = "error_depense_invalid_date")

@@ -1,39 +1,22 @@
 package fr.esgi.al5.tayarim.services;
 
-import com.stripe.Stripe;
-import com.stripe.exception.StripeException;
-import com.stripe.model.PaymentIntent;
 import fr.esgi.al5.tayarim.dto.depense.DepenseCreationDto;
 import fr.esgi.al5.tayarim.dto.depense.DepenseDto;
-import fr.esgi.al5.tayarim.dto.reservation.ReservationCreationDto;
-import fr.esgi.al5.tayarim.dto.reservation.ReservationDto;
-import fr.esgi.al5.tayarim.dto.reservation.ReservationUpdateDto;
+import fr.esgi.al5.tayarim.dto.depense.DepenseUpdateDto;
 import fr.esgi.al5.tayarim.entities.Depense;
 import fr.esgi.al5.tayarim.entities.Logement;
-import fr.esgi.al5.tayarim.entities.Reservation;
+import fr.esgi.al5.tayarim.exceptions.DepenseDateInvalidError;
+import fr.esgi.al5.tayarim.exceptions.DepenseNotFoundError;
 import fr.esgi.al5.tayarim.exceptions.LogementNotFoundException;
-import fr.esgi.al5.tayarim.exceptions.ReservationDateConflictError;
-import fr.esgi.al5.tayarim.exceptions.ReservationDateInvalideError;
-import fr.esgi.al5.tayarim.exceptions.ReservationDateTooShortError;
-import fr.esgi.al5.tayarim.exceptions.ReservationNotFoundException;
-import fr.esgi.al5.tayarim.exceptions.ReservationPeopleCapacityError;
-import fr.esgi.al5.tayarim.exceptions.ReservationStatusUpdateError;
-import fr.esgi.al5.tayarim.exceptions.ReservationStripeError;
-import fr.esgi.al5.tayarim.mappers.ReservationMapper;
+import fr.esgi.al5.tayarim.mappers.DepenseMapper;
 import fr.esgi.al5.tayarim.repositories.DepenseRepository;
-import fr.esgi.al5.tayarim.repositories.IndisponibiliteRepository;
 import fr.esgi.al5.tayarim.repositories.LogementRepository;
-import fr.esgi.al5.tayarim.repositories.ReservationRepository;
 import fr.esgi.al5.tayarim.socket.MyWebSocketHandler;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import lombok.NonNull;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 
@@ -46,20 +29,28 @@ public class DepenseService {
 
   private final DepenseRepository depenseRepository;
 
+  private final LogementRepository logementRepository;
+
   private final AuthService authService;
 
+  private final MyWebSocketHandler myWebSocketHandler;
 
 
   /**
    * Constructeur pour le service de Reservation.
    *
-   * @param depenseRepository Le repository des depenses.
-   * @param authService     Le service d'authentification.
+   * @param depenseRepository  Le repository des depenses.
+   * @param logementRepository Le repository des logements
+   * @param authService        Le service d'authentification.
+   * @param myWebSocketHandler Le service de socket
    */
   public DepenseService(DepenseRepository depenseRepository,
-      AuthService authService) {
+      LogementRepository logementRepository, AuthService authService,
+      MyWebSocketHandler myWebSocketHandler) {
     this.depenseRepository = depenseRepository;
+    this.logementRepository = logementRepository;
     this.authService = authService;
+    this.myWebSocketHandler = myWebSocketHandler;
   }
 
   /**
@@ -69,14 +60,103 @@ public class DepenseService {
    * @return Le DTO de la depense créée.
    */
   public DepenseDto create(@NonNull DepenseCreationDto depenseCreationDto) {
-    /*return DepenseMapper.entityToDto(
-        depenseRepository.save(
-            DepenseMapper.creationDtoToEntity(
-                depenseCreationDto
-            )
+
+    Optional<Logement> optionalLogement = logementRepository.findById(
+        depenseCreationDto.getIdLogement());
+
+    if (optionalLogement.isEmpty()) {
+      throw new LogementNotFoundException();
+    }
+
+    LocalDate date;
+    try {
+      date = LocalDate.parse(depenseCreationDto.getDate());
+    } catch (Exception e) {
+      throw new DepenseDateInvalidError();
+    }
+
+    Logement logement = optionalLogement.get();
+
+    Depense depense = depenseRepository.save(
+        DepenseMapper.creationDtoToEntity(
+            depenseCreationDto,
+            date,
+            logement
         )
-    );*/
-    return null;
+    );
+
+    myWebSocketHandler.sendNotif(logement.getId(), date, "notification_expense_creation",
+        "Depense");
+
+    return DepenseMapper.entityToDto(
+        depense
+    );
+  }
+
+  /**
+   * Recupère toute les dépenses.
+   */
+  public List<DepenseDto> getAll(@NonNull Long id, @NonNull Boolean isAdmin) {
+
+    if(isAdmin){
+      return DepenseMapper.entityListToDtoList(depenseRepository.findAll());
+    }
+
+    return DepenseMapper.entityListToDtoList(depenseRepository.findAllByLogementProprietaireId(id));
+
+  }
+
+  /**
+   * Recupère une dépense par son id.
+   */
+  public DepenseDto getById(@NonNull Long id) {
+    Optional<Depense> optionalDepense = depenseRepository.findById(id);
+    if (optionalDepense.isEmpty()) {
+      throw new DepenseNotFoundError();
+    }
+
+    return DepenseMapper.entityToDto(optionalDepense.get());
+  }
+
+  /**
+   * Met à jour une dépense par son id.
+   */
+  public DepenseDto update(@NonNull DepenseUpdateDto depenseUpdateDto, @NonNull Long id) {
+    Optional<Depense> optionalDepense = depenseRepository.findById(id);
+    if (optionalDepense.isEmpty()) {
+      throw new DepenseNotFoundError();
+    }
+
+    Depense depense = optionalDepense.get();
+
+    depense.setLibelle(
+        depenseUpdateDto.getLibelle() != null || !depenseUpdateDto.getLibelle().isBlank()
+            ? depenseUpdateDto.getLibelle() : depense.getLibelle()
+    );
+
+    depense.setPrix(
+        depenseUpdateDto.getPrix() != null
+            ? depenseUpdateDto.getPrix() : depense.getPrix()
+    );
+
+    return DepenseMapper.entityToDto(depenseRepository.save(depense));
+
+  }
+
+  /**
+   * Supprime une dépense.
+   */
+  public DepenseDto delete(@NonNull Long id) {
+    Optional<Depense> optionalDepense = depenseRepository.findById(id);
+    if (optionalDepense.isEmpty()) {
+      throw new DepenseNotFoundError();
+    }
+
+    Depense depense = optionalDepense.get();
+
+    depenseRepository.deleteById(depense.getId());
+
+    return DepenseMapper.entityToDto(depense);
   }
 
 }

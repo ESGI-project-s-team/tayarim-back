@@ -8,7 +8,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import java.time.LocalDate;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -34,10 +36,25 @@ public class Depense {
   private Float prix;
 
   @Column(name = "DATE", nullable = false)
-  private String date;
+  private LocalDate date;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "IDLOGEMENT", nullable = false)
   private Logement logement;
 
+  /**
+   * Constructeur pour l'entité Depense.
+   *
+   * @param libelle Libelle de la depense
+   * @param prix Prix de la depense
+   * @param date Date de la depense
+   * @param logement Logement associé à la depense
+   */
+  @Builder
+  public Depense(String libelle, Float prix, LocalDate date, Logement logement) {
+    this.libelle = libelle;
+    this.prix = prix;
+    this.date = date;
+    this.logement = logement;
+  }
 }
