@@ -23,7 +23,7 @@ jobs:
         with:
           file: ./Dockerfile_back
           push: true
-          tags: tayarim-repo /tayarim_back:${{ github.sha }}, tayarim-repo/tayarim_back:latest
+          tags: tayarim-repo/tayarim_back:${{ github.sha }}, tayarim-repo/tayarim_back:latest
 
 #  update-cloud-sql:
 #    runs-on: ubuntu-latest
