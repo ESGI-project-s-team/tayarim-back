@@ -5,6 +5,7 @@ import fr.esgi.al5.tayarim.dto.depense.DepenseDto;
 import fr.esgi.al5.tayarim.dto.depense.DepenseUpdateDto;
 import fr.esgi.al5.tayarim.entities.Depense;
 import fr.esgi.al5.tayarim.entities.Logement;
+import fr.esgi.al5.tayarim.entities.Notification;
 import fr.esgi.al5.tayarim.exceptions.DepenseDateInvalidError;
 import fr.esgi.al5.tayarim.exceptions.DepenseNotFoundError;
 import fr.esgi.al5.tayarim.exceptions.LogementNotFoundException;
@@ -13,6 +14,7 @@ import fr.esgi.al5.tayarim.exceptions.UnauthorizedException;
 import fr.esgi.al5.tayarim.mappers.DepenseMapper;
 import fr.esgi.al5.tayarim.repositories.DepenseRepository;
 import fr.esgi.al5.tayarim.repositories.LogementRepository;
+import fr.esgi.al5.tayarim.repositories.NotificationRepository;
 import fr.esgi.al5.tayarim.socket.MyWebSocketHandler;
 import java.time.LocalDate;
 import java.util.List;
@@ -37,22 +39,26 @@ public class DepenseService {
 
   private final MyWebSocketHandler myWebSocketHandler;
 
+  private final NotificationRepository notificationRepository;
+
 
   /**
    * Constructeur pour le service de Reservation.
    *
-   * @param depenseRepository  Le repository des depenses.
-   * @param logementRepository Le repository des logements
-   * @param authService        Le service d'authentification.
-   * @param myWebSocketHandler Le service de socket
+   * @param depenseRepository      Le repository des depenses.
+   * @param logementRepository     Le repository des logements
+   * @param authService            Le service d'authentification.
+   * @param myWebSocketHandler     Le service de socket
+   * @param notificationRepository Le repository des notifications
    */
   public DepenseService(DepenseRepository depenseRepository,
       LogementRepository logementRepository, AuthService authService,
-      MyWebSocketHandler myWebSocketHandler) {
+      MyWebSocketHandler myWebSocketHandler, NotificationRepository notificationRepository) {
     this.depenseRepository = depenseRepository;
     this.logementRepository = logementRepository;
     this.authService = authService;
     this.myWebSocketHandler = myWebSocketHandler;
+    this.notificationRepository = notificationRepository;
   }
 
   /**
@@ -91,6 +97,17 @@ public class DepenseService {
     try {
       myWebSocketHandler.sendNotif(logement.getId(), date, "notification_expense_creation",
           "Depense");
+
+      notificationRepository.save(
+          new Notification(
+              "Depense",
+              "notification_expense_creation",
+              date,
+              logement.getProprietaire(),
+              false
+          )
+      );
+
     } catch (Exception e) {
       throw new NotificationSendError();
     }

@@ -138,7 +138,7 @@ public class IndisponibiliteService {
       myWebSocketHandler.sendNotif(logement.getProprietaire().getId(), LocalDate.now(),
           "notification_indisponibilite_creation", "Indisponibilite");
       notificationRepository.save(new Notification(
-          "Reservation",
+          "Indisponibilite",
           "notification_reservation_creation",
           LocalDate.now(),
           logement.getProprietaire(),
@@ -149,7 +149,7 @@ public class IndisponibiliteService {
         myWebSocketHandler.sendNotif(administrateur.getId(), LocalDate.now(),
             "notification_indisponibilite_creation", "Indisponibilite");
         notificationRepository.save(new Notification(
-            "Reservation",
+            "Indisponibilite",
             "notification_reservation_creation",
             LocalDate.now(),
             administrateur,
