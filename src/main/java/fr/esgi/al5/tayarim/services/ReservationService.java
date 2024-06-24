@@ -116,7 +116,7 @@ public class ReservationService {
     LocalDate dateDepart = LocalDate.parse(reservationCreationDto.getDateDepart());
 
     checkDateCondition(dateArrivee, dateDepart, optionalLogement.get().getNombresNuitsMin(),
-        false);
+        isAdmin);
 
     checkDateConclict(idCommande, dateArrivee, dateDepart, reservationCreationDto.getIdLogement(),
         isAdmin);
