@@ -11,6 +11,7 @@ import fr.esgi.al5.tayarim.entities.Logement;
 import fr.esgi.al5.tayarim.entities.Notification;
 import fr.esgi.al5.tayarim.entities.Reservation;
 import fr.esgi.al5.tayarim.exceptions.LogementNotFoundException;
+import fr.esgi.al5.tayarim.exceptions.NotificationSendError;
 import fr.esgi.al5.tayarim.exceptions.ReservationDateConflictError;
 import fr.esgi.al5.tayarim.exceptions.ReservationDateInvalideError;
 import fr.esgi.al5.tayarim.exceptions.ReservationDateTooShortError;
@@ -135,30 +136,10 @@ public class ReservationService {
       status = "reserved";
     }
 
-    myWebSocketHandler.sendNotif(logement.getProprietaire().getId(), LocalDate.now(),
-        "notification_reservation_creation", "Reservation");
-
-    notificationRepository.save(new Notification(
-        "Reservation",
-        "notification_reservation_creation",
-        LocalDate.now(),
-        logement.getProprietaire(),
-        false
-    ));
-
-    if (!isAdmin) {
-      for (Administrateur administrateur : administrateurRepository.findAll()) {
-        myWebSocketHandler.sendNotif(administrateur.getId(), LocalDate.now(),
-            "notification_reservation_creation", "Reservation");
-
-        notificationRepository.save(new Notification(
-            "Reservation",
-            "notification_reservation_creation",
-            LocalDate.now(),
-            administrateur,
-            false
-        ));
-      }
+    try {
+      sendNotif(logement, isAdmin);
+    } catch (Exception e) {
+      throw new NotificationSendError();
     }
 
     Reservation reservation = reservationRepository.save(
@@ -177,6 +158,38 @@ public class ReservationService {
     return ReservationMapper.entityToDto(
         reservation
     );
+
+
+  }
+
+  private void sendNotif(@NonNull Logement logement, @NonNull Boolean isAdmin) {
+
+    myWebSocketHandler.sendNotif(logement.getProprietaire().getId(), LocalDate.now(),
+        "notification_reservation_creation", "Reservation");
+
+    notificationRepository.save(new Notification(
+        "Reservation",
+        "notification_reservation_creation",
+        LocalDate.now(),
+        logement.getProprietaire(),
+        false
+    ));
+
+    if (!isAdmin) {
+      //ici
+      for (Administrateur administrateur : administrateurRepository.findAll()) {
+        myWebSocketHandler.sendNotif(administrateur.getId(), LocalDate.now(),
+            "notification_reservation_creation", "Reservation");
+
+        notificationRepository.save(new Notification(
+            "Reservation",
+            "notification_reservation_creation",
+            LocalDate.now(),
+            administrateur,
+            false
+        ));
+      }
+    }
 
 
   }
@@ -444,7 +457,7 @@ public class ReservationService {
         if (arrivee.toEpochDay() > (dateDepart.toEpochDay() + 2)) {
           continue;
         }
-        if (depart.toEpochDay() < (dateArrivee.toEpochDay() - 2)) {
+        if (depart.toEpochDay() < (dateArrivee.toEpochDay())) {
           continue;
         }
       } else {

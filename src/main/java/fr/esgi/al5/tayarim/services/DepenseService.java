@@ -8,6 +8,7 @@ import fr.esgi.al5.tayarim.entities.Logement;
 import fr.esgi.al5.tayarim.exceptions.DepenseDateInvalidError;
 import fr.esgi.al5.tayarim.exceptions.DepenseNotFoundError;
 import fr.esgi.al5.tayarim.exceptions.LogementNotFoundException;
+import fr.esgi.al5.tayarim.exceptions.NotificationSendError;
 import fr.esgi.al5.tayarim.exceptions.UnauthorizedException;
 import fr.esgi.al5.tayarim.mappers.DepenseMapper;
 import fr.esgi.al5.tayarim.repositories.DepenseRepository;
@@ -87,8 +88,12 @@ public class DepenseService {
         )
     );
 
-    myWebSocketHandler.sendNotif(logement.getId(), date, "notification_expense_creation",
-        "Depense");
+    try {
+      myWebSocketHandler.sendNotif(logement.getId(), date, "notification_expense_creation",
+          "Depense");
+    } catch (Exception e) {
+      throw new NotificationSendError();
+    }
 
     return DepenseMapper.entityToDto(
         depense

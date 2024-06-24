@@ -10,6 +10,7 @@ import fr.esgi.al5.tayarim.exceptions.IndisponibiliteDateInvalidError;
 import fr.esgi.al5.tayarim.exceptions.IndisponibiliteLogementNotFoundError;
 import fr.esgi.al5.tayarim.exceptions.IndisponibiliteNotFoundError;
 import fr.esgi.al5.tayarim.exceptions.IndisponibiliteUnauthorizedError;
+import fr.esgi.al5.tayarim.exceptions.NotificationSendError;
 import fr.esgi.al5.tayarim.exceptions.ReservationDateConflictError;
 import fr.esgi.al5.tayarim.exceptions.ReservationDateInvalideError;
 import fr.esgi.al5.tayarim.mappers.IndisponibiliteMapper;
@@ -105,7 +106,7 @@ public class IndisponibiliteService {
 
     Logement logement = optionalLogement.get();
 
-    checkDateCondition(dateDebut, dateFin, logement.getNombresNuitsMin(), isAdmin);
+    checkDateCondition(dateDebut, dateFin, isAdmin);
 
     checkDateConclict(
         "INDISPONIBILITE-".concat(logement.getId().toString()),
@@ -120,6 +121,19 @@ public class IndisponibiliteService {
             logement
         )
     );
+
+    try {
+      sendNotif(logement, isAdmin);
+    } catch (Exception e) {
+      throw new NotificationSendError();
+    }
+
+    return IndisponibiliteMapper.entityToDto(
+        indisponibilite
+    );
+  }
+
+  private void sendNotif(@NonNull Logement logement, @NonNull Boolean isAdmin) {
     if (isAdmin) {
       myWebSocketHandler.sendNotif(logement.getProprietaire().getId(), LocalDate.now(),
           "notification_indisponibilite_creation", "Indisponibilite");
@@ -143,10 +157,6 @@ public class IndisponibiliteService {
         ));
       }
     }
-
-    return IndisponibiliteMapper.entityToDto(
-        indisponibilite
-    );
   }
 
   /**
@@ -195,7 +205,7 @@ public class IndisponibiliteService {
    * Vérifie les conditions d'application des dates.
    */
   public void checkDateCondition(@NonNull LocalDate dateArrivee,
-      @NonNull LocalDate dateDepart, @NonNull Integer nombresNuitsMin, @NonNull Boolean isAdmin) {
+      @NonNull LocalDate dateDepart, @NonNull Boolean isAdmin) {
     if (dateArrivee.toEpochDay() >= dateDepart.toEpochDay()) {
       throw new ReservationDateInvalideError();
     }
