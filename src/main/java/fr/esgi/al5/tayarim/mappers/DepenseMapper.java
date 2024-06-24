@@ -44,7 +44,8 @@ public class DepenseMapper {
         depense.getLibelle(),
         depense.getPrix(),
         depense.getDate().toString(),
-        depense.getLogement().getId()
+        depense.getLogement().getId(),
+        depense.getLogement().getTitre()
     );
   }
 

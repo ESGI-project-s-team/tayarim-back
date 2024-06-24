@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -17,19 +18,18 @@ import lombok.RequiredArgsConstructor;
 @AllArgsConstructor
 public class DepenseDto {
 
-  @Valid
-
-  @NotBlank(message = "error_depense_invalid_libelle")
-  @Size(min = 1, max = 200, message = "error_depense_invalid_libelle")
+  @NonNull
   private String libelle;
 
-  @Min(value = 1, message = "error_depense_invalid_prix")
+  @NonNull
   private Float prix;
 
-  @NotBlank(message = "error_depense_invalid_date")
-  @Size(min = 1, max = 10, message = "error_depense_invalid_date")
+  @NonNull
   private String date;
 
-  @Min(value = 1, message = "error_depense_invalid_idLogement")
+  @NonNull
   private Long idLogement;
+
+  @NonNull
+  private String titreLogement;
 }
