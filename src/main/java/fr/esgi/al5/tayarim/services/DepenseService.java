@@ -35,8 +35,6 @@ public class DepenseService {
 
   private final LogementRepository logementRepository;
 
-  private final AuthService authService;
-
   private final MyWebSocketHandler myWebSocketHandler;
 
   private final NotificationRepository notificationRepository;
@@ -47,16 +45,14 @@ public class DepenseService {
    *
    * @param depenseRepository      Le repository des depenses.
    * @param logementRepository     Le repository des logements
-   * @param authService            Le service d'authentification.
    * @param myWebSocketHandler     Le service de socket
    * @param notificationRepository Le repository des notifications
    */
   public DepenseService(DepenseRepository depenseRepository,
-      LogementRepository logementRepository, AuthService authService,
+      LogementRepository logementRepository,
       MyWebSocketHandler myWebSocketHandler, NotificationRepository notificationRepository) {
     this.depenseRepository = depenseRepository;
     this.logementRepository = logementRepository;
-    this.authService = authService;
     this.myWebSocketHandler = myWebSocketHandler;
     this.notificationRepository = notificationRepository;
   }

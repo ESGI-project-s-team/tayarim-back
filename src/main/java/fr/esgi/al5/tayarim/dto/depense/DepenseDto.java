@@ -19,6 +19,9 @@ import lombok.RequiredArgsConstructor;
 public class DepenseDto {
 
   @NonNull
+  private Long id;
+
+  @NonNull
   private String libelle;
 
   @NonNull

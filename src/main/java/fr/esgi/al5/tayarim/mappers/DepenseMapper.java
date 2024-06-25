@@ -41,6 +41,7 @@ public class DepenseMapper {
    */
   public static DepenseDto entityToDto(@NonNull Depense depense) {
     return new DepenseDto(
+        depense.getId(),
         depense.getLibelle(),
         depense.getPrix(),
         depense.getDate().toString(),
