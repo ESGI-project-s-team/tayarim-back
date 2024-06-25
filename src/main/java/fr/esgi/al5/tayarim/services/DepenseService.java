@@ -95,7 +95,7 @@ public class DepenseService {
     );
 
     try {
-      myWebSocketHandler.sendNotif(logement.getId(), date, "notification_expense_creation",
+      myWebSocketHandler.sendNotif(logement.getProprietaire().getId(), date, "notification_expense_creation",
           "Depense");
 
       notificationRepository.save(
