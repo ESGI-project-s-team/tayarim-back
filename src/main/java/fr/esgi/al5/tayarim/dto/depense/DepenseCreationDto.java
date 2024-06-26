@@ -32,7 +32,8 @@ public class DepenseCreationDto {
 
   @NotBlank(message = "error_expense_invalid_date")
   @Size(min = 1, max = 10, message = "error_expense_invalid_date")
-  @Pattern(regexp = "[0-9]{4}-(0[1-9]|1[0-2])-([0-2][0-9]|3[0-1])", message = "error_expense_invalid_date")
+  @Pattern(regexp = "[0-9]{4}-(0[1-9]|1[0-2])-([0-2][0-9]|3[0-1])",
+      message = "error_expense_invalid_date")
   private String date;
 
   @NotNull(message = "error_expense_invalid_idLogement")

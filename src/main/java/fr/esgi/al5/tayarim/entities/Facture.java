@@ -14,6 +14,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Classe représentant une facture.
+ */
 @Data
 @Entity(name = "FACTURE")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

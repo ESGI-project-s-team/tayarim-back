@@ -2,6 +2,7 @@ package fr.esgi.al5.tayarim.mappers;
 
 import fr.esgi.al5.tayarim.dto.logement.LogementCreationDto;
 import fr.esgi.al5.tayarim.dto.logement.LogementDto;
+import fr.esgi.al5.tayarim.dto.proprietaire.ProprietaireCandidateDto;
 import fr.esgi.al5.tayarim.entities.Amenagement;
 import fr.esgi.al5.tayarim.entities.ImageLogement;
 import fr.esgi.al5.tayarim.entities.Logement;
@@ -12,6 +13,7 @@ import fr.esgi.al5.tayarim.repositories.ProprietaireRepository;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -63,6 +65,42 @@ public class LogementMapper {
         reglesLogements,
         amenagements,
         images);
+  }
+
+  /**
+   * Convertit une candidature Logement en une entité Logement.
+   */
+  public static Logement candidatureDtoToEntity(
+      @NonNull ProprietaireCandidateDto proprietaireCandidateDto,
+      @NonNull Proprietaire proprietaire,
+      @NonNull TypeLogement typeLogement, @NonNull List<ReglesLogement> reglesLogements,
+      @NonNull List<Amenagement> amenagements, @NonNull List<ImageLogement> images) {
+    return new Logement(
+        proprietaireCandidateDto.getIsLouable(),
+        proprietaireCandidateDto.getTitre(),
+        proprietaireCandidateDto.getNombresDeChambres(),
+        proprietaireCandidateDto.getNombresDeLits(),
+        proprietaireCandidateDto.getNombresSallesDeBains(),
+        proprietaireCandidateDto.getCapaciteMaxPersonne(),
+        1,
+        proprietaireCandidateDto.getDescription(),
+        0f,
+        1f,
+        LocalTime.parse("15:00"),
+        LocalTime.parse("15:00"),
+        1,
+        proprietaireCandidateDto.getVille(),
+        proprietaireCandidateDto.getAddressLogement(),
+        proprietaireCandidateDto.getCodePostal(),
+        proprietaireCandidateDto.getPays(),
+        proprietaireCandidateDto.getEtage(),
+        proprietaireCandidateDto.getNumeroDePorte(),
+        typeLogement,
+        proprietaire,
+        new HashSet<>(reglesLogements),
+        new HashSet<>(amenagements),
+        images
+    );
   }
 
   /**

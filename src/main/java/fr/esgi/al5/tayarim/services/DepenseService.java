@@ -91,7 +91,8 @@ public class DepenseService {
     );
 
     try {
-      myWebSocketHandler.sendNotif(logement.getProprietaire().getId(), date, "notification_expense_creation",
+      myWebSocketHandler.sendNotif(logement.getProprietaire().getId(), date,
+          "notification_expense_creation",
           "Depense");
 
       notificationRepository.save(
@@ -166,7 +167,7 @@ public class DepenseService {
             ? depenseUpdateDto.getPrix() : depense.getPrix()
     );
 
-    if(depenseUpdateDto.getDate() != null && !depenseUpdateDto.getDate().isBlank()) {
+    if (depenseUpdateDto.getDate() != null && !depenseUpdateDto.getDate().isBlank()) {
       LocalDate date;
       try {
         date = LocalDate.parse(depenseUpdateDto.getDate());
@@ -177,7 +178,6 @@ public class DepenseService {
 
       depense.setDate(date);
     }
-
 
     return DepenseMapper.entityToDto(depenseRepository.save(depense));
 

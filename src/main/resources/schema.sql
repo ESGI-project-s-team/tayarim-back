@@ -31,7 +31,8 @@ CREATE TABLE IF NOT EXISTS Proprietaire (
                                             adresse VARCHAR(300),
                                             dateInscription DATETIME,
                                             isPasswordUpdated BOOLEAN,
-                                            commission FLOAT
+                                            commission FLOAT,
+                                            isValidated BOOLEAN
 );
 
 CREATE TABLE IF NOT EXISTS Administrateur (

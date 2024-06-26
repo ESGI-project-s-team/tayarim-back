@@ -22,6 +22,7 @@ import fr.esgi.al5.tayarim.exceptions.NotificationNotFoundError;
 import fr.esgi.al5.tayarim.exceptions.NotificationSendError;
 import fr.esgi.al5.tayarim.exceptions.PasswordHashNotPossibleException;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireEmailAlreadyExistException;
+import fr.esgi.al5.tayarim.exceptions.ProprietaireInvalidCandidatureBody;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireInvalidUpdateBody;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireNumTelAlreadyExistException;
@@ -86,6 +87,19 @@ public interface ControllerUtils {
   @ExceptionHandler(UnsupportedMethodPathException.class)
   default Map<String, List<String>> unsupportedMethodPathException(
       UnsupportedMethodPathException ex) {
+    return mapException(ex);
+  }
+
+  /**
+   * Gère les exceptions lorsque le corps de mise à jour de l'administrateur est invalide.
+   *
+   * @param ex L'exception capturée.
+   * @return Une carte des erreurs avec le message approprié.
+   */
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ExceptionHandler(ProprietaireInvalidCandidatureBody.class)
+  default Map<String, List<String>> proprietaireInvalidCandidatureBody(
+      ProprietaireInvalidCandidatureBody ex) {
     return mapException(ex);
   }
 

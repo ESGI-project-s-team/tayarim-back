@@ -50,5 +50,8 @@ public class ProprietaireDto {
   @NonNull
   private Float commission;
 
+  @NonNull
+  private Boolean isValidated;
+
   // No need for explicit getters, setters, or constructors
 }

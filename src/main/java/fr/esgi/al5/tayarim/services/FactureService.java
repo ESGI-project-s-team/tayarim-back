@@ -47,6 +47,14 @@ public class FactureService {
   private final LogementRepository logementRepository;
   private final ReservationRepository reservationRepository;
 
+  /**
+   * Constructeur pour le service de Facture.
+   *
+   * @param factureRepository      Le repository des factures.
+   * @param proprietaireRepository Le repository des propriétaires.
+   * @param logementRepository     Le repository des logements.
+   * @param reservationRepository  Le repository des réservations.
+   */
   public FactureService(FactureRepository factureRepository,
       ProprietaireRepository proprietaireRepository, LogementRepository logementRepository,
       ReservationRepository reservationRepository) {
@@ -59,8 +67,8 @@ public class FactureService {
   /**
    * Crée une facture.
    *
-   * @param factureCreationDto
-   * @return
+   * @param factureCreationDto Le DTO de création de facture.
+   * @return Le DTO de la facture créée.
    */
   public FactureDto create(@NonNull FactureCreationDto factureCreationDto) {
 
@@ -78,6 +86,13 @@ public class FactureService {
 
   }
 
+  /**
+   * Récupère toutes les factures.
+   *
+   * @param userId  L'identifiant de l'utilisateur.
+   * @param isAdmin Si l'utilisateur est un administrateur.
+   * @return La liste des factures.
+   */
   public List<FactureDto> getAll(@NonNull Long userId, @NonNull Boolean isAdmin) {
     if (isAdmin) {
       return FactureMapper.entityListToDtoList(factureRepository.findAll());
@@ -158,14 +173,14 @@ public class FactureService {
 
       document.add(tableClient);
 
-      Paragraph FactureParagraph = new Paragraph("Facture N° 00001",
+      Paragraph factureParagraph = new Paragraph("Facture N° 00001",
           FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12));
-      FactureParagraph.setAlignment(Element.ALIGN_LEFT);
-      document.add(FactureParagraph);
+      factureParagraph.setAlignment(Element.ALIGN_LEFT);
+      document.add(factureParagraph);
 
-      Paragraph DateParagraph = new Paragraph("Date : " + LocalDate.now());
-      DateParagraph.setAlignment(Element.ALIGN_LEFT);
-      document.add(DateParagraph);
+      Paragraph dateParagraph = new Paragraph("Date : " + LocalDate.now());
+      dateParagraph.setAlignment(Element.ALIGN_LEFT);
+      document.add(dateParagraph);
 
       // Ajouter les lignes de dépense
       PdfPTable depenseTable = new PdfPTable(3); // 4 colonnes
@@ -181,18 +196,18 @@ public class FactureService {
 
       PdfPCell descHeaderCell = new PdfPCell(
           new Phrase("Désignation des produits ou prestations", headerFont));
-      PdfPCell creditDebitHeaderCell = new PdfPCell(new Phrase("Credit/Debit", headerFont));
-      PdfPCell totalHeaderCell = new PdfPCell(new Phrase("Total", headerFont));
-
-      //light blue
       descHeaderCell.setBackgroundColor(new BaseColor(173, 216, 230));
       descHeaderCell.setHorizontalAlignment(Element.ALIGN_CENTER);
       descHeaderCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
       descHeaderCell.setPaddingBottom(5);
+
+      PdfPCell creditDebitHeaderCell = new PdfPCell(new Phrase("Credit/Debit", headerFont));
       creditDebitHeaderCell.setBackgroundColor(new BaseColor(173, 216, 230));
       creditDebitHeaderCell.setHorizontalAlignment(Element.ALIGN_CENTER);
       creditDebitHeaderCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
       creditDebitHeaderCell.setPaddingBottom(5);
+
+      PdfPCell totalHeaderCell = new PdfPCell(new Phrase("Total", headerFont));
       totalHeaderCell.setBackgroundColor(new BaseColor(173, 216, 230));
       totalHeaderCell.setHorizontalAlignment(Element.ALIGN_CENTER);
       totalHeaderCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
@@ -303,15 +318,14 @@ public class FactureService {
       totalTable.setSpacingAfter(10f);
 
       PdfPCell totalDescCell = new PdfPCell(new Phrase("Total", headerFont));
-      PdfPCell totalCell = new PdfPCell(
-          new Phrase(String.format("%.2f", finalAmount) + " €", headerFont));
-
       totalDescCell.setBackgroundColor(new BaseColor(173, 216, 230));
       totalDescCell.setHorizontalAlignment(Element.ALIGN_CENTER);
       totalDescCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
       totalDescCell.setPaddingBottom(5);
 
-      if(secondaryColor){
+      PdfPCell totalCell = new PdfPCell(
+          new Phrase(String.format("%.2f", finalAmount) + " €", headerFont));
+      if (secondaryColor) {
         totalCell.setBackgroundColor(lightGrey);
       }
       totalCell.setHorizontalAlignment(Element.ALIGN_RIGHT);

@@ -1,23 +1,44 @@
 package fr.esgi.al5.tayarim.services;
 
+import fr.esgi.al5.tayarim.TayarimApplication;
+import fr.esgi.al5.tayarim.dto.proprietaire.ProprietaireCandidateDto;
 import fr.esgi.al5.tayarim.dto.proprietaire.ProprietaireCreationDto;
 import fr.esgi.al5.tayarim.dto.proprietaire.ProprietaireDto;
 import fr.esgi.al5.tayarim.dto.proprietaire.ProprietaireUpdateDto;
+import fr.esgi.al5.tayarim.entities.Amenagement;
+import fr.esgi.al5.tayarim.entities.ImageLogement;
+import fr.esgi.al5.tayarim.entities.Logement;
 import fr.esgi.al5.tayarim.entities.Proprietaire;
+import fr.esgi.al5.tayarim.entities.ReglesLogement;
+import fr.esgi.al5.tayarim.entities.TypeLogement;
+import fr.esgi.al5.tayarim.exceptions.LogementImageBucketUploadError;
+import fr.esgi.al5.tayarim.exceptions.LogementInvalidAmenagement;
+import fr.esgi.al5.tayarim.exceptions.LogementInvalidReglesLogement;
+import fr.esgi.al5.tayarim.exceptions.LogementInvalidTypeLogement;
 import fr.esgi.al5.tayarim.exceptions.PasswordHashNotPossibleException;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireEmailAlreadyExistException;
+import fr.esgi.al5.tayarim.exceptions.ProprietaireInvalidCandidatureBody;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireInvalidUpdateBody;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireNumTelAlreadyExistException;
+import fr.esgi.al5.tayarim.mappers.LogementMapper;
 import fr.esgi.al5.tayarim.mappers.ProprietaireMapper;
+import fr.esgi.al5.tayarim.repositories.AmenagementRepository;
+import fr.esgi.al5.tayarim.repositories.ImageLogementRepository;
+import fr.esgi.al5.tayarim.repositories.LogementRepository;
 import fr.esgi.al5.tayarim.repositories.ProprietaireRepository;
+import fr.esgi.al5.tayarim.repositories.ReglesLogementRepository;
+import fr.esgi.al5.tayarim.repositories.TypeLogementRepository;
+import java.io.IOException;
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import lombok.NonNull;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 
 /**
@@ -29,9 +50,26 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProprietaireService {
 
   private final ProprietaireRepository proprietaireRepository;
+  private final LogementRepository logementRepository;
+  private final TypeLogementRepository typeLogementRepository;
+  private final ReglesLogementRepository reglesLogementRepository;
+  private final AmenagementRepository amenagementRepository;
+  private final ImageLogementRepository imageLogementRepository;
 
-  public ProprietaireService(ProprietaireRepository proprietaireRepository) {
+  /**
+   * Constructeur pour le service de gestion des propriétaires.
+   */
+  public ProprietaireService(ProprietaireRepository proprietaireRepository,
+      LogementRepository logementRepository, TypeLogementRepository typeLogementRepository,
+      ReglesLogementRepository reglesLogementRepository,
+      AmenagementRepository amenagementRepository,
+      ImageLogementRepository imageLogementRepository) {
     this.proprietaireRepository = proprietaireRepository;
+    this.logementRepository = logementRepository;
+    this.typeLogementRepository = typeLogementRepository;
+    this.reglesLogementRepository = reglesLogementRepository;
+    this.amenagementRepository = amenagementRepository;
+    this.imageLogementRepository = imageLogementRepository;
   }
 
   /**
@@ -57,34 +95,7 @@ public class ProprietaireService {
     }
     proprietaireCreationDto.setNumTel(numTel);
 
-    String allowedchar = "abcdefghijklmnopqrstuvwxyz"
-        + "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        + "0123456789"
-        + "!@#$%&*()_+-=[]?";
-    SecureRandom random = new SecureRandom();
-    StringBuilder generatedPassword = null;
-    boolean result = false;
-    while (!result) {
-      boolean hasLowerCase = false;
-      boolean hasUpperCase = false;
-      boolean hasDigit = false;
-      boolean hasSpecialChar = false;
-      generatedPassword = new StringBuilder(16);
-      for (int i = 0; i < 16; i++) {
-        int index = random.nextInt(allowedchar.length());
-        if (index > 61) {
-          hasSpecialChar = true;
-        } else if (index > 51) {
-          hasDigit = true;
-        } else if (index > 25) {
-          hasUpperCase = true;
-        } else {
-          hasLowerCase = true;
-        }
-        generatedPassword.append(allowedchar.charAt(index));
-      }
-      result = hasLowerCase && hasUpperCase && hasDigit && hasSpecialChar;
-    }
+    String generatedPassword = hashPassword(generatePassword());
 
     System.out.println(generatedPassword); // waiting for SMTP
 
@@ -210,7 +221,8 @@ public class ProprietaireService {
             .isNaN())
             ? proprietaireUpdateDto.getCommission() : proprietaire.getCommission());
     proprietaire.setAdresse(
-        (proprietaireUpdateDto.getAdresse() != null && !proprietaireUpdateDto.getAdresse().isBlank())
+        (proprietaireUpdateDto.getAdresse() != null && !proprietaireUpdateDto.getAdresse()
+            .isBlank())
             ? proprietaireUpdateDto.getAdresse() : proprietaire.getAdresse());
 
     return ProprietaireMapper.entityToDto(proprietaireRepository.save(proprietaire), false);
@@ -239,6 +251,129 @@ public class ProprietaireService {
 
     return proprietaireDto;
 
+  }
+
+  /**
+   * Enregistre la candidature d'un propriétaire.
+   */
+  @Transactional
+  public ProprietaireDto candidate(@NonNull ProprietaireCandidateDto proprietaireCandidateDto) {
+
+    if (
+        proprietaireCandidateDto.getIsLouable()
+            && (
+            proprietaireCandidateDto.getNombresDeChambres() == null
+                || proprietaireCandidateDto.getNombresDeLits() == null
+                || proprietaireCandidateDto.getNombresSallesDeBains() == null
+                || proprietaireCandidateDto.getCapaciteMaxPersonne() == null
+                || proprietaireCandidateDto.getEtage() == null
+                || proprietaireCandidateDto.getEtage().isBlank()
+                || proprietaireCandidateDto.getNumeroDePorte() == null
+                || proprietaireCandidateDto.getNumeroDePorte().isBlank()
+                || proprietaireCandidateDto.getReglesLogement() == null
+                || proprietaireCandidateDto.getAmenagements() == null
+                || proprietaireCandidateDto.getFiles() == null
+        )
+    ) {
+      throw new ProprietaireInvalidCandidatureBody();
+    }
+
+    if (proprietaireRepository.findFirstByEmail(proprietaireCandidateDto.getEmail()).isPresent()) {
+      throw new ProprietaireEmailAlreadyExistException();
+    }
+
+    if (proprietaireRepository.findFirstByNumTel(proprietaireCandidateDto.getNumTel())
+        .isPresent()) {
+      throw new ProprietaireNumTelAlreadyExistException();
+    }
+
+    Proprietaire proprietaire = ProprietaireMapper.candidatureDtoToEntity(proprietaireCandidateDto,
+        hashPassword(generatePassword()));
+
+    Optional<TypeLogement> optionalTypeLogement = typeLogementRepository
+        .findById(proprietaireCandidateDto.getIdTypeLogement());
+    if (optionalTypeLogement.isEmpty()) {
+      throw new LogementInvalidTypeLogement();
+    }
+    TypeLogement typeLogement = optionalTypeLogement.get();
+
+    ArrayList<ReglesLogement> reglesLogements = parseRegle(
+        proprietaireCandidateDto.getReglesLogement());
+
+    ArrayList<Amenagement> amenagements = parseAmenagement(
+        proprietaireCandidateDto.getAmenagements());
+
+    Logement logement = LogementMapper.candidatureDtoToEntity(proprietaireCandidateDto,
+        proprietaire, typeLogement, reglesLogements, amenagements, new ArrayList<>());
+
+    proprietaire = proprietaireRepository.save(proprietaire);
+
+    proprietaire.setLogements(List.of(
+        logementRepository.save(logement))
+    );
+
+    if (proprietaireCandidateDto.getFiles() != null) {
+      int cpt = 0;
+      List<String> urls = new ArrayList<>();
+      ArrayList<ImageLogement> images = new ArrayList<>();
+      for (MultipartFile file : proprietaireCandidateDto.getFiles()) {
+        cpt++;
+
+        try {
+          // Obtenez les octets du fichier
+          byte[] bytes = file.getBytes();
+
+          String fileName = "House images/".concat(
+                  proprietaire.getLogements().get(0).getId().toString()).concat("_")
+              .concat(Integer.toString(cpt));
+
+          // Téléchargez le fichier dans GCS
+          TayarimApplication.bucket.create(fileName, bytes);
+
+          urls.add(fileName);
+
+        } catch (IOException e) {
+          logementRepository.delete(logement);
+          proprietaireRepository.delete(proprietaire);
+          throw new LogementImageBucketUploadError();
+        }
+
+      }
+
+      cpt = 0;
+      for (String fileName : urls) {
+        cpt++;
+        images.add(imageLogementRepository.save(new ImageLogement(fileName, logement, (cpt == 1))));
+      }
+
+      logement.setImages(images);
+
+    }
+
+    logementRepository.save(logement);
+
+    return ProprietaireMapper.entityToDto(proprietaire, false);
+  }
+
+  /**
+   * Valide un propriétaire candidat.
+   */
+  @Transactional
+  public ProprietaireDto validateCandidat(@NonNull Long id) {
+    Optional<Proprietaire> optionalProprietaire = proprietaireRepository.findById(id);
+    if (optionalProprietaire.isEmpty()) {
+      throw new ProprietaireNotFoundException();
+    }
+
+    Proprietaire proprietaire = optionalProprietaire.get();
+
+    if (proprietaire.getIsValidated()) {
+      throw new ProprietaireNotFoundException();
+    }
+
+    proprietaire.setIsValidated(true);
+
+    return ProprietaireMapper.entityToDto(proprietaireRepository.save(proprietaire), false);
   }
 
   /**
@@ -274,4 +409,73 @@ public class ProprietaireService {
     return BCrypt.checkpw(password, hashedPassword);
 
   }
+
+  private String generatePassword() {
+    String allowedchar = "abcdefghijklmnopqrstuvwxyz"
+        + "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        + "0123456789"
+        + "!@#$%&*()_+-=[]?";
+    SecureRandom random = new SecureRandom();
+    StringBuilder generatedPassword = null;
+    boolean result = false;
+    while (!result) {
+      boolean hasLowerCase = false;
+      boolean hasUpperCase = false;
+      boolean hasDigit = false;
+      boolean hasSpecialChar = false;
+      generatedPassword = new StringBuilder(16);
+      for (int i = 0; i < 16; i++) {
+        int index = random.nextInt(allowedchar.length());
+        if (index > 61) {
+          hasSpecialChar = true;
+        } else if (index > 51) {
+          hasDigit = true;
+        } else if (index > 25) {
+          hasUpperCase = true;
+        } else {
+          hasLowerCase = true;
+        }
+        generatedPassword.append(allowedchar.charAt(index));
+      }
+      result = hasLowerCase && hasUpperCase && hasDigit && hasSpecialChar;
+    }
+    return generatedPassword.toString();
+  }
+
+  private ArrayList<ReglesLogement> parseRegle(List<Long> idRegles) {
+    if (idRegles == null) {
+      return new ArrayList<>();
+    }
+
+    ArrayList<ReglesLogement> reglesLogements = new ArrayList<>();
+    for (Long id : idRegles) {
+      Optional<ReglesLogement> optionalReglesLogement = reglesLogementRepository.findById(id);
+      if (optionalReglesLogement.isEmpty()) {
+        throw new LogementInvalidReglesLogement();
+      }
+      reglesLogements.add(optionalReglesLogement.get());
+    }
+
+    return reglesLogements;
+
+  }
+
+  private ArrayList<Amenagement> parseAmenagement(List<Long> idAmenagements) {
+    if (idAmenagements == null) {
+      return new ArrayList<>();
+    }
+
+    ArrayList<Amenagement> amenagements = new ArrayList<>();
+    for (Long id : idAmenagements) {
+      Optional<Amenagement> optionalAmenagement = amenagementRepository.findById(id);
+      if (optionalAmenagement.isEmpty()) {
+        throw new LogementInvalidAmenagement();
+      }
+      amenagements.add(optionalAmenagement.get());
+    }
+
+    return amenagements;
+
+  }
+
 }

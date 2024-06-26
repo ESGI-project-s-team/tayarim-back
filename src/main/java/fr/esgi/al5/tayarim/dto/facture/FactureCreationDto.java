@@ -10,6 +10,9 @@ import lombok.Data;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Classe pour la gestion des Dto de création de facture.
+ */
 @Data // Generates getters, setters, toString, equals, and hashCode methods
 @RequiredArgsConstructor
 @AllArgsConstructor // Generates an all-args constructor

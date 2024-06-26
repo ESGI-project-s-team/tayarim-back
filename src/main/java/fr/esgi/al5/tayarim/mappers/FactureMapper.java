@@ -23,7 +23,7 @@ public class FactureMapper {
    */
   public static Facture creationDtoToEntity(@NonNull FactureCreationDto factureCreationDto,
       @NonNull Proprietaire proprietaire
-      ) {
+  ) {
     return new Facture(
         "numero",
         LocalDate.now(),
@@ -43,9 +43,6 @@ public class FactureMapper {
         facture.getId(),
         facture.getNumeroFacture(),
         facture.getDateFacture().toString(
-
-
-
 
         ),
         facture.getMontant(),

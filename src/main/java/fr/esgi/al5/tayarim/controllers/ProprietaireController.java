@@ -4,6 +4,7 @@ import fr.esgi.al5.tayarim.auth.UserTokenInfo;
 import fr.esgi.al5.tayarim.controllers.interfaces.ControllerUtils;
 import fr.esgi.al5.tayarim.controllers.interfaces.DeleteMethodInterface;
 import fr.esgi.al5.tayarim.controllers.interfaces.UpdateMethodInterface;
+import fr.esgi.al5.tayarim.dto.proprietaire.ProprietaireCandidateDto;
 import fr.esgi.al5.tayarim.dto.proprietaire.ProprietaireCreationDto;
 import fr.esgi.al5.tayarim.dto.proprietaire.ProprietaireDto;
 import fr.esgi.al5.tayarim.dto.proprietaire.ProprietaireUpdateDto;
@@ -24,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -167,4 +169,31 @@ public class ProprietaireController implements
         HttpStatus.OK
     );
   }
+
+  /**
+   * Gère la candidature des propriétaires.
+   */
+  @PostMapping(path = "/candidate", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  public ResponseEntity<ProprietaireDto> candidate(
+      @Valid ProprietaireCandidateDto proprietaireCandidateDto) {
+    return new ResponseEntity<>(
+        proprietaireService.candidate(proprietaireCandidateDto),
+        HttpStatus.CREATED
+    );
+  }
+
+  /**
+   * Valide un propriétaire candidat.
+   */
+  @Operation(summary = "Authenticate user", security = @SecurityRequirement(name = "bearer-key"))
+  @PutMapping(path = "/candidate/{id}")
+  public ResponseEntity<ProprietaireDto> validateCandidate(
+      @RequestAttribute("token") String authHeader, @PathVariable Long id) {
+    authService.verifyToken(getTokenFromHeader(authHeader), true);
+    return new ResponseEntity<>(
+        proprietaireService.validateCandidat(id),
+        HttpStatus.OK
+    );
+  }
+
 }

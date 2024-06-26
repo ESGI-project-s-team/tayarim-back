@@ -6,6 +6,9 @@ import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 
+/**
+ * Service pour l'envoi d'email.
+ */
 public class MySender implements JavaMailSender {
 
   @Override
