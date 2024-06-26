@@ -37,6 +37,9 @@ public class ProprietaireDto {
   private String numTel;
 
   @NonNull
+  private String adresse;
+
+  @NonNull
   private LocalDateTime dateInscription;
 
   @NonNull

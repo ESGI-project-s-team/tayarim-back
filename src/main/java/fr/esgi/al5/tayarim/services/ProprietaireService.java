@@ -155,6 +155,8 @@ public class ProprietaireService {
             .isBlank())
             && (proprietaireUpdateDto.getEmail() == null || proprietaireUpdateDto.getEmail()
             .isBlank())
+            && (proprietaireUpdateDto.getAdresse() == null || proprietaireUpdateDto.getAdresse()
+            .isBlank())
             && (proprietaireUpdateDto.getNumTel() == null || proprietaireUpdateDto.getNumTel()
             .isBlank())
             && (proprietaireUpdateDto.getMotDePasse() == null
@@ -207,6 +209,9 @@ public class ProprietaireService {
         (proprietaireUpdateDto.getCommission() != null && !proprietaireUpdateDto.getCommission()
             .isNaN())
             ? proprietaireUpdateDto.getCommission() : proprietaire.getCommission());
+    proprietaire.setAdresse(
+        (proprietaireUpdateDto.getAdresse() != null && !proprietaireUpdateDto.getAdresse().isBlank())
+            ? proprietaireUpdateDto.getAdresse() : proprietaire.getAdresse());
 
     return ProprietaireMapper.entityToDto(proprietaireRepository.save(proprietaire), false);
   }

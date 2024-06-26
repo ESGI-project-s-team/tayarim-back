@@ -33,6 +33,7 @@ public class ProprietaireMapper {
         .numTel(proprietaireCreationDto.getNumTel())
         .motDePasse(hashedPassword)
         .dateInscription(LocalDateTime.now())
+        .adresse(proprietaireCreationDto.getAdresse())
         .isPasswordUpdated(false)
         .build();
   }
@@ -59,6 +60,7 @@ public class ProprietaireMapper {
         .logements(
             isLogement ? LogementMapper.entityListToDtoList(proprietaire.getLogements()) : null)
         .commission(proprietaire.getCommission())
+        .adresse(proprietaire.getAdresse())
         .build();
   }
 

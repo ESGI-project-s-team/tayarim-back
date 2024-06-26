@@ -157,7 +157,7 @@ public class DepenseService {
     Depense depense = optionalDepense.get();
 
     depense.setLibelle(
-        depenseUpdateDto.getLibelle() != null || !depenseUpdateDto.getLibelle().isBlank()
+        depenseUpdateDto.getLibelle() != null && !depenseUpdateDto.getLibelle().isBlank()
             ? depenseUpdateDto.getLibelle() : depense.getLibelle()
     );
 
@@ -165,6 +165,19 @@ public class DepenseService {
         depenseUpdateDto.getPrix() != null
             ? depenseUpdateDto.getPrix() : depense.getPrix()
     );
+
+    if(depenseUpdateDto.getDate() != null && !depenseUpdateDto.getDate().isBlank()) {
+      LocalDate date;
+      try {
+        date = LocalDate.parse(depenseUpdateDto.getDate());
+        System.out.println(date);
+      } catch (Exception e) {
+        throw new DepenseDateInvalidError();
+      }
+
+      depense.setDate(date);
+    }
+
 
     return DepenseMapper.entityToDto(depenseRepository.save(depense));
 

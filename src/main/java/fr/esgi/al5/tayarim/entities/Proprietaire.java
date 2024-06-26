@@ -34,6 +34,10 @@ public class Proprietaire extends Utilisateur {
   @NonNull
   private LocalDateTime dateInscription;
 
+  @Column(name = "ADRESSE", nullable = false)
+  @NonNull
+  private String adresse;
+
   @Column(name = "ISPASSWORDUPDATED", nullable = false)
   @NonNull
   private Boolean isPasswordUpdated;
@@ -51,11 +55,13 @@ public class Proprietaire extends Utilisateur {
    * @param numTel Numéro de téléphone du proprietaire
    * @param motDePasse Mot de passe du proprietaire
    * @param dateInscription Date de l'inscription du proprietaire
+   * @param adresse Adresse du proprietaire
    * @param isPasswordUpdated Indicateur de modification du mot de passe générer à l'inscription
    */
   @Builder
   public Proprietaire(@NonNull String nom, @NonNull String prenom, @NonNull String email,
       @NonNull String numTel, @NonNull String motDePasse, @NonNull LocalDateTime dateInscription,
+      @NonNull String adresse,
       @NonNull Boolean isPasswordUpdated) {
     // Utiliser super() pour appeler le constructeur de la classe parente
     super(nom, prenom, email, numTel, motDePasse);
@@ -68,6 +74,7 @@ public class Proprietaire extends Utilisateur {
 
     this.isPasswordUpdated = isPasswordUpdated;
     this.commission = 20f;
+    this.adresse = adresse;
   }
 
 

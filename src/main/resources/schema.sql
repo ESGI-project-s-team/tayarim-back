@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS Utilisateur (
 
 CREATE TABLE IF NOT EXISTS Proprietaire (
                                             idUser INT PRIMARY KEY,
+                                            adresse VARCHAR(300),
                                             dateInscription DATETIME,
                                             isPasswordUpdated BOOLEAN,
                                             commission FLOAT

@@ -82,3 +82,4 @@
 "error_expense_invalid_date": "The date entered is invalid",
 "error_expense_invalid_idLogement": "The id of the housing is invalid",
 "error_notification_send": "An error occurred while sending the notification",
+"error_owner_invalid_address": "The address entered is invalid",
