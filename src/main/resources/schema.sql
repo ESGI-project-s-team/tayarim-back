@@ -1,4 +1,5 @@
 DROP TABLE IF EXISTS Notification;
+DROP TABLE IF EXISTS Facture;
 DROP TABLE IF EXISTS Contenir;
 DROP TABLE IF EXISTS Respecter;
 DROP TABLE IF EXISTS Indisponibilite;
@@ -161,6 +162,14 @@ CREATE TABLE IF NOT EXISTS Notification (
                                            isRead BOOLEAN
 );
 
+CREATE TABLE IF NOT EXISTS Facture (
+                                      id INT PRIMARY KEY AUTO_INCREMENT,
+                                      numeroFacture VARCHAR(100),
+                                      date DATE,
+                                      montant FLOAT,
+                                      idProprietaire INT
+);
+
 ALTER TABLE Proprietaire ADD FOREIGN KEY (idUser) REFERENCES Utilisateur(id);
 
 ALTER TABLE Administrateur ADD FOREIGN KEY (idUser) REFERENCES Utilisateur(id);
@@ -190,3 +199,5 @@ ALTER TABLE Contenir ADD FOREIGN KEY (idLogement) REFERENCES Logement(id);
 ALTER TABLE Contenir ADD FOREIGN KEY (idAmenagement) REFERENCES Amenagement(id);
 
 ALTER TABLE Notification ADD FOREIGN KEY (idUser) REFERENCES Utilisateur(id);
+
+ALTER TABLE Facture ADD FOREIGN KEY (idProprietaire) REFERENCES Proprietaire(idUser);
