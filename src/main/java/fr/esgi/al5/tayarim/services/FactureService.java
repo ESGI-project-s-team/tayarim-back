@@ -85,7 +85,8 @@ public class FactureService {
 
     List<Logement> logements = logementRepository.findAllByProprietaire(optionalProprietaire.get());
 
-    generateFacture(factureCreationDto.getMonth(), factureCreationDto.getYear(), logements, optionalProprietaire.get());
+    generateFacture(factureCreationDto.getMonth(), factureCreationDto.getYear(), logements,
+        optionalProprietaire.get());
 
     return null;
 
@@ -109,7 +110,8 @@ public class FactureService {
 
   }
 
-  private void generateFacture(Long month, Long year, List<Logement> logements, Proprietaire proprietaire) {
+  private void generateFacture(Long month, Long year, List<Logement> logements,
+      Proprietaire proprietaire) {
     Document document = new Document();
     try {
       PdfWriter pdfWriter = PdfWriter.getInstance(document, new FileOutputStream("facture.pdf"));
@@ -241,8 +243,9 @@ public class FactureService {
         String creditDebit = "";
         String total = "";
 
-        List<Reservation> reservations = reservationRepository.findAllByLogementIdAndStatutInAndDateDepartStartsWith(
-            logement.getId(), List.of("done"), firstDayOfMonth, lastDayOfMonth);
+        List<Reservation> reservations = reservationRepository
+            .findAllByLogementIdAndStatutInAndDateDepartStartsWith(
+                logement.getId(), List.of("done"), firstDayOfMonth, lastDayOfMonth);
 
         String resaDesc = "";
         String resaCreditDebit = "";

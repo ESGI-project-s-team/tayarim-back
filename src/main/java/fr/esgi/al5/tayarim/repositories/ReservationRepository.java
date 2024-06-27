@@ -38,6 +38,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
       + "WHERE l.id = :idLogement "
       + "AND r.statut IN :status "
       + "AND r.dateDepart BETWEEN :startDate AND :endDate ")
-  List<Reservation> findAllByLogementIdAndStatutInAndDateDepartStartsWith(@Param("idLogement") Long idLogement,
-      @Param("status") Collection<String> status, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+  List<Reservation> findAllByLogementIdAndStatutInAndDateDepartStartsWith(
+      @Param("idLogement") Long idLogement,
+      @Param("status") Collection<String> status, @Param("startDate") LocalDate startDate,
+      @Param("endDate") LocalDate endDate);
 }
