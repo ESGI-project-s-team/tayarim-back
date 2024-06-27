@@ -28,6 +28,7 @@ import fr.esgi.al5.tayarim.repositories.ReservationRepository;
 import java.io.FileOutputStream;
 import java.time.LocalDate;
 import java.time.Month;
+import java.time.YearMonth;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -224,8 +225,16 @@ public class FactureService {
 
       Float finalAmount = 0f;
 
+      // Create a YearMonth instance for the given year and month
+      YearMonth yearMonth = YearMonth.of(Math.toIntExact(year), Math.toIntExact(month));
+
+      // Get the first day of the month as a LocalDate
+      LocalDate firstDayOfMonth = yearMonth.atDay(1);
+      LocalDate lastDayOfMonth = yearMonth.atEndOfMonth();
+
       boolean secondaryColor = false;
       BaseColor lightGrey = new BaseColor(220, 220, 220);
+
       for (Logement logement : logements) {
 
         String colDesc = "Logement : " + logement.getAdresse();
@@ -233,7 +242,7 @@ public class FactureService {
         String total = "";
 
         List<Reservation> reservations = reservationRepository.findAllByLogementIdAndStatutInAndDateDepartStartsWith(
-            logement.getId(), List.of("done"), year + "-" + (month < 10 ? "0" + month : month) + "-%");
+            logement.getId(), List.of("done"), firstDayOfMonth, lastDayOfMonth);
 
         String resaDesc = "";
         String resaCreditDebit = "";
