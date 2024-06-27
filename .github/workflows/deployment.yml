@@ -60,7 +60,7 @@ jobs:
           repo: iac-tayarim
           github_token: ${{ secrets.ACTIONS_KEY }}
           workflow_file_name: terraform_deploy.yml
-          ref: main
+          ref: feature/david
           wait_interval: 30
           propagate_failure: true
           wait_workflow: true
