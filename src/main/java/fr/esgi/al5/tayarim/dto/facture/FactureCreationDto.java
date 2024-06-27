@@ -25,6 +25,7 @@ public class FactureCreationDto {
   @NotNull
   private Long month;
 
+  @NotNull
   @Min(value = 2000, message = "error_invoice_invalid_year")
   @Max(value = 3000, message = "error_invoice_invalid_year")
   private Long year;

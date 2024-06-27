@@ -4,6 +4,8 @@ import fr.esgi.al5.tayarim.entities.Logement;
 import fr.esgi.al5.tayarim.entities.Proprietaire;
 import fr.esgi.al5.tayarim.entities.Reservation;
 import fr.esgi.al5.tayarim.entities.TypeLogement;
+import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import lombok.NonNull;
@@ -29,4 +31,13 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
   List<Reservation> findAllByLogementIdAndStatutIn(@NonNull Long idLogement,
       @NonNull List<String> statuts);
+
+  @Query("SELECT r FROM RESERVATION r "
+      + "JOIN r.logement l "
+      + "JOIN l.typeLogement t "
+      + "WHERE l.id = :idLogement "
+      + "AND r.statut IN :status "
+      + "AND r.dateDepart BETWEEN :startDate AND :endDate ")
+  List<Reservation> findAllByLogementIdAndStatutInAndDateDepartStartsWith(@Param("idLogement") Long idLogement,
+      @Param("status") Collection<String> status, @Param("startDate") String startDate, @Param("endDate") String endDate);
 }

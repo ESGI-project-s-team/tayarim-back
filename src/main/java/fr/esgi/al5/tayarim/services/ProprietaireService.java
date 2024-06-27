@@ -377,6 +377,7 @@ public class ProprietaireService {
             || logement.getPrixParNuit() == null
             || logement.getDefaultCheckIn() == null
             || logement.getDefaultCheckOut() == null
+            || logement.getIntervalReservation() == null
     ) {
       throw new LogementInvalidUpdateBody();
     }

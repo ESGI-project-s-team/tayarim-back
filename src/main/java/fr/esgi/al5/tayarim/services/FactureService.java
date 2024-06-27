@@ -27,8 +27,12 @@ import fr.esgi.al5.tayarim.repositories.ProprietaireRepository;
 import fr.esgi.al5.tayarim.repositories.ReservationRepository;
 import java.io.FileOutputStream;
 import java.time.LocalDate;
+import java.time.Month;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import lombok.NonNull;
 import org.springframework.stereotype.Service;
@@ -80,7 +84,7 @@ public class FactureService {
 
     List<Logement> logements = logementRepository.findAllByProprietaire(optionalProprietaire.get());
 
-    generateFacture(factureCreationDto.getMonth(), logements, optionalProprietaire.get());
+    generateFacture(factureCreationDto.getMonth(), factureCreationDto.getYear(), logements, optionalProprietaire.get());
 
     return null;
 
@@ -104,7 +108,7 @@ public class FactureService {
 
   }
 
-  private void generateFacture(Long month, List<Logement> logements, Proprietaire proprietaire) {
+  private void generateFacture(Long month, Long year, List<Logement> logements, Proprietaire proprietaire) {
     Document document = new Document();
     try {
       PdfWriter pdfWriter = PdfWriter.getInstance(document, new FileOutputStream("facture.pdf"));
@@ -173,7 +177,8 @@ public class FactureService {
 
       document.add(tableClient);
 
-      Paragraph factureParagraph = new Paragraph("Facture N° 00001",
+      Paragraph factureParagraph = new Paragraph("Facture N° 00001 pour le mois de " + Month.of(
+          Math.toIntExact(month)).getDisplayName(TextStyle.FULL, Locale.FRANCE) + " " + year,
           FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12));
       factureParagraph.setAlignment(Element.ALIGN_LEFT);
       document.add(factureParagraph);
@@ -227,8 +232,8 @@ public class FactureService {
         String creditDebit = "";
         String total = "";
 
-        List<Reservation> reservations = reservationRepository.findAllByLogementIdAndStatutIn(
-            logement.getId(), List.of("done"));
+        List<Reservation> reservations = reservationRepository.findAllByLogementIdAndStatutInAndDateDepartStartsWith(
+            logement.getId(), List.of("done"), year + "-" + (month < 10 ? "0" + month : month) + "-%");
 
         String resaDesc = "";
         String resaCreditDebit = "";
