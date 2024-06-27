@@ -1,4 +1,5 @@
 DROP TABLE IF EXISTS Notification;
+DROP TABLE IF EXISTS Facture;
 DROP TABLE IF EXISTS Contenir;
 DROP TABLE IF EXISTS Respecter;
 DROP TABLE IF EXISTS Indisponibilite;
@@ -27,9 +28,11 @@ CREATE TABLE IF NOT EXISTS Utilisateur (
 
 CREATE TABLE IF NOT EXISTS Proprietaire (
                                             idUser INT PRIMARY KEY,
+                                            adresse VARCHAR(300),
                                             dateInscription DATETIME,
                                             isPasswordUpdated BOOLEAN,
-                                            commission FLOAT
+                                            commission FLOAT,
+                                            isValidated BOOLEAN
 );
 
 CREATE TABLE IF NOT EXISTS Administrateur (
@@ -58,7 +61,8 @@ CREATE TABLE IF NOT EXISTS Logement (
                                         etage VARCHAR(100),
                                         numeroDePorte VARCHAR(100),
                                         idTypeLogement INT,
-                                        idProprietaire INT
+                                        idProprietaire INT,
+                                        isValidated BOOLEAN
 );
 
 CREATE TABLE IF NOT EXISTS TypeLogement (
@@ -163,6 +167,14 @@ CREATE TABLE IF NOT EXISTS Notification (
                                             isRead BOOLEAN
 );
 
+CREATE TABLE IF NOT EXISTS Facture (
+                                       id INT PRIMARY KEY AUTO_INCREMENT,
+                                       numeroFacture VARCHAR(100),
+                                       date DATE,
+                                       montant FLOAT,
+                                       idProprietaire INT
+);
+
 ALTER TABLE Proprietaire ADD FOREIGN KEY (idUser) REFERENCES Utilisateur(id);
 
 ALTER TABLE Administrateur ADD FOREIGN KEY (idUser) REFERENCES Utilisateur(id);
@@ -190,5 +202,7 @@ ALTER TABLE Respecter ADD FOREIGN KEY (idReglesLogement) REFERENCES ReglesLogeme
 ALTER TABLE Contenir ADD FOREIGN KEY (idLogement) REFERENCES Logement(id);
 
 ALTER TABLE Contenir ADD FOREIGN KEY (idAmenagement) REFERENCES Amenagement(id);
+
+ALTER TABLE Facture ADD FOREIGN KEY (idProprietaire) REFERENCES Utilisateur(id);
 
 ALTER TABLE Notification ADD FOREIGN KEY (idUser) REFERENCES Utilisateur(id);

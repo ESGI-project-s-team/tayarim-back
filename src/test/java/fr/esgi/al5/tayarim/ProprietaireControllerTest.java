@@ -82,6 +82,7 @@ public class ProprietaireControllerTest {
         .prenom("Mathieu")
         .email("test@gmail.com")
         .numTel("0612345678")
+        .adresse("13 FakeStreet City, 12345 Country")
         .build();
     proprietaire = Proprietaire.builder()
         .nom("Ferreira")
@@ -91,6 +92,8 @@ public class ProprietaireControllerTest {
         .motDePasse("$2a$12$3hQDUblvPShmuQg/.g0Qk.wHAGjqPL54RMO/lNgsei/HQGo0ZLIYm")
         .dateInscription(localDateTime)
         .isPasswordUpdated(Boolean.TRUE)
+        .adresse("13 FakeStreet City, 12345 Country")
+        .isValidated(Boolean.TRUE)
         .build();
     proprietaireDto = ProprietaireDto.builder()
         .id(1L)
@@ -102,6 +105,8 @@ public class ProprietaireControllerTest {
         .logements(null)
         .isPasswordUpdated(Boolean.TRUE)
         .commission(20f)
+        .adresse("13 FakeStreet City, 12345 Country")
+        .isValidated(Boolean.TRUE)
         .build();
     proprietaireDto2 = ProprietaireDto.builder()
         .id(2L)
@@ -113,6 +118,8 @@ public class ProprietaireControllerTest {
         .logements(null)
         .isPasswordUpdated(Boolean.TRUE)
         .commission(20f)
+        .adresse("13 FakeStreet City, 12345 Country")
+        .isValidated(Boolean.TRUE)
         .build();
     proprietaireDtos = List.of(proprietaireDto, proprietaireDto2);
     proprietaireDtoWithLogement = ProprietaireDto.builder()
@@ -149,9 +156,12 @@ public class ProprietaireControllerTest {
             Map.of("Children allowed", "FaChild", "Smoking allowed", "FaSmoking", "Pets allowed",
                 "MdOutlinePets"),
             Map.of("Oven", "PiOvenDuotone", "Wifi", "FaWifi"),
-            List.of()
+            List.of(),
+            true
         )))
         .commission(20f)
+        .adresse("13 FakeStreet City, 12345 Country")
+        .isValidated(Boolean.TRUE)
         .build();
     proprietaireUpdateDto = ProprietaireUpdateDto.builder()
         .prenom("Karl")

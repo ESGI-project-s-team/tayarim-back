@@ -16,6 +16,7 @@ import fr.esgi.al5.tayarim.exceptions.LogementImageBucketUploadError;
 import fr.esgi.al5.tayarim.exceptions.LogementInvalidAmenagement;
 import fr.esgi.al5.tayarim.exceptions.LogementInvalidReglesLogement;
 import fr.esgi.al5.tayarim.exceptions.LogementInvalidTypeLogement;
+import fr.esgi.al5.tayarim.exceptions.LogementInvalidUpdateBody;
 import fr.esgi.al5.tayarim.exceptions.LogementNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.PasswordHashNotPossibleException;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireEmailAlreadyExistException;
@@ -262,20 +263,7 @@ public class ProprietaireService {
   public ProprietaireDto candidate(@NonNull ProprietaireCandidateDto proprietaireCandidateDto) {
 
     if (
-        proprietaireCandidateDto.getIsLouable()
-            && (
-            proprietaireCandidateDto.getNombresDeChambres() == null
-                || proprietaireCandidateDto.getNombresDeLits() == null
-                || proprietaireCandidateDto.getNombresSallesDeBains() == null
-                || proprietaireCandidateDto.getCapaciteMaxPersonne() == null
-                || proprietaireCandidateDto.getEtage() == null
-                || proprietaireCandidateDto.getEtage().isBlank()
-                || proprietaireCandidateDto.getNumeroDePorte() == null
-                || proprietaireCandidateDto.getNumeroDePorte().isBlank()
-                || proprietaireCandidateDto.getReglesLogement() == null
-                || proprietaireCandidateDto.getAmenagements() == null
-                || proprietaireCandidateDto.getFiles() == null
-        )
+        verifyFieldCandidate(proprietaireCandidateDto)
     ) {
       throw new ProprietaireInvalidCandidatureBody();
     }
@@ -377,11 +365,22 @@ public class ProprietaireService {
 
     proprietaire.setIsValidated(true);
 
-    if(proprietaire.getLogements().get(0) == null){
+    if (proprietaire.getLogements().get(0) == null) {
       throw new LogementNotFoundException();
     }
 
     Logement logement = proprietaire.getLogements().get(0);
+
+    if (
+        logement.getCapaciteMaxPersonne() == null
+            || logement.getNombresNuitsMin() == null
+            || logement.getPrixParNuit() == null
+            || logement.getDefaultCheckIn() == null
+            || logement.getDefaultCheckOut() == null
+    ) {
+      throw new LogementInvalidUpdateBody();
+    }
+
     logement.setIsValidated(true);
     logement = logementRepository.save(logement);
 
@@ -514,6 +513,26 @@ public class ProprietaireService {
 
     return amenagements;
 
+  }
+
+  private boolean verifyFieldCandidate(@NonNull ProprietaireCandidateDto proprietaireCandidateDto) {
+    return
+        (
+            proprietaireCandidateDto.getIsLouable()
+                && (
+                proprietaireCandidateDto.getNombresDeChambres() == null
+                    || proprietaireCandidateDto.getNombresDeLits() == null
+                    || proprietaireCandidateDto.getNombresSallesDeBains() == null
+                    || proprietaireCandidateDto.getCapaciteMaxPersonne() == null
+                    || proprietaireCandidateDto.getEtage() == null
+                    || proprietaireCandidateDto.getEtage().isBlank()
+                    || proprietaireCandidateDto.getNumeroDePorte() == null
+                    || proprietaireCandidateDto.getNumeroDePorte().isBlank()
+                    || proprietaireCandidateDto.getReglesLogement() == null
+                    || proprietaireCandidateDto.getAmenagements() == null
+                    || proprietaireCandidateDto.getFiles() == null
+            )
+        );
   }
 
 }
