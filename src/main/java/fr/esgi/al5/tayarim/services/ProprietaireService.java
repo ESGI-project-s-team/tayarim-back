@@ -5,6 +5,7 @@ import fr.esgi.al5.tayarim.dto.proprietaire.ProprietaireCandidateDto;
 import fr.esgi.al5.tayarim.dto.proprietaire.ProprietaireCreationDto;
 import fr.esgi.al5.tayarim.dto.proprietaire.ProprietaireDto;
 import fr.esgi.al5.tayarim.dto.proprietaire.ProprietaireUpdateDto;
+import fr.esgi.al5.tayarim.dto.proprietaire.ProprietaireValidateDto;
 import fr.esgi.al5.tayarim.entities.Amenagement;
 import fr.esgi.al5.tayarim.entities.ImageLogement;
 import fr.esgi.al5.tayarim.entities.Logement;
@@ -15,6 +16,7 @@ import fr.esgi.al5.tayarim.exceptions.LogementImageBucketUploadError;
 import fr.esgi.al5.tayarim.exceptions.LogementInvalidAmenagement;
 import fr.esgi.al5.tayarim.exceptions.LogementInvalidReglesLogement;
 import fr.esgi.al5.tayarim.exceptions.LogementInvalidTypeLogement;
+import fr.esgi.al5.tayarim.exceptions.LogementNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.PasswordHashNotPossibleException;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireEmailAlreadyExistException;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireInvalidCandidatureBody;
@@ -290,6 +292,8 @@ public class ProprietaireService {
     Proprietaire proprietaire = ProprietaireMapper.candidatureDtoToEntity(proprietaireCandidateDto,
         hashPassword(generatePassword()));
 
+    //send the password when validated
+
     Optional<TypeLogement> optionalTypeLogement = typeLogementRepository
         .findById(proprietaireCandidateDto.getIdTypeLogement());
     if (optionalTypeLogement.isEmpty()) {
@@ -373,7 +377,41 @@ public class ProprietaireService {
 
     proprietaire.setIsValidated(true);
 
+    if(proprietaire.getLogements().get(0) == null){
+      throw new LogementNotFoundException();
+    }
+
+    Logement logement = proprietaire.getLogements().get(0);
+    logement.setIsValidated(true);
+    logement = logementRepository.save(logement);
+
+    System.out.println(logement.getIsValidated());
+
     return ProprietaireMapper.entityToDto(proprietaireRepository.save(proprietaire), false);
+  }
+
+  /**
+   * Rejette un propriétaire candidat.
+   */
+  @Transactional
+  public ProprietaireDto rejectCandidat(@NonNull Long id) {
+    Optional<Proprietaire> optionalProprietaire = proprietaireRepository.findById(id);
+    if (optionalProprietaire.isEmpty()) {
+      throw new ProprietaireNotFoundException();
+    }
+
+    Proprietaire proprietaire = optionalProprietaire.get();
+
+    if (proprietaire.getIsValidated()) {
+      throw new ProprietaireNotFoundException();
+    }
+
+    Logement logement = proprietaire.getLogements().get(0);
+
+    logementRepository.delete(logement);
+    proprietaireRepository.delete(proprietaire);
+
+    return ProprietaireMapper.entityToDto(proprietaire, false);
   }
 
   /**

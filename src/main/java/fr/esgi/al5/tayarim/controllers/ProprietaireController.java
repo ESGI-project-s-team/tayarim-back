@@ -8,6 +8,7 @@ import fr.esgi.al5.tayarim.dto.proprietaire.ProprietaireCandidateDto;
 import fr.esgi.al5.tayarim.dto.proprietaire.ProprietaireCreationDto;
 import fr.esgi.al5.tayarim.dto.proprietaire.ProprietaireDto;
 import fr.esgi.al5.tayarim.dto.proprietaire.ProprietaireUpdateDto;
+import fr.esgi.al5.tayarim.dto.proprietaire.ProprietaireValidateDto;
 import fr.esgi.al5.tayarim.exceptions.PasswordHashNotPossibleException;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireEmailAlreadyExistException;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireInvalidUpdateBody;
@@ -175,7 +176,7 @@ public class ProprietaireController implements
    */
   @PostMapping(path = "/candidate", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<ProprietaireDto> candidate(
-      @Valid ProprietaireCandidateDto proprietaireCandidateDto) {
+      @Valid @RequestBody ProprietaireCandidateDto proprietaireCandidateDto) {
     return new ResponseEntity<>(
         proprietaireService.candidate(proprietaireCandidateDto),
         HttpStatus.CREATED
@@ -190,8 +191,25 @@ public class ProprietaireController implements
   public ResponseEntity<ProprietaireDto> validateCandidate(
       @RequestAttribute("token") String authHeader, @PathVariable Long id) {
     authService.verifyToken(getTokenFromHeader(authHeader), true);
+
+
     return new ResponseEntity<>(
         proprietaireService.validateCandidat(id),
+        HttpStatus.OK
+    );
+  }
+
+  /**
+   * Rejette un propriétaire candidat.
+   */
+  @Operation(summary = "Authenticate user", security = @SecurityRequirement(name = "bearer-key"))
+  @DeleteMapping(path = "/candidate/{id}")
+  public ResponseEntity<ProprietaireDto> rejectCandidate(
+      @RequestAttribute("token") String authHeader, @PathVariable Long id) {
+    authService.verifyToken(getTokenFromHeader(authHeader), true);
+
+    return new ResponseEntity<>(
+        proprietaireService.rejectCandidat(id),
         HttpStatus.OK
     );
   }

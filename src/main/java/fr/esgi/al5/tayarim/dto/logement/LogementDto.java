@@ -70,4 +70,7 @@ public class LogementDto {
   @NonNull
   private List<ImageLogementDto> images;
 
+  @NonNull
+  private Boolean isValidated;
+
 }

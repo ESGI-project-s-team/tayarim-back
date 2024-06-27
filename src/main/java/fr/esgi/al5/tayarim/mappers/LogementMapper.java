@@ -64,7 +64,8 @@ public class LogementMapper {
         proprietaire,
         reglesLogements,
         amenagements,
-        images);
+        images,
+        true);
   }
 
   /**
@@ -99,7 +100,8 @@ public class LogementMapper {
         proprietaire,
         new HashSet<>(reglesLogements),
         new HashSet<>(amenagements),
-        images
+        images,
+        false
     );
   }
 
@@ -140,7 +142,8 @@ public class LogementMapper {
         logement.getAmenagements().stream().collect(
             Collectors.toMap(Amenagement::getNom, Amenagement::getIcone)
         ),
-        ImageLogementMapper.entityListToDtoList(logement.getImages())
+        ImageLogementMapper.entityListToDtoList(logement.getImages()),
+        logement.getIsValidated()
     );
   }
 
