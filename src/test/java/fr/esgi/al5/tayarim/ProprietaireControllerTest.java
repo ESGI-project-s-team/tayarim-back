@@ -22,6 +22,7 @@ import fr.esgi.al5.tayarim.services.ProprietaireService;
 import java.time.LocalDateTime;
 import java.util.AbstractMap;
 import java.util.List;
+import java.util.Map;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -81,6 +82,7 @@ public class ProprietaireControllerTest {
         .prenom("Mathieu")
         .email("test@gmail.com")
         .numTel("0612345678")
+        .adresse("13 FakeStreet City, 12345 Country")
         .build();
     proprietaire = Proprietaire.builder()
         .nom("Ferreira")
@@ -90,6 +92,8 @@ public class ProprietaireControllerTest {
         .motDePasse("$2a$12$3hQDUblvPShmuQg/.g0Qk.wHAGjqPL54RMO/lNgsei/HQGo0ZLIYm")
         .dateInscription(localDateTime)
         .isPasswordUpdated(Boolean.TRUE)
+        .adresse("13 FakeStreet City, 12345 Country")
+        .isValidated(Boolean.TRUE)
         .build();
     proprietaireDto = ProprietaireDto.builder()
         .id(1L)
@@ -101,6 +105,8 @@ public class ProprietaireControllerTest {
         .logements(null)
         .isPasswordUpdated(Boolean.TRUE)
         .commission(20f)
+        .adresse("13 FakeStreet City, 12345 Country")
+        .isValidated(Boolean.TRUE)
         .build();
     proprietaireDto2 = ProprietaireDto.builder()
         .id(2L)
@@ -112,6 +118,8 @@ public class ProprietaireControllerTest {
         .logements(null)
         .isPasswordUpdated(Boolean.TRUE)
         .commission(20f)
+        .adresse("13 FakeStreet City, 12345 Country")
+        .isValidated(Boolean.TRUE)
         .build();
     proprietaireDtos = List.of(proprietaireDto, proprietaireDto2);
     proprietaireDtoWithLogement = ProprietaireDto.builder()
@@ -144,9 +152,16 @@ public class ProprietaireControllerTest {
             "Country",
             null,
             null,
-            "Appartement"
+            "Appartement",
+            Map.of("Children allowed", "FaChild", "Smoking allowed", "FaSmoking", "Pets allowed",
+                "MdOutlinePets"),
+            Map.of("Oven", "PiOvenDuotone", "Wifi", "FaWifi"),
+            List.of(),
+            true
         )))
         .commission(20f)
+        .adresse("13 FakeStreet City, 12345 Country")
+        .isValidated(Boolean.TRUE)
         .build();
     proprietaireUpdateDto = ProprietaireUpdateDto.builder()
         .prenom("Karl")
@@ -154,7 +169,7 @@ public class ProprietaireControllerTest {
   }
 
   @Test
-  public void creerProprietaire_ReturnCreated() throws Exception {
+  public void create_ReturnCreated() throws Exception {
     given(proprietaireService.creerProprietaire(ArgumentMatchers.any())).willAnswer(
         invocationOnMock -> proprietaireDto);
     when(authService.verifyToken(any(), anyBoolean())).thenReturn(
@@ -177,7 +192,7 @@ public class ProprietaireControllerTest {
   }
 
   @Test
-  public void creerProprietaire_ReturnErrorOwnerInvalidName()
+  public void create_ReturnErrorOwnerInvalidName()
       throws Exception {
     proprietaireCreationDto.setNom("");
     given(proprietaireService.creerProprietaire(ArgumentMatchers.any())).willAnswer(
@@ -197,7 +212,7 @@ public class ProprietaireControllerTest {
   }
 
   @Test
-  public void creerProprietaire_ReturnErrorOwnerInvalidFirstName()
+  public void create_ReturnErrorOwnerInvalidFirstName()
       throws Exception {
     proprietaireCreationDto.setPrenom("");
     given(proprietaireService.creerProprietaire(ArgumentMatchers.any())).willAnswer(
@@ -217,7 +232,7 @@ public class ProprietaireControllerTest {
   }
 
   @Test
-  public void creerProprietaire_ReturnErrorOwnerInvalidMail_WhenEmailIsEmpty()
+  public void create_ReturnErrorOwnerInvalidMail_WhenEmailIsEmpty()
       throws Exception {
     proprietaireCreationDto.setEmail("");
     given(proprietaireService.creerProprietaire(ArgumentMatchers.any())).willAnswer(
@@ -237,7 +252,7 @@ public class ProprietaireControllerTest {
   }
 
   @Test
-  public void creerProprietaire_ReturnErrorOwnerInvalidMail_WhenEmailDoesntMatchFormat()
+  public void create_ReturnErrorOwnerInvalidMail_WhenEmailDoesntMatchFormat()
       throws Exception {
     proprietaireCreationDto.setEmail("testmailcom");
     given(proprietaireService.creerProprietaire(ArgumentMatchers.any())).willAnswer(
@@ -257,7 +272,7 @@ public class ProprietaireControllerTest {
   }
 
   @Test
-  public void creerProprietaire_ReturnErrorOwnerInvalidNumTel_WhenNumTelIsEmpty()
+  public void create_ReturnErrorOwnerInvalidNumTel_WhenNumTelIsEmpty()
       throws Exception {
     proprietaireCreationDto.setNumTel("");
     given(proprietaireService.creerProprietaire(ArgumentMatchers.any())).willAnswer(
@@ -277,7 +292,7 @@ public class ProprietaireControllerTest {
   }
 
   @Test
-  public void creerProprietaire_ReturnErrorOwnerInvalidNumTel_WhenNumTelDoesntMatchFormat()
+  public void create_ReturnErrorOwnerInvalidNumTel_WhenNumTelDoesntMatchFormat()
       throws Exception {
     proprietaireCreationDto.setNumTel("aaaaa");
     given(proprietaireService.creerProprietaire(ArgumentMatchers.any())).willAnswer(
@@ -297,7 +312,7 @@ public class ProprietaireControllerTest {
   }
 
   @Test
-  public void getProprietaire_ReturnOk() throws Exception {
+  public void getAll_ReturnOk() throws Exception {
     given(proprietaireService.getProprietaire(false)).willAnswer(
         invocationOnMock -> proprietaireDtos);
 
@@ -332,7 +347,7 @@ public class ProprietaireControllerTest {
   }
 
   @Test
-  public void getProprietaire_WithIdInPath_ReturnOk() throws Exception {
+  public void getById_WithIdInPath_ReturnOk() throws Exception {
     given(proprietaireService.getProprietaireById(1L, false)).willAnswer(
         invocationOnMock -> proprietaireDto);
 
@@ -357,7 +372,7 @@ public class ProprietaireControllerTest {
   }
 
   @Test
-  public void updateProprietaire_ReturnOk() throws Exception {
+  public void update_ReturnOk() throws Exception {
     proprietaireDto.setPrenom(proprietaireUpdateDto.getPrenom());
     given(proprietaireService.updateProprietaire(1L, proprietaireUpdateDto)).willAnswer(
         invocationOnMock -> proprietaireDto);
@@ -384,7 +399,7 @@ public class ProprietaireControllerTest {
   }
 
   @Test
-  public void deleteProprietaire_ReturnOk() throws Exception {
+  public void delete_ReturnOk() throws Exception {
     given(proprietaireService.deleteProprietaire(1L)).willAnswer(
         invocationOnMock -> proprietaireDto);
 

@@ -1,30 +1,58 @@
 package fr.esgi.al5.tayarim.services;
 
 
+import fr.esgi.al5.tayarim.TayarimApplication;
 import fr.esgi.al5.tayarim.dto.logement.LogementCreationDto;
 import fr.esgi.al5.tayarim.dto.logement.LogementDto;
+import fr.esgi.al5.tayarim.dto.logement.LogementSearchDto;
 import fr.esgi.al5.tayarim.dto.logement.LogementUpdateDto;
 import fr.esgi.al5.tayarim.dto.logement.TypeLogementDto;
+import fr.esgi.al5.tayarim.entities.Amenagement;
+import fr.esgi.al5.tayarim.entities.ImageLogement;
+import fr.esgi.al5.tayarim.entities.Indisponibilite;
 import fr.esgi.al5.tayarim.entities.Logement;
 import fr.esgi.al5.tayarim.entities.Proprietaire;
+import fr.esgi.al5.tayarim.entities.ReglesLogement;
+import fr.esgi.al5.tayarim.entities.Reservation;
 import fr.esgi.al5.tayarim.entities.TypeLogement;
+import fr.esgi.al5.tayarim.exceptions.LogementImageBucketUploadError;
+import fr.esgi.al5.tayarim.exceptions.LogementImageInvalidError;
+import fr.esgi.al5.tayarim.exceptions.LogementInvalidAmenagement;
 import fr.esgi.al5.tayarim.exceptions.LogementInvalidCreationBody;
+import fr.esgi.al5.tayarim.exceptions.LogementInvalidReglesLogement;
 import fr.esgi.al5.tayarim.exceptions.LogementInvalidTypeLogement;
 import fr.esgi.al5.tayarim.exceptions.LogementInvalidUpdateBody;
 import fr.esgi.al5.tayarim.exceptions.LogementNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireInvalidUpdateBody;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireNotFoundException;
+import fr.esgi.al5.tayarim.exceptions.ReservationDateConflictError;
+import fr.esgi.al5.tayarim.exceptions.ReservationDateInvalideError;
+import fr.esgi.al5.tayarim.exceptions.ReservationDateTooShortError;
+import fr.esgi.al5.tayarim.exceptions.SearchDateInvalidError;
+import fr.esgi.al5.tayarim.exceptions.SearchDateMissingError;
 import fr.esgi.al5.tayarim.mappers.LogementMapper;
 import fr.esgi.al5.tayarim.mappers.TypeLogementMapper;
+import fr.esgi.al5.tayarim.repositories.AmenagementRepository;
+import fr.esgi.al5.tayarim.repositories.ImageLogementRepository;
+import fr.esgi.al5.tayarim.repositories.IndisponibiliteRepository;
 import fr.esgi.al5.tayarim.repositories.LogementRepository;
 import fr.esgi.al5.tayarim.repositories.ProprietaireRepository;
+import fr.esgi.al5.tayarim.repositories.ReglesLogementRepository;
+import fr.esgi.al5.tayarim.repositories.ReservationRepository;
 import fr.esgi.al5.tayarim.repositories.TypeLogementRepository;
+import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.NonNull;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 
 /**
@@ -38,20 +66,48 @@ public class LogementService {
   private final ProprietaireRepository proprietaireRepository;
   private final TypeLogementRepository typeLogementRepository;
 
+  private final ReglesLogementRepository reglesLogementRepository;
+  private final AmenagementRepository amenagementRepository;
+
+  private final ReservationService reservationService;
+
+  private final ReservationRepository reservationRepository;
+
+  private final ImageLogementRepository imageLogementRepository;
+
+  private final IndisponibiliteRepository indisponibiliteRepository;
+
 
   /**
    * Constructeur pour le service de logement.
    *
-   * @param logementRepository     Le repository des logements.
-   * @param proprietaireRepository Le repository des propriétaires.
-   * @param typeLogementRepository Le repository des types de logements.
+   * @param logementRepository        Le repository des logements.
+   * @param proprietaireRepository    Le repository des propriétaires.
+   * @param typeLogementRepository    Le repository des types de logements.
+   * @param reglesLogementRepository  Le repository des règles de logements.
+   * @param amenagementRepository     Le repository des aménagements.
+   * @param reservationService        Le service des réservations.
+   * @param reservationRepository     Le repository des réservations
+   * @param imageLogementRepository   Le repository des images de logement
+   * @param indisponibiliteRepository Le repository des indisponibilites
    */
   public LogementService(LogementRepository logementRepository,
       ProprietaireRepository proprietaireRepository,
-      TypeLogementRepository typeLogementRepository) {
+      TypeLogementRepository typeLogementRepository,
+      ReglesLogementRepository reglesLogementRepository,
+      AmenagementRepository amenagementRepository, ReservationService reservationService,
+      ReservationRepository reservationRepository,
+      ImageLogementRepository imageLogementRepository,
+      IndisponibiliteRepository indisponibiliteRepository) {
     this.logementRepository = logementRepository;
     this.proprietaireRepository = proprietaireRepository;
     this.typeLogementRepository = typeLogementRepository;
+    this.reglesLogementRepository = reglesLogementRepository;
+    this.amenagementRepository = amenagementRepository;
+    this.reservationService = reservationService;
+    this.reservationRepository = reservationRepository;
+    this.imageLogementRepository = imageLogementRepository;
+    this.indisponibiliteRepository = indisponibiliteRepository;
   }
 
   /**
@@ -62,6 +118,10 @@ public class LogementService {
    */
   @Transactional
   public LogementDto createLogement(@NonNull LogementCreationDto logementCreationDto) {
+
+    if (logementCreationDto.getFiles() != null && logementCreationDto.getFiles().isEmpty()) {
+      throw new LogementImageInvalidError();
+    }
 
     Optional<Proprietaire> optionalProprietaire = proprietaireRepository.findById(
         logementCreationDto.getIdProprietaire());
@@ -84,6 +144,12 @@ public class LogementService {
                 || (logementCreationDto.getDefaultCheckOut() == null
                 || logementCreationDto.getDefaultCheckOut().isBlank())
                 || logementCreationDto.getPrixParNuit() == null
+                || (logementCreationDto.getReglesLogement() == null
+                || logementCreationDto.getReglesLogement().isEmpty())
+                || (logementCreationDto.getAmenagements() == null
+                || logementCreationDto.getAmenagements().isEmpty())
+                || (logementCreationDto.getFiles() == null || logementCreationDto.getFiles()
+                .isEmpty())
         )) {
       throw new LogementInvalidCreationBody();
     }
@@ -94,13 +160,64 @@ public class LogementService {
       throw new LogementInvalidTypeLogement();
     }
 
-    return LogementMapper.entityToDto(
-        logementRepository.save(
-            LogementMapper.creationDtoToEntity(
-                logementCreationDto,
-                optionalTypeLogement.get(),
-                proprietaire)
+    ArrayList<ReglesLogement> reglesLogements = parseRegle(logementCreationDto.getReglesLogement());
+
+    ArrayList<Amenagement> amenagements = parseAmenagement(logementCreationDto.getAmenagements());
+
+    Logement logement = logementRepository.save(
+        LogementMapper.creationDtoToEntity(
+            logementCreationDto,
+            optionalTypeLogement.get(),
+            proprietaire,
+            new HashSet<>(reglesLogements),
+            new HashSet<>(amenagements),
+            List.of()
         )
+    );
+
+    if (logementCreationDto.getFiles() != null) {
+      int cpt = 0;
+      List<String> urls = new ArrayList<>();
+      ArrayList<ImageLogement> images = new ArrayList<>();
+      for (MultipartFile file : logementCreationDto.getFiles()) {
+        cpt++;
+
+        try {
+          // Obtenez les octets du fichier
+          byte[] bytes = file.getBytes();
+
+          String fileName = "House images/".concat(logement.getId().toString()).concat("_")
+              .concat(Integer.toString(cpt));
+
+          // Téléchargez le fichier dans GCS
+          TayarimApplication.bucket.create(fileName, bytes);
+
+          urls.add(fileName);
+
+
+        } catch (IOException e) {
+          e.printStackTrace();
+          logementRepository.delete(logement);
+          throw new LogementImageBucketUploadError();
+        }
+
+      }
+
+      cpt = 0;
+      for (String fileName : urls) {
+        cpt++;
+        images.add(imageLogementRepository.save(new ImageLogement(fileName, logement, (cpt == 1))));
+      }
+
+      logement.setImages(images);
+
+      logementRepository.save(logement);
+    }
+
+    System.out.println("end");
+
+    return LogementMapper.entityToDto(
+        logement
     );
   }
 
@@ -121,8 +238,14 @@ public class LogementService {
       throw new ProprietaireNotFoundException();
     }
 
+    List<Logement> logements = logementRepository.findAllByProprietaire(optionalProprietaire.get());
+
+    for (Logement logement : logements) {
+      System.out.println(logement.getImages().size());
+    }
+
     return LogementMapper.entityListToDtoList(
-        logementRepository.findAllByProprietaire(optionalProprietaire.get())
+        logements
     );
   }
 
@@ -156,6 +279,8 @@ public class LogementService {
 
     if ((logementUpdateDto.getTitre() == null || logementUpdateDto.getTitre().isBlank())
         && (logementUpdateDto.getIsLouable() == null)
+        && (logementUpdateDto.getIdProprietaire() == null
+        || logementUpdateDto.getIdProprietaire() == 0)
         && (logementUpdateDto.getNombresDeChambres() == null
         || logementUpdateDto.getNombresDeChambres() == 0)
         && (logementUpdateDto.getNombresDeLits() == null
@@ -184,7 +309,15 @@ public class LogementService {
         && (logementUpdateDto.getNumeroDePorte() == null || logementUpdateDto.getNumeroDePorte()
         .isBlank())
         && (logementUpdateDto.getIdTypeLogement() == null
-        || logementUpdateDto.getIdTypeLogement() == 0)) {
+        || logementUpdateDto.getIdTypeLogement() == 0)
+        && (logementUpdateDto.getReglesLogement() == null || logementUpdateDto.getReglesLogement()
+        .isEmpty())
+        && (logementUpdateDto.getAmenagements() == null || logementUpdateDto.getAmenagements()
+        .isEmpty())
+        && (logementUpdateDto.getFiles() == null || logementUpdateDto.getFiles().isEmpty())
+        && (logementUpdateDto.getCurrentImages() == null || logementUpdateDto.getCurrentImages()
+        .isEmpty())
+    ) {
       throw new LogementInvalidUpdateBody();
     }
 
@@ -197,26 +330,49 @@ public class LogementService {
     Logement logement = optionalLogement.get();
 
     if (
-        (!logement.getIsLouable() && logementUpdateDto.getIsLouable())
-            && (
-            (logement.getNombresDeChambres() == null
-                && logementUpdateDto.getNombresDeChambres() == null)
-                || (logement.getNombresDeLits() == null
-                && logementUpdateDto.getNombresDeLits() == null)
-                || (logement.getNombresSallesDeBains() == null
-                && logementUpdateDto.getNombresSallesDeBains() == null)
-                || (logement.getCapaciteMaxPersonne() == null
-                && logementUpdateDto.getCapaciteMaxPersonne() == null)
-                || (logement.getNombresNuitsMin() == null
-                && logementUpdateDto.getNombresNuitsMin() == null)
-                || (logement.getDefaultCheckIn() == null
-                && logementUpdateDto.getDefaultCheckIn() == null)
-                || (logement.getDefaultCheckOut() == null
-                && logementUpdateDto.getDefaultCheckOut() == null)
-                || (logement.getPrixParNuit() == null && logementUpdateDto.getPrixParNuit() == null)
-        )
+        (!logement.getIsLouable() && (logementUpdateDto.getIsLouable() != null
+            && logementUpdateDto.getIsLouable()))
+            &&
+            (
+                (logement.getNombresDeChambres() == null
+                    && logementUpdateDto.getNombresDeChambres() == null)
+                    || (logement.getNombresDeLits() == null
+                    && logementUpdateDto.getNombresDeLits() == null)
+                    || (logement.getNombresSallesDeBains() == null
+                    && logementUpdateDto.getNombresSallesDeBains() == null)
+                    || (logement.getCapaciteMaxPersonne() == null
+                    && logementUpdateDto.getCapaciteMaxPersonne() == null)
+                    || (logement.getNombresNuitsMin() == null
+                    && logementUpdateDto.getNombresNuitsMin() == null)
+                    || (logement.getDefaultCheckIn() == null
+                    && logementUpdateDto.getDefaultCheckIn() == null)
+                    || (logement.getDefaultCheckOut() == null
+                    && logementUpdateDto.getDefaultCheckOut() == null)
+                    || (logement.getPrixParNuit() == null
+                    && logementUpdateDto.getPrixParNuit() == null)
+                    || (logement.getReglesLogements() == null
+                    && (logementUpdateDto.getReglesLogement() == null
+                    || logementUpdateDto.getReglesLogement().isEmpty()))
+                    || (logement.getAmenagements() == null
+                    && (logementUpdateDto.getAmenagements() == null
+                    || logementUpdateDto.getAmenagements().isEmpty()))
+                    || (logement.getImages() == null
+                    && (logementUpdateDto.getFiles() == null
+                    || logementUpdateDto.getFiles().isEmpty()))
+
+            )
     ) {
       throw new LogementInvalidUpdateBody();
+    }
+
+    if (logementUpdateDto.getIdProprietaire() != null
+        && logementUpdateDto.getIdProprietaire() != 0) {
+      Optional<Proprietaire> optionalProprietaire = proprietaireRepository.findById(
+          logementUpdateDto.getIdProprietaire());
+      if (optionalProprietaire.isEmpty()) {
+        throw new ProprietaireNotFoundException();
+      }
+      logement.setProprietaire(optionalProprietaire.get());
     }
 
     logement.setTitre(
@@ -287,6 +443,76 @@ public class LogementService {
             ? logement.getTypeLogement()
             : typeLogementRepository.findById(logementUpdateDto.getIdTypeLogement()).orElseThrow(
                 LogementInvalidTypeLogement::new));
+    logement.setReglesLogements(
+        logementUpdateDto.getReglesLogement() == null || logementUpdateDto.getReglesLogement()
+            .isEmpty() ? logement.getReglesLogements()
+            : new HashSet<>(parseRegle(logementUpdateDto.getReglesLogement())));
+    logement.setAmenagements(
+        logementUpdateDto.getAmenagements() == null || logementUpdateDto.getAmenagements().isEmpty()
+            ? logement.getAmenagements()
+            : new HashSet<>(parseAmenagement(logementUpdateDto.getAmenagements())));
+
+    int cpt = 0;
+    List<String> urls = new ArrayList<>();
+    ArrayList<ImageLogement> images = new ArrayList<>();
+
+    if (logementUpdateDto.getCurrentImages() == null || logementUpdateDto.getCurrentImages()
+        .isEmpty()) {
+      System.out.println("current null");
+      imageLogementRepository.deleteAllByLogementId(logement.getId());
+      logement.setImages(images);
+    } else {
+      System.out.println("current here");
+      List<ImageLogement> oldImages = logement.getImages();
+
+      imageLogementRepository.deleteUnusedImage(
+          logement.getId(),
+          logementUpdateDto.getCurrentImages()
+      );
+
+      for (ImageLogement image : oldImages) {
+        cpt++;
+        if (logementUpdateDto.getCurrentImages().contains(image.getId())) {
+          images.add(image);
+        }
+      }
+      logement.setImages(images);
+    }
+
+    if (logementUpdateDto.getFiles() != null) {
+      System.out.println("getFiles here");
+      for (MultipartFile file : logementUpdateDto.getFiles()) {
+        cpt++;
+        try {
+          // Obtenez les octets du fichier
+          byte[] bytes = file.getBytes();
+
+          String fileName = "House images/".concat(logement.getId().toString()).concat("_")
+              .concat(Integer.toString(cpt));
+
+          // Téléchargez le fichier dans GCS
+          TayarimApplication.bucket.create(fileName, bytes);
+
+          urls.add(fileName);
+
+        } catch (IOException e) {
+          e.printStackTrace();
+          throw new LogementImageBucketUploadError();
+        }
+
+      }
+
+      cpt = 0;
+
+      for (String fileName : urls) {
+        cpt++;
+        images.add(imageLogementRepository.save(new ImageLogement(fileName, logement, (cpt == 1))));
+      }
+
+      logement.setImages(images);
+    }
+
+    System.out.println("end update");
 
     return LogementMapper.entityToDto(logementRepository.save(logement));
 
@@ -309,6 +535,11 @@ public class LogementService {
 
     LogementDto logementDto = LogementMapper.entityToDto(optionalLogement.get());
 
+    List<Reservation> reservations = reservationRepository.findAllByLogementId(id);
+    for (Reservation reservation : reservations) {
+      reservationRepository.deleteById(reservation.getId());
+    }
+
     logementRepository.deleteById(id);
 
     return logementDto;
@@ -325,5 +556,167 @@ public class LogementService {
     return TypeLogementMapper.entityListToDtoList(
         typeLogementRepository.findAll()
     );
+  }
+
+  /**
+   * Tnte de récupèrer des logements basé sur certain critère.
+   *
+   * @param logementSearchDto dto de recherche de logement
+   */
+
+  @Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
+  public List<LogementDto> search(LogementSearchDto logementSearchDto) {
+
+    if ((logementSearchDto.getDateArrivee() != null && logementSearchDto.getDateDepart() == null)
+        || (logementSearchDto.getDateArrivee() == null
+        && logementSearchDto.getDateDepart() != null)) {
+      throw new SearchDateMissingError();
+    }
+
+    List<Logement> logements = logementRepository.findAll();
+
+    logements = logements.stream()
+        .filter(Logement::getIsLouable)
+        .collect(Collectors.toList());
+
+    if (logementSearchDto.getDestination() != null && !logementSearchDto.getDestination()
+        .isBlank()) {
+      logements = logements.stream()
+          .filter(logement -> logement.getAdresse().toUpperCase()
+              .contains(logementSearchDto.getDestination().toUpperCase())
+              || logement.getVille().toUpperCase()
+              .contains(logementSearchDto.getDestination().toUpperCase())
+              || logement.getPays().toUpperCase()
+              .contains(logementSearchDto.getDestination().toUpperCase()))
+          .collect(Collectors.toList());
+    }
+
+    if (logementSearchDto.getNbPersonnes() != null) {
+      logements = logements.stream()
+          .filter(
+              logement -> logement.getCapaciteMaxPersonne() >= logementSearchDto.getNbPersonnes())
+          .collect(Collectors.toList());
+    }
+
+    if (logementSearchDto.getDateArrivee() != null && logementSearchDto.getDateDepart() != null) {
+      LocalDate dateArrivee = LocalDate.parse(logementSearchDto.getDateArrivee());
+      LocalDate dateDepart = LocalDate.parse(logementSearchDto.getDateDepart());
+
+      if (dateArrivee.isAfter(dateDepart)) {
+        throw new SearchDateInvalidError();
+      }
+
+      logements = logements.stream().filter(logement -> {
+        try {
+          reservationService.checkDateCondition(
+              dateArrivee,
+              dateDepart,
+              logement.getNombresNuitsMin(),
+              false
+          );
+          reservationService.checkDateConclict(
+              "RESA-SEARCHING",
+              dateArrivee,
+              dateDepart,
+              logement.getId(),
+              false
+          );
+          return true;
+        } catch (ReservationDateInvalideError | ReservationDateConflictError
+                 | ReservationDateTooShortError e) {
+          return false;
+        }
+      }).collect(Collectors.toList());
+    }
+
+    return LogementMapper.entityListToDtoList(logements);
+  }
+
+  /**
+   * Récupère les dates occupées d'un logement.
+   *
+   * @param id Id du logement.
+   * @return Les dates occupées.
+   */
+  @Transactional
+  public List<String> getOccupiedDates(@NonNull Long id) {
+    Optional<Logement> optionalLogement = logementRepository.findById(id);
+    if (optionalLogement.isEmpty()) {
+      throw new LogementNotFoundException();
+    }
+
+    Logement logement = optionalLogement.get();
+
+    List<Reservation> reservations = reservationRepository.findAllByLogementIdAndStatutIn(
+        logement.getId(),
+        List.of("reserved", "payed", "in progress"));
+
+    ArrayList<String> dates = new ArrayList<>();
+
+    for (Reservation reservation : reservations) {
+      LocalDate currentDate = reservation.getDateArrivee().minusDays(2);
+      LocalDate dateDepart = reservation.getDateDepart().plusDays(2);
+
+      while (!currentDate.isAfter(dateDepart)) {
+        if (!dates.contains(currentDate.toString())) {
+          dates.add(currentDate.toString());
+        }
+        currentDate = currentDate.plusDays(1);
+      }
+    }
+
+    List<Indisponibilite> indisponibilites = indisponibiliteRepository.findAllByLogementId(
+        logement.getId());
+
+    for (Indisponibilite indisponibilite : indisponibilites) {
+      LocalDate currentDate = indisponibilite.getDateDebut();
+      LocalDate dateFin = indisponibilite.getDateFin();
+
+      while (!currentDate.isAfter(dateFin)) {
+        if (!dates.contains(currentDate.toString())) {
+          dates.add(currentDate.toString());
+        }
+        currentDate = currentDate.plusDays(1);
+      }
+    }
+
+    return dates.stream().toList();
+
+  }
+
+  private ArrayList<ReglesLogement> parseRegle(List<Long> idRegles) {
+    if (idRegles == null) {
+      return new ArrayList<>();
+    }
+
+    ArrayList<ReglesLogement> reglesLogements = new ArrayList<>();
+    for (Long id : idRegles) {
+      Optional<ReglesLogement> optionalReglesLogement = reglesLogementRepository.findById(id);
+      if (optionalReglesLogement.isEmpty()) {
+        throw new LogementInvalidReglesLogement();
+      }
+      reglesLogements.add(optionalReglesLogement.get());
+    }
+
+    return reglesLogements;
+
+  }
+
+  private ArrayList<Amenagement> parseAmenagement(List<Long> idAmenagements) {
+    if (idAmenagements == null) {
+      return new ArrayList<>();
+    }
+
+    ArrayList<Amenagement> amenagements = new ArrayList<>();
+    for (Long id : idAmenagements) {
+      Optional<Amenagement> optionalAmenagement = amenagementRepository.findById(id);
+      if (optionalAmenagement.isEmpty()) {
+        throw new LogementInvalidAmenagement();
+      }
+      amenagements.add(optionalAmenagement.get());
+    }
+
+    return amenagements;
+
   }
 }

@@ -1,6 +1,5 @@
 package fr.esgi.al5.tayarim.auth;
 
-
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,6 +8,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -45,15 +45,43 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             && !request.getServletPath().startsWith("/proprietaires")
             && !request.getServletPath().startsWith("/admin")
             && !request.getServletPath().startsWith("/logements")
+            && !request.getServletPath().startsWith("/reglesLogements")
+            && !request.getServletPath().startsWith("/amenagements")
+            && !request.getServletPath().startsWith("/reservations")
+            && !request.getServletPath().startsWith("/indisponibilites")
+            && !request.getServletPath().startsWith("/depenses")
+            && !request.getServletPath().startsWith("/notifications")
+            && !request.getServletPath().startsWith("/factures")
     ) {
       return true;
     }
+    if (request.getServletPath().equals("/reservations") && request.getMethod().equals("POST")
+        && (request.getHeader("Authorization") != null
+        && request.getHeader("Authorization").startsWith("Bearer "))) {
+      return false;
+    }
 
     Map<String, List<String>> mapOfExcludeMethodPath = new HashMap<>();
-    mapOfExcludeMethodPath.put("POST", List.of("/auth/login", "/auth/refresh"));
+    mapOfExcludeMethodPath.put("POST",
+        List.of("/auth/login", "/auth/refresh", "/reservations", "/logements/search",
+            "/proprietaires/candidate"));
+    mapOfExcludeMethodPath.put("PUT", List.of("/reservations/paymentIntent/\\d+"));
+    mapOfExcludeMethodPath.put("GET",
+        List.of("/logements/types", "/reglesLogement", "/amenagements",
+            "/logements/dates/\\d+", "/logements/\\d+"));
 
-    return mapOfExcludeMethodPath.get(request.getMethod().toUpperCase()) != null
-        && mapOfExcludeMethodPath.get(request.getMethod().toUpperCase())
-        .contains(request.getServletPath());
+    String method = request.getMethod().toUpperCase();
+    String path = request.getServletPath();
+
+    List<String> excludePaths = mapOfExcludeMethodPath.get(method);
+
+    if (excludePaths == null) {
+      return false;
+    }
+
+    return
+        !method.isBlank()
+            && excludePaths.stream()
+            .anyMatch(pattern -> Pattern.compile(pattern).matcher(path).matches());
   }
 }

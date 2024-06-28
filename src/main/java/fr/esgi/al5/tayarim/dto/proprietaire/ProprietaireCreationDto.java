@@ -42,5 +42,9 @@ public class ProprietaireCreationDto {
       message = "error_owner_invalid_phone")
   private String numTel;
 
+  @NotBlank(message = "error_owner_invalid_address")
+  @Size(min = 1, max = 300, message = "error_owner_invalid_address")
+  private String adresse;
+
   // No need for explicit getters, setters, or constructors
 }

@@ -37,6 +37,9 @@ public class ProprietaireDto {
   private String numTel;
 
   @NonNull
+  private String adresse;
+
+  @NonNull
   private LocalDateTime dateInscription;
 
   @NonNull
@@ -46,6 +49,9 @@ public class ProprietaireDto {
 
   @NonNull
   private Float commission;
+
+  @NonNull
+  private Boolean isValidated;
 
   // No need for explicit getters, setters, or constructors
 }
