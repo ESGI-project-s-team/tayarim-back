@@ -36,6 +36,8 @@ public class ProprietaireRepositoryTest {
         .motDePasse("password")
         .dateInscription(dateInscription)
         .isPasswordUpdated(Boolean.TRUE)
+        .adresse("13 FakeStreet City, 12345 Country")
+        .isValidated(Boolean.TRUE)
         .build();
 
     Proprietaire savedProprietaire = proprietaireRepository.save(proprietaire);
@@ -72,6 +74,8 @@ public class ProprietaireRepositoryTest {
         .motDePasse("password")
         .dateInscription(dateInscription)
         .isPasswordUpdated(Boolean.TRUE)
+        .adresse("13 FakeStreet City, 12345 Country")
+        .isValidated(Boolean.TRUE)
         .build();
     proprietaireRepository.save(proprietaire);
 
@@ -93,6 +97,8 @@ public class ProprietaireRepositoryTest {
         .motDePasse("password")
         .dateInscription(dateInscription)
         .isPasswordUpdated(Boolean.TRUE)
+        .adresse("13 FakeStreet City, 12345 Country")
+        .isValidated(Boolean.TRUE)
         .build();
     Proprietaire proprietaire2 = Proprietaire.builder()
         .nom("Ferreira")
@@ -102,6 +108,8 @@ public class ProprietaireRepositoryTest {
         .motDePasse("password")
         .dateInscription(dateInscription)
         .isPasswordUpdated(Boolean.TRUE)
+        .adresse("13 FakeStreet City, 12345 Country")
+        .isValidated(Boolean.TRUE)
         .build();
     proprietaireRepository.save(proprietaire);
     proprietaireRepository.save(proprietaire2);
@@ -124,6 +132,8 @@ public class ProprietaireRepositoryTest {
         .motDePasse("password")
         .dateInscription(dateInscription)
         .isPasswordUpdated(Boolean.TRUE)
+        .adresse("13 FakeStreet City, 12345 Country")
+        .isValidated(Boolean.TRUE)
         .build();
     proprietaireRepository.save(proprietaire);
 
@@ -152,6 +162,8 @@ public class ProprietaireRepositoryTest {
         .motDePasse("password")
         .dateInscription(dateInscription)
         .isPasswordUpdated(Boolean.TRUE)
+        .adresse("13 FakeStreet City, 12345 Country")
+        .isValidated(Boolean.TRUE)
         .build();
     proprietaireRepository.save(proprietaire);
 
@@ -180,6 +192,8 @@ public class ProprietaireRepositoryTest {
         .motDePasse("password")
         .dateInscription(dateInscription)
         .isPasswordUpdated(Boolean.TRUE)
+        .adresse("13 FakeStreet City, 12345 Country")
+        .isValidated(Boolean.TRUE)
         .build();
     proprietaireRepository.save(proprietaire);
 

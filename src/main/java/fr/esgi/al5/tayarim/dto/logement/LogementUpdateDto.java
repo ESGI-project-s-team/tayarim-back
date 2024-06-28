@@ -6,10 +6,12 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * DTO pour la création de nouveaux logement dans le système. Contient des champs avec des
@@ -82,4 +84,15 @@ public class LogementUpdateDto {
   @Min(value = 1, message = "error_home_invalid_type_id")
   private Long idTypeLogement;
 
+  @Size(min = 1, max = 1000, message = "error_home_invalid_rules")
+  private List<Long> reglesLogement;
+
+  @Size(min = 1, max = 1000, message = "error_home_invalid_facilities")
+  private List<Long> amenagements;
+
+  @Size(min = 1, max = 1000, message = "error_home_invalid_photos_list_length")
+  private List<MultipartFile> files;
+
+  @Size(min = 1, max = 1000, message = "error_home_invalid_current_photos_list_length")
+  private List<Long> currentImages;
 }

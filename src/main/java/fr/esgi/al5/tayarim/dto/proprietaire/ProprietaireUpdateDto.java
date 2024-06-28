@@ -37,6 +37,9 @@ public class ProprietaireUpdateDto {
       message = "error_owner_invalid_phone")
   private String numTel;
 
+  @Size(min = 1, max = 300, message = "error_owner_invalid_address")
+  private String adresse;
+
   @Pattern(regexp = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?\\d)(?=.*?[!@#$%&*()_+\\-=\\[\\]?]).{8,}$",
       message = "error_owner_invalid_password")
   private String motDePasse;

@@ -8,6 +8,7 @@ import fr.esgi.al5.tayarim.dto.proprietaire.ProprietaireCreationDto;
 import fr.esgi.al5.tayarim.dto.proprietaire.ProprietaireDto;
 import fr.esgi.al5.tayarim.dto.proprietaire.ProprietaireUpdateDto;
 import fr.esgi.al5.tayarim.entities.Proprietaire;
+import fr.esgi.al5.tayarim.repositories.LogementRepository;
 import fr.esgi.al5.tayarim.repositories.ProprietaireRepository;
 import fr.esgi.al5.tayarim.services.ProprietaireService;
 import java.time.LocalDateTime;
@@ -33,6 +34,9 @@ public class ProprietaireServiceTest {
   @InjectMocks
   private ProprietaireService proprietaireService;
 
+  @Mock
+  private LogementRepository logementRepository;
+
   @Test
   public void creerProprietaire_ReturnsProprietaireDto() {
 
@@ -43,6 +47,7 @@ public class ProprietaireServiceTest {
         .prenom("Mathieu")
         .email("test@gmail.com")
         .numTel("0612345678")
+        .adresse("13 FakeStreet City, 12345 Country")
         .build();
 
     Proprietaire proprietaire = Proprietaire.builder()
@@ -53,6 +58,8 @@ public class ProprietaireServiceTest {
         .motDePasse("password")
         .dateInscription(localDateTime)
         .isPasswordUpdated(Boolean.TRUE)
+        .adresse("13 FakeStreet City, 12345 Country")
+        .isValidated(Boolean.TRUE)
         .build();
     proprietaire.setLogements(null);
     proprietaire.setId(1L);
@@ -86,6 +93,8 @@ public class ProprietaireServiceTest {
         .motDePasse("password")
         .dateInscription(localDateTime)
         .isPasswordUpdated(Boolean.TRUE)
+        .adresse("13 FakeStreet City, 12345 Country")
+        .isValidated(Boolean.TRUE)
         .build();
     proprietaire.setLogements(null);
     proprietaire.setId(1L);
@@ -97,6 +106,8 @@ public class ProprietaireServiceTest {
         .motDePasse("password")
         .dateInscription(localDateTime)
         .isPasswordUpdated(Boolean.TRUE)
+        .adresse("13 FakeStreet City, 12345 Country")
+        .isValidated(Boolean.TRUE)
         .build();
     proprietaire2.setLogements(null);
     proprietaire2.setId(2L);
@@ -121,6 +132,8 @@ public class ProprietaireServiceTest {
         .motDePasse("password")
         .dateInscription(localDateTime)
         .isPasswordUpdated(Boolean.TRUE)
+        .adresse("13 FakeStreet City, 12345 Country")
+        .isValidated(Boolean.TRUE)
         .build();
     proprietaire.setLogements(null);
     proprietaire.setId(1L);
@@ -153,6 +166,8 @@ public class ProprietaireServiceTest {
         .motDePasse("password")
         .dateInscription(localDateTime)
         .isPasswordUpdated(Boolean.TRUE)
+        .adresse("13 FakeStreet City, 12345 Country")
+        .isValidated(Boolean.TRUE)
         .build();
     proprietaire.setLogements(null);
     proprietaire.setId(1L);
@@ -191,6 +206,8 @@ public class ProprietaireServiceTest {
         .motDePasse("password")
         .dateInscription(localDateTime)
         .isPasswordUpdated(Boolean.TRUE)
+        .adresse("13 FakeStreet City, 12345 Country")
+        .isValidated(Boolean.TRUE)
         .build();
     proprietaire.setLogements(null);
     proprietaire.setId(id);
@@ -233,6 +250,8 @@ public class ProprietaireServiceTest {
         .motDePasse("password")
         .dateInscription(localDateTime)
         .isPasswordUpdated(Boolean.TRUE)
+        .adresse("13 FakeStreet City, 12345 Country")
+        .isValidated(Boolean.TRUE)
         .build();
     proprietaire.setLogements(null);
     proprietaire.setId(id);
@@ -268,6 +287,8 @@ public class ProprietaireServiceTest {
         .motDePasse(hashedPassword)
         .dateInscription(localDateTime)
         .isPasswordUpdated(Boolean.TRUE)
+        .adresse("13 FakeStreet City, 12345 Country")
+        .isValidated(Boolean.TRUE)
         .build();
     when(proprietaireRepository.findById(id)).thenReturn(Optional.ofNullable(proprietaire));
 
@@ -293,6 +314,8 @@ public class ProprietaireServiceTest {
         .motDePasse(hashedPassword)
         .dateInscription(localDateTime)
         .isPasswordUpdated(Boolean.TRUE)
+        .adresse("13 FakeStreet City, 12345 Country")
+        .isValidated(Boolean.TRUE)
         .build();
     when(proprietaireRepository.findById(id)).thenReturn(Optional.ofNullable(proprietaire));
 

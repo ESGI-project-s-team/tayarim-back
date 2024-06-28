@@ -138,12 +138,12 @@ public class AdministrateurService {
 
     if (administrateurUpdateDto.getEmail() != null && administrateurRepository.findFirstByEmail(
         administrateurUpdateDto.getEmail()).isPresent()) {
-      throw new ProprietaireInvalidUpdateBody();
+      throw new AdministrateurInvalidUpdateBody();
     }
 
     if (administrateurUpdateDto.getNumTel() != null && administrateurRepository.findFirstByNumTel(
         administrateurUpdateDto.getNumTel()).isPresent()) {
-      throw new ProprietaireInvalidUpdateBody();
+      throw new AdministrateurInvalidUpdateBody();
     }
 
     Administrateur administrateur = optionalAdministrateur.get();
