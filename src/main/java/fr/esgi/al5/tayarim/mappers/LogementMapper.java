@@ -64,46 +64,9 @@ public class LogementMapper {
         proprietaire,
         reglesLogements,
         amenagements,
-        images,
-        true);
+        images);
   }
 
-  /**
-   * Convertit une candidature Logement en une entité Logement.
-   */
-  public static Logement candidatureDtoToEntity(
-      @NonNull ProprietaireCandidateDto proprietaireCandidateDto,
-      @NonNull Proprietaire proprietaire,
-      @NonNull TypeLogement typeLogement, @NonNull List<ReglesLogement> reglesLogements,
-      @NonNull List<Amenagement> amenagements, @NonNull List<ImageLogement> images) {
-    return new Logement(
-        proprietaireCandidateDto.getIsLouable(),
-        proprietaireCandidateDto.getTitre(),
-        proprietaireCandidateDto.getNombresDeChambres(),
-        proprietaireCandidateDto.getNombresDeLits(),
-        proprietaireCandidateDto.getNombresSallesDeBains(),
-        proprietaireCandidateDto.getCapaciteMaxPersonne(),
-        1,
-        proprietaireCandidateDto.getDescription(),
-        0f,
-        1f,
-        null,
-        null,
-        1,
-        proprietaireCandidateDto.getVille(),
-        proprietaireCandidateDto.getAddressLogement(),
-        proprietaireCandidateDto.getCodePostal(),
-        proprietaireCandidateDto.getPays(),
-        proprietaireCandidateDto.getEtage(),
-        proprietaireCandidateDto.getNumeroDePorte(),
-        typeLogement,
-        proprietaire,
-        new HashSet<>(reglesLogements),
-        new HashSet<>(amenagements),
-        images,
-        false
-    );
-  }
 
   /**
    * Convertit une entité Logement en un DTO Logement.
@@ -142,8 +105,7 @@ public class LogementMapper {
         logement.getAmenagements().stream().collect(
             Collectors.toMap(Amenagement::getNom, Amenagement::getIcone)
         ),
-        ImageLogementMapper.entityListToDtoList(logement.getImages()),
-        logement.getIsValidated()
+        ImageLogementMapper.entityListToDtoList(logement.getImages())
     );
   }
 

@@ -576,7 +576,7 @@ public class LogementService {
     List<Logement> logements = logementRepository.findAll();
 
     logements = logements.stream()
-        .filter(logement -> logement.getIsLouable() && logement.getIsValidated())
+        .filter(Logement::getIsLouable)
         .collect(Collectors.toList());
 
     if (logementSearchDto.getDestination() != null && !logementSearchDto.getDestination()

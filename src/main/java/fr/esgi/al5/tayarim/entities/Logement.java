@@ -124,9 +124,6 @@ public class Logement {
   @OneToMany(cascade = CascadeType.ALL, mappedBy = "logement")
   private List<ImageLogement> images;
 
-  @Column(name = "ISVALIDATED", nullable = false)
-  private Boolean isValidated;
-
   /**
    * Builder pour l'entité Logmeent.
    *
@@ -153,7 +150,6 @@ public class Logement {
    * @param reglesLogements      Ensemble des règles du logement
    * @param amenagements         Ensemble des aménagements du logement
    * @param images               Ensemble des images du logement
-   * @param isValidated          Indicateur de validation du logement
    */
   @Builder
   public Logement(@NonNull Boolean isLouable, @NonNull String titre,
@@ -166,7 +162,7 @@ public class Logement {
       @NonNull String codePostal, @NonNull String pays, String etage, String numeroDePorte,
       @NonNull TypeLogement typeLogement, @NonNull Proprietaire proprietaire,
       @NonNull Set<ReglesLogement> reglesLogements, @NonNull Set<Amenagement> amenagements,
-      @NonNull List<ImageLogement> images, @NonNull Boolean isValidated) {
+      @NonNull List<ImageLogement> images) {
     this.isLouable = isLouable;
     this.titre = titre;
     this.nombresDeChambres = nombresDeChambres;
@@ -191,7 +187,6 @@ public class Logement {
     this.reglesLogements = reglesLogements;
     this.amenagements = amenagements;
     this.images = images;
-    this.isValidated = isValidated;
   }
 
 }

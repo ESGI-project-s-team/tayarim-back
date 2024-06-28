@@ -163,9 +163,9 @@ public class ProprietaireController implements
   /**
    * Gère la candidature des propriétaires.
    */
-  @PostMapping(path = "/candidate", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  @PostMapping(path = "/candidate")
   public ResponseEntity<ProprietaireDto> candidate(
-      @Valid @ModelAttribute ProprietaireCandidateDto proprietaireCandidateDto) {
+      @Valid @RequestBody ProprietaireCandidateDto proprietaireCandidateDto) {
     return new ResponseEntity<>(
         proprietaireService.candidate(proprietaireCandidateDto),
         HttpStatus.CREATED

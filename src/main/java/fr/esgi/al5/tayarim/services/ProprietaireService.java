@@ -275,12 +275,6 @@ public class ProprietaireService {
   @Transactional
   public ProprietaireDto candidate(@NonNull ProprietaireCandidateDto proprietaireCandidateDto) {
 
-    if (
-        verifyFieldCandidate(proprietaireCandidateDto)
-    ) {
-      throw new ProprietaireInvalidCandidatureBody();
-    }
-
     if (proprietaireRepository.findFirstByEmail(proprietaireCandidateDto.getEmail()).isPresent()) {
       throw new ProprietaireEmailAlreadyExistException();
     }
@@ -295,67 +289,7 @@ public class ProprietaireService {
 
     //send the password when validated
 
-    Optional<TypeLogement> optionalTypeLogement = typeLogementRepository
-        .findById(proprietaireCandidateDto.getIdTypeLogement());
-    if (optionalTypeLogement.isEmpty()) {
-      throw new LogementInvalidTypeLogement();
-    }
-    TypeLogement typeLogement = optionalTypeLogement.get();
-
-    ArrayList<ReglesLogement> reglesLogements = parseRegle(
-        proprietaireCandidateDto.getReglesLogement());
-
-    ArrayList<Amenagement> amenagements = parseAmenagement(
-        proprietaireCandidateDto.getAmenagements());
-
-    Logement logement = LogementMapper.candidatureDtoToEntity(proprietaireCandidateDto,
-        proprietaire, typeLogement, reglesLogements, amenagements, new ArrayList<>());
-
     proprietaire = proprietaireRepository.save(proprietaire);
-
-    proprietaire.setLogements(List.of(
-        logementRepository.save(logement))
-    );
-
-    if (proprietaireCandidateDto.getFiles() != null) {
-      int cpt = 0;
-      List<String> urls = new ArrayList<>();
-      ArrayList<ImageLogement> images = new ArrayList<>();
-      for (MultipartFile file : proprietaireCandidateDto.getFiles()) {
-        cpt++;
-
-        try {
-          // Obtenez les octets du fichier
-          byte[] bytes = file.getBytes();
-
-          String fileName = "House images/".concat(
-                  proprietaire.getLogements().get(0).getId().toString()).concat("_")
-              .concat(Integer.toString(cpt));
-
-          // Téléchargez le fichier dans GCS
-          TayarimApplication.bucket.create(fileName, bytes);
-
-          urls.add(fileName);
-
-        } catch (IOException e) {
-          logementRepository.delete(logement);
-          proprietaireRepository.delete(proprietaire);
-          throw new LogementImageBucketUploadError();
-        }
-
-      }
-
-      cpt = 0;
-      for (String fileName : urls) {
-        cpt++;
-        images.add(imageLogementRepository.save(new ImageLogement(fileName, logement, (cpt == 1))));
-      }
-
-      logement.setImages(images);
-
-    }
-
-    logementRepository.save(logement);
 
     return ProprietaireMapper.entityToDto(proprietaire, false);
   }
@@ -378,28 +312,6 @@ public class ProprietaireService {
 
     proprietaire.setIsValidated(true);
 
-    if (proprietaire.getLogements().get(0) == null) {
-      throw new LogementNotFoundException();
-    }
-
-    Logement logement = proprietaire.getLogements().get(0);
-
-    if (
-        logement.getCapaciteMaxPersonne() == null
-            || logement.getNombresNuitsMin() == null
-            || logement.getPrixParNuit() == null
-            || logement.getDefaultCheckIn() == null
-            || logement.getDefaultCheckOut() == null
-            || logement.getIntervalReservation() == null
-    ) {
-      throw new LogementInvalidUpdateBody();
-    }
-
-    logement.setIsValidated(true);
-    logement = logementRepository.save(logement);
-
-    System.out.println(logement.getIsValidated());
-
     return ProprietaireMapper.entityToDto(proprietaireRepository.save(proprietaire), false);
   }
 
@@ -419,9 +331,6 @@ public class ProprietaireService {
       throw new ProprietaireNotFoundException();
     }
 
-    Logement logement = proprietaire.getLogements().get(0);
-
-    logementRepository.delete(logement);
     proprietaireRepository.delete(proprietaire);
 
     return ProprietaireMapper.entityToDto(proprietaire, false);
@@ -527,22 +436,6 @@ public class ProprietaireService {
 
     return amenagements;
 
-  }
-
-  private boolean verifyFieldCandidate(@NonNull ProprietaireCandidateDto proprietaireCandidateDto) {
-    return
-        (
-            proprietaireCandidateDto.getIsLouable()
-                && (
-                proprietaireCandidateDto.getNombresDeChambres() == null
-                    || proprietaireCandidateDto.getNombresDeLits() == null
-                    || proprietaireCandidateDto.getNombresSallesDeBains() == null
-                    || proprietaireCandidateDto.getCapaciteMaxPersonne() == null
-                    || proprietaireCandidateDto.getReglesLogement() == null
-                    || proprietaireCandidateDto.getAmenagements() == null
-                    || proprietaireCandidateDto.getFiles() == null
-            )
-        );
   }
 
 }
