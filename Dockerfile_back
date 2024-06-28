@@ -5,6 +5,15 @@ WORKDIR /app
 COPY pom.xml .
 COPY src ./src
 
+RUN --mount=type=secret,id=PRIVATE_KEY \
+    sed -i "s/PRIVATE_KEY=/PRIVATE_KEY=$(cat /run/secrets/PRIVATE_KEY)/" .env.production
+
+RUN --mount=type=secret,id=MYSQL_USER \
+    sed -i "s/MYSQL_USER=/MYSQL_USER=$(cat /run/secrets/MYSQL_USER)/" .env.production
+
+RUN --mount=type=secret,id=MYSQL_PASSWORD \
+    sed -i "s/MYSQL_PASSWORD=/MYSQL_PASSWORD=$(cat /run/secrets/MYSQL_PASSWORD)/" .env.production
+
 RUN mvn clean package -DskipTests
 
 FROM amazoncorretto:21-alpine
