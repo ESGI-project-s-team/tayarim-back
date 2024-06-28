@@ -24,6 +24,10 @@ jobs:
           file: ./Dockerfile_back
           push: true
           tags: eu.gcr.io/tayarim-project/tayarim_back:${{ github.sha }}, eu.gcr.io/tayarim-project/tayarim_back:latest
+          secrets: |
+            "PRIVATE_KEY=${{ secrets.PRIVATE_KEY }}"
+            "USER=${{ secrets.MYSQL_USER }}"
+            "PASSWORD=${{ secrets.MYSQL_PASSWORD }}"
 
 #  update-cloud-sql:
 #    runs-on: ubuntu-latest
