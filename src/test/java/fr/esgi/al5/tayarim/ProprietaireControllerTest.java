@@ -156,8 +156,7 @@ public class ProprietaireControllerTest {
             Map.of("Children allowed", "FaChild", "Smoking allowed", "FaSmoking", "Pets allowed",
                 "MdOutlinePets"),
             Map.of("Oven", "PiOvenDuotone", "Wifi", "FaWifi"),
-            List.of(),
-            true
+            List.of()
         )))
         .commission(20f)
         .adresse("13 FakeStreet City, 12345 Country")
