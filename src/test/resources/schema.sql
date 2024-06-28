@@ -61,8 +61,7 @@ CREATE TABLE IF NOT EXISTS Logement (
                                         etage VARCHAR(100),
                                         numeroDePorte VARCHAR(100),
                                         idTypeLogement INT,
-                                        idProprietaire INT,
-                                        isValidated BOOLEAN
+                                        idProprietaire INT
 );
 
 CREATE TABLE IF NOT EXISTS TypeLogement (
