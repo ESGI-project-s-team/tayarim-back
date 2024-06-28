@@ -535,6 +535,11 @@ public class LogementService {
 
     LogementDto logementDto = LogementMapper.entityToDto(optionalLogement.get());
 
+    List<Reservation> reservations = reservationRepository.findAllByLogementId(id);
+    for (Reservation reservation : reservations) {
+      reservationRepository.deleteById(reservation.getId());
+    }
+
     logementRepository.deleteById(id);
 
     return logementDto;

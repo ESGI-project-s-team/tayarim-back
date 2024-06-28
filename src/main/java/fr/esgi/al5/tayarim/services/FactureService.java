@@ -15,9 +15,11 @@ import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.pdf.TextField;
 import fr.esgi.al5.tayarim.dto.facture.FactureCreationDto;
 import fr.esgi.al5.tayarim.dto.facture.FactureDto;
+import fr.esgi.al5.tayarim.entities.Facture;
 import fr.esgi.al5.tayarim.entities.Logement;
 import fr.esgi.al5.tayarim.entities.Proprietaire;
 import fr.esgi.al5.tayarim.entities.Reservation;
+import fr.esgi.al5.tayarim.exceptions.FactureDoesNotExistException;
 import fr.esgi.al5.tayarim.exceptions.LogementNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireNotFoundException;
 import fr.esgi.al5.tayarim.mappers.FactureMapper;
@@ -77,6 +79,12 @@ public class FactureService {
    */
   public FactureDto create(@NonNull FactureCreationDto factureCreationDto) {
 
+    if (factureCreationDto.getYear() >= LocalDate.now().getYear() || (
+        factureCreationDto.getMonth() >= LocalDate.now().getMonthValue()
+            && factureCreationDto.getYear() >= LocalDate.now().getYear())) {
+      throw new FactureDoesNotExistException();
+    }
+
     Optional<Proprietaire> optionalProprietaire = proprietaireRepository.findById(
         factureCreationDto.getIdProprietaire());
     if (optionalProprietaire.isEmpty()) {
@@ -104,14 +112,30 @@ public class FactureService {
       return FactureMapper.entityListToDtoList(factureRepository.findAll());
     }
 
-    //return FactureMapper.entityListToDtoList(factureRepository.findByProprietaireId(userId));
-    return null;
+    return FactureMapper.entityListToDtoList(factureRepository.findAllByProprietaireId(userId));
+  }
 
+  /**
+   * Récupère une facture par son identifiant.
+   *
+   * @param numeroFacture L'identifiant de la facture.
+   */
+  public FactureDto getById(@NonNull String numeroFacture) {
+    if (numeroFacture.length() < 6) {
+      numeroFacture = String.format("%06d", Integer.parseInt(numeroFacture));
+      System.out.println(numeroFacture);
+    }
+    Optional<Facture> optionalFacture = factureRepository.findByNumeroFacture(numeroFacture);
+    if (optionalFacture.isEmpty()) {
+      throw new FactureDoesNotExistException();
+    }
 
+    return FactureMapper.entityToDto(optionalFacture.get());
   }
 
   private void generateFacture(Long month, Long year, List<Logement> logements,
       Proprietaire proprietaire) {
+
     Document document = new Document();
     try {
       PdfWriter pdfWriter = PdfWriter.getInstance(document, new FileOutputStream("facture.pdf"));

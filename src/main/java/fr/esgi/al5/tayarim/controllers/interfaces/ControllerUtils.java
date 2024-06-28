@@ -6,6 +6,7 @@ import fr.esgi.al5.tayarim.exceptions.AdministrateurNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.AdministrateurNumTelAlreadyExistException;
 import fr.esgi.al5.tayarim.exceptions.DepenseDateInvalidError;
 import fr.esgi.al5.tayarim.exceptions.DepenseNotFoundError;
+import fr.esgi.al5.tayarim.exceptions.FactureDoesNotExistException;
 import fr.esgi.al5.tayarim.exceptions.IndisponibiliteDateInvalidError;
 import fr.esgi.al5.tayarim.exceptions.IndisponibiliteLogementNotFoundError;
 import fr.esgi.al5.tayarim.exceptions.IndisponibiliteNotFoundError;
@@ -87,6 +88,19 @@ public interface ControllerUtils {
   @ExceptionHandler(UnsupportedMethodPathException.class)
   default Map<String, List<String>> unsupportedMethodPathException(
       UnsupportedMethodPathException ex) {
+    return mapException(ex);
+  }
+
+  /**
+   * Gère les exceptions lorsque le corps de mise à jour de l'administrateur est invalide.
+   *
+   * @param ex L'exception capturée.
+   * @return Une carte des erreurs avec le message approprié.
+   */
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ExceptionHandler(FactureDoesNotExistException.class)
+  default Map<String, List<String>> factureDoesNotExistException(
+      FactureDoesNotExistException ex) {
     return mapException(ex);
   }
 
