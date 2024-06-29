@@ -21,14 +21,15 @@ public class FactureMapper {
    *
    * @return L'entité Depense correspondant.
    */
-  public static Facture creationDtoToEntity(@NonNull FactureCreationDto factureCreationDto,
-      @NonNull Proprietaire proprietaire
-  ) {
+  public static Facture creationDtoToEntity(@NonNull Long id,
+      @NonNull Proprietaire proprietaire, @NonNull String numeroFacture, @NonNull String url) {
     return new Facture(
-        "numero",
+        id,
+        numeroFacture,
         LocalDate.now(),
         1000f,
-        proprietaire
+        proprietaire,
+        url
     );
   }
 
@@ -42,11 +43,10 @@ public class FactureMapper {
     return new FactureDto(
         facture.getId(),
         facture.getNumeroFacture(),
-        facture.getDateFacture().toString(
-
-        ),
+        facture.getDateFacture().toString(),
         facture.getMontant(),
-        facture.getProprietaire().getId()
+        facture.getProprietaire().getId(),
+        facture.getUrl()
     );
   }
 
