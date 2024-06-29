@@ -4,6 +4,7 @@ WORKDIR /app
 
 COPY pom.xml .
 COPY src ./src
+COPY .env.production .
 
 RUN --mount=type=secret,id=USER \
     sed -i "s/USER=/USER=$(cat /run/secrets/USER)/" .env.production
