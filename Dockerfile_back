@@ -6,6 +6,8 @@ COPY pom.xml .
 COPY src ./src
 COPY src/main/resources/.env.production src/main/resources/.env.production
 
+RUN ls -la src/main/resources
+
 RUN --mount=type=secret,id=USER \
     sed -i "s/USER=/USER=$(cat /run/secrets/USER)/" src/main/resources/.env.production
 
