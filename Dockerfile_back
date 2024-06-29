@@ -21,7 +21,8 @@ RUN --mount=type=secret,id=GCP \
     sed -i "s/GCP=/GCP=$(cat /run/secrets/GCP)/" src/main/resources/.env.production
 
 RUN --mount=type=secret,id=PRIVATE_KEY \
-    sed -i "s/PRIVATE_KEY=/PRIVATE_KEY=$(cat /run/secrets/PRIVATE_KEY)/" src/main/resources/.env.production
+    sh -c 'PRIVATE_KEY=$(cat /run/secrets/PRIVATE_KEY) && \
+        sed -i "s|PRIVATE_KEY=.*|PRIVATE_KEY=${PRIVATE_KEY}|" src/main/resources/.env.production'
 
 RUN mvn clean package -DskipTests
 
