@@ -26,8 +26,8 @@ jobs:
           tags: eu.gcr.io/tayarim-project/tayarim_back:${{ github.sha }}, eu.gcr.io/tayarim-project/tayarim_back:latest
           secrets: |
             "PRIVATE_KEY=${{ secrets.PRIVATE_KEY }}"
-            "USER=${{ secrets.MYSQL_USER }}"
-            "PASSWORD=${{ secrets.MYSQL_PASSWORD }}"
+            "USER=${{ secrets.USER }}"
+            "PASSWORD=${{ secrets.PASSWORD }}"
             "STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}"
             "GCP=${{ secrets.GCP }}"
 
