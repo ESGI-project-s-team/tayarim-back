@@ -4,22 +4,22 @@ WORKDIR /app
 
 COPY pom.xml .
 COPY src ./src
-COPY .env.production .
+COPY src/main/resources/.env.production src/main/resources/.env.production
 
 RUN --mount=type=secret,id=USER \
-    sed -i "s/USER=/USER=$(cat /run/secrets/USER)/" .env.production
+    sed -i "s/USER=/USER=$(cat /run/secrets/USER)/" src/main/resources/.env.production
 
 RUN --mount=type=secret,id=PASSWORD \
-    sed -i "s/PASSWORD=/PASSWORD=$(cat /run/secrets/PASSWORD)/" .env.production
+    sed -i "s/PASSWORD=/PASSWORD=$(cat /run/secrets/PASSWORD)/" src/main/resources/.env.production
 
 RUN --mount=type=secret,id=STRIPE_SECRET_KEY \
-    sed -i "s/STRIPE_SECRET_KEY=/STRIPE_SECRET_KEY=$(cat /run/secrets/STRIPE_SECRET_KEY)/" .env.production
+    sed -i "s/STRIPE_SECRET_KEY=/STRIPE_SECRET_KEY=$(cat /run/secrets/STRIPE_SECRET_KEY)/" src/main/resources/.env.production
 
 RUN --mount=type=secret,id=GCP \
-    sed -i "s/GCP=/GCP=$(cat /run/secrets/GCP)/" .env.production
+    sed -i "s/GCP=/GCP=$(cat /run/secrets/GCP)/" src/main/resources/.env.production
 
 RUN --mount=type=secret,id=PRIVATE_KEY \
-    sed -i "s/PRIVATE_KEY=/PRIVATE_KEY=$(cat /run/secrets/PRIVATE_KEY)/" .env.production
+    sed -i "s/PRIVATE_KEY=/PRIVATE_KEY=$(cat /run/secrets/PRIVATE_KEY)/" src/main/resources/.env.production
 
 RUN mvn clean package -DskipTests
 
