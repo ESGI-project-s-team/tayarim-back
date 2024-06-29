@@ -23,8 +23,37 @@ jobs:
         with:
           file: ./Dockerfile_back
           push: true
-          tags: eu.gcr.io/tayarim-project/tayarim_back:${{ github.sha }}
+          tags: eu.gcr.io/tayarim-project/tayarim_back:${{ github.sha }}, eu.gcr.io/tayarim-project/tayarim_back:latest
+          secrets: |
+            "PRIVATE_KEY=${{ secrets.PRIVATE_KEY }}"
+            "USER=${{ secrets.USER }}"
+            "PASSWORD=${{ secrets.PASSWORD }}"
+            "STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}"
+            "GCP=${{ secrets.GCP }}"
 
+#  update-cloud-sql:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Update cloud sql
+#        uses: google-github-actions/sql-action@0.1
+#        with:
+#          service_account_key: ${{ secrets.GCR_JSON_KEY }}
+#          project_id: tayarim-project
+#          instance_connection_name: tayarim-project:europe-west9:tayarim-sql
+#          database: tayarim
+#          sql: |
+#            CREATE TABLE IF NOT EXISTS users (
+#              id SERIAL PRIMARY KEY,
+#              name VARCHAR(255) NOT NULL,
+#              email VARCHAR(255) NOT NULL,
+#              password VARCHAR(255) NOT NULL
+#            );
+#            CREATE TABLE IF NOT EXISTS products (
+#              id SERIAL PRIMARY KEY,
+#              name VARCHAR(255) NOT NULL,
+#              price FLOAT NOT NULL,
+#              description TEXT NOT NULL
+#            );
   trigger_workflow:
     runs-on: ubuntu-latest
     needs:
@@ -39,6 +68,6 @@ jobs:
           workflow_file_name: terraform_deploy.yml
           ref: main
           wait_interval: 30
-          propagate_failure: true
+          propagate_failure: false
           wait_workflow: true
           client_payload: '{"back":"${{ github.sha }}"}'

@@ -1,5 +1,6 @@
 package fr.esgi.al5.tayarim.mappers;
 
+import fr.esgi.al5.tayarim.dto.proprietaire.ProprietaireCandidateDto;
 import fr.esgi.al5.tayarim.dto.proprietaire.ProprietaireCreationDto;
 import fr.esgi.al5.tayarim.dto.proprietaire.ProprietaireDto;
 import fr.esgi.al5.tayarim.entities.Proprietaire;
@@ -33,8 +34,28 @@ public class ProprietaireMapper {
         .numTel(proprietaireCreationDto.getNumTel())
         .motDePasse(hashedPassword)
         .dateInscription(LocalDateTime.now())
+        .adresse(proprietaireCreationDto.getAdresse())
         .isPasswordUpdated(false)
+        .isValidated(true)
         .build();
+  }
+
+  /**
+   * Convertit une candidature Proprietaire en une entité Proprietaire.
+   */
+  public static Proprietaire candidatureDtoToEntity(
+      @NonNull ProprietaireCandidateDto proprietaireCandidateDto, @NonNull String hashedPassword) {
+    return new Proprietaire(
+        proprietaireCandidateDto.getNom(),
+        proprietaireCandidateDto.getPrenom(),
+        proprietaireCandidateDto.getEmail(),
+        proprietaireCandidateDto.getNumTel(),
+        hashedPassword,
+        LocalDateTime.now(),
+        proprietaireCandidateDto.getAdresse(),
+        false,
+        false
+    );
   }
 
   /**
@@ -59,6 +80,8 @@ public class ProprietaireMapper {
         .logements(
             isLogement ? LogementMapper.entityListToDtoList(proprietaire.getLogements()) : null)
         .commission(proprietaire.getCommission())
+        .adresse(proprietaire.getAdresse())
+        .isValidated(proprietaire.getIsValidated())
         .build();
   }
 

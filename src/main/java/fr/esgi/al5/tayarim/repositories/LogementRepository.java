@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import lombok.NonNull;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 
@@ -14,6 +15,11 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface LogementRepository extends JpaRepository<Logement, Long> {
+
+  @Query("SELECT l FROM Logement l "
+      + "LEFT JOIN FETCH l.reglesLogements "
+      + "LEFT JOIN FETCH l.amenagements")
+  List<Logement> findAll();
 
   List<Logement> findAllByProprietaire(@NonNull Proprietaire proprietaire);
 
