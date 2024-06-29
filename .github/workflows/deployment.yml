@@ -28,6 +28,8 @@ jobs:
             "PRIVATE_KEY=${{ secrets.PRIVATE_KEY }}"
             "USER=${{ secrets.MYSQL_USER }}"
             "PASSWORD=${{ secrets.MYSQL_PASSWORD }}"
+            "STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}"
+            "GCP=${{ secrets.GCP }}"
 
 #  update-cloud-sql:
 #    runs-on: ubuntu-latest

@@ -14,6 +14,12 @@ RUN --mount=type=secret,id=MYSQL_USER \
 RUN --mount=type=secret,id=MYSQL_PASSWORD \
     sed -i "s/MYSQL_PASSWORD=/MYSQL_PASSWORD=$(cat /run/secrets/MYSQL_PASSWORD)/" .env.production
 
+RUN --mount=type=secret,id=STRIPE_SECRET_KEY \
+    sed -i "s/STRIPE_SECRET_KEY=/STRIPE_SECRET_KEY=$(cat /run/secrets/STRIPE_SECRET_KEY)/" .env.production
+
+RUN --mount=type=secret,id=GCP \
+    sed -i "s/GCP=/GCP=$(cat /run/secrets/GCP)/" .env.production
+
 RUN mvn clean package -DskipTests
 
 FROM amazoncorretto:21-alpine
