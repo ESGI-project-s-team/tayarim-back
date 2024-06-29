@@ -84,4 +84,3 @@
 "error_notification_send": "Une erreur est survenue lors de l'envoi de la notification",
 "error_owner_invalid_address": "L'adresse saisie est invalide",
 "error_invoice_nonexistent": "Cette facture n'existe pas",
-"test": "test",
