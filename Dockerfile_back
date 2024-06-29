@@ -5,11 +5,11 @@ WORKDIR /app
 COPY pom.xml .
 COPY src ./src
 
-RUN --mount=type=secret,id=MYSQL_USER \
-    sed -i "s/MYSQL_USER=/MYSQL_USER=$(cat /run/secrets/MYSQL_USER)/" .env.production
+RUN --mount=type=secret,id=USER \
+    sed -i "s/USER=/USER=$(cat /run/secrets/USER)/" .env.production
 
-RUN --mount=type=secret,id=MYSQL_PASSWORD \
-    sed -i "s/MYSQL_PASSWORD=/MYSQL_PASSWORD=$(cat /run/secrets/MYSQL_PASSWORD)/" .env.production
+RUN --mount=type=secret,id=PASSWORD \
+    sed -i "s/PASSWORD=/PASSWORD=$(cat /run/secrets/PASSWORD)/" .env.production
 
 RUN --mount=type=secret,id=STRIPE_SECRET_KEY \
     sed -i "s/STRIPE_SECRET_KEY=/STRIPE_SECRET_KEY=$(cat /run/secrets/STRIPE_SECRET_KEY)/" .env.production
