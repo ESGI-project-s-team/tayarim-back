@@ -2,7 +2,6 @@ package fr.esgi.al5.tayarim.services;
 
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
-import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.FontFactory;
@@ -13,22 +12,31 @@ import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import fr.esgi.al5.tayarim.TayarimApplication;
 import fr.esgi.al5.tayarim.dto.facture.FactureCreationDto;
 import fr.esgi.al5.tayarim.dto.facture.FactureDto;
 import fr.esgi.al5.tayarim.entities.Depense;
 import fr.esgi.al5.tayarim.entities.Facture;
 import fr.esgi.al5.tayarim.entities.Logement;
+import fr.esgi.al5.tayarim.entities.Notification;
 import fr.esgi.al5.tayarim.entities.Proprietaire;
 import fr.esgi.al5.tayarim.entities.Reservation;
+import fr.esgi.al5.tayarim.exceptions.FactureBucketUploadError;
 import fr.esgi.al5.tayarim.exceptions.FactureDoesNotExistException;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireNotFoundException;
 import fr.esgi.al5.tayarim.mappers.FactureMapper;
+import fr.esgi.al5.tayarim.mappers.NotificationMapper;
 import fr.esgi.al5.tayarim.repositories.DepenseRepository;
 import fr.esgi.al5.tayarim.repositories.FactureRepository;
 import fr.esgi.al5.tayarim.repositories.LogementRepository;
+import fr.esgi.al5.tayarim.repositories.NotificationRepository;
 import fr.esgi.al5.tayarim.repositories.ProprietaireRepository;
 import fr.esgi.al5.tayarim.repositories.ReservationRepository;
+import fr.esgi.al5.tayarim.socket.MyWebSocketHandler;
+import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.YearMonth;
@@ -55,6 +63,9 @@ public class FactureService {
 
   private final DepenseRepository depenseRepository;
 
+  private final MyWebSocketHandler myWebSocketHandler;
+  private final NotificationRepository notificationRepository;
+
   /**
    * Constructeur pour le service de Facture.
    *
@@ -63,15 +74,20 @@ public class FactureService {
    * @param logementRepository     Le repository des logements.
    * @param reservationRepository  Le repository des réservations.
    * @param depenseRepository      Le repository des dépenses.
+   * @param myWebSocketHandler     Le service de socket.
+   * @param notificationRepository Le repository des notifications.
    */
   public FactureService(FactureRepository factureRepository,
       ProprietaireRepository proprietaireRepository, LogementRepository logementRepository,
-      ReservationRepository reservationRepository, DepenseRepository depenseRepository) {
+      ReservationRepository reservationRepository, DepenseRepository depenseRepository,
+      MyWebSocketHandler myWebSocketHandler, NotificationRepository notificationRepository) {
     this.factureRepository = factureRepository;
     this.proprietaireRepository = proprietaireRepository;
     this.logementRepository = logementRepository;
     this.reservationRepository = reservationRepository;
     this.depenseRepository = depenseRepository;
+    this.myWebSocketHandler = myWebSocketHandler;
+    this.notificationRepository = notificationRepository;
   }
 
   /**
@@ -99,8 +115,12 @@ public class FactureService {
 
     List<Logement> logements = logementRepository.findAllByProprietaire(optionalProprietaire.get());
 
-    generateFacture(factureCreationDto, logements,
-        optionalProprietaire.get());
+    try {
+      generateFacture(factureCreationDto, logements,
+          optionalProprietaire.get());
+    } catch (IOException e) {
+      throw new FactureBucketUploadError();
+    }
 
     return null;
 
@@ -118,7 +138,10 @@ public class FactureService {
       return FactureMapper.entityListToDtoList(factureRepository.findAll());
     }
 
-    return FactureMapper.entityListToDtoList(factureRepository.findAllByProprietaireId(userId));
+    List<Facture> factures = factureRepository.findAllByProprietaireId(userId).stream().filter(
+        Facture::getIsSend
+    ).toList();
+    return FactureMapper.entityListToDtoList(factures);
   }
 
   /**
@@ -146,8 +169,38 @@ public class FactureService {
     return FactureMapper.entityToDto(optionalFacture.get());
   }
 
+  /**
+   * Envoie une facture par email et uen notification.
+   */
+  @Transactional
+  public FactureDto sendFacture(@NonNull Long id) {
+    Optional<Facture> optionalFacture = factureRepository.findById(id);
+    if (optionalFacture.isEmpty()) {
+      throw new FactureDoesNotExistException();
+    }
+
+    Facture facture = optionalFacture.get();
+
+    myWebSocketHandler.sendNotif(facture.getProprietaire().getId(), LocalDate.now(),
+        "notif_facture", "facture");
+
+    notificationRepository.save(new Notification(
+        "facture",
+        "notif_facture",
+        LocalDate.now(),
+        facture.getProprietaire(),
+        false
+    ));
+
+    //sendMail
+
+    facture.setIsSend(true);
+
+    return FactureMapper.entityToDto(factureRepository.save(facture));
+  }
+
   private void generateFacture(FactureCreationDto factureCreationDto, List<Logement> logements,
-      Proprietaire proprietaire) {
+      Proprietaire proprietaire) throws IOException {
 
     Long idFacture = factureRepository.count() + 1;
     String numeroFacture = Long.toString(idFacture);
@@ -156,10 +209,11 @@ public class FactureService {
       numeroFacture = String.format("%06d", Integer.parseInt(numeroFacture));
       System.out.println(numeroFacture);
     }
+    String filePath = numeroFacture + ".pdf";
 
     Document document = new Document();
     try {
-      PdfWriter.getInstance(document, new FileOutputStream("facture.pdf"));
+      PdfWriter.getInstance(document, new FileOutputStream(filePath));
       document.open();
 
       // Ajouter l'image de puis le dossier resources
@@ -342,9 +396,18 @@ public class FactureService {
     } finally {
       document.close();
 
+      // get the file just created
+      File file = new File(filePath);
+
+      // send to GCS
+      String fileName = "Factures/facture_" + numeroFacture + ".pdf";
+      TayarimApplication.bucket.create(fileName, Files.readAllBytes(file.toPath()));
+
+      file.delete();
+
       factureRepository.save(
           FactureMapper.creationDtoToEntity(
-              idFacture, proprietaire, numeroFacture, "facture.pdf"
+              idFacture, proprietaire, numeroFacture, fileName
           )
       );
 

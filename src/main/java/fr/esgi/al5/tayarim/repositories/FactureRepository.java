@@ -19,6 +19,4 @@ public interface FactureRepository extends JpaRepository<Facture, Long> {
 
   Optional<Facture> findByNumeroFacture(String numeroFacture);
 
-
-
 }
