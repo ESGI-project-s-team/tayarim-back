@@ -4,6 +4,7 @@ import fr.esgi.al5.tayarim.dto.statistique.StatistiqueDto;
 import fr.esgi.al5.tayarim.entities.Reservation;
 import fr.esgi.al5.tayarim.repositories.ReservationRepository;
 import fr.esgi.al5.tayarim.repositories.StatistiqueRepository;
+import lombok.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,33 +23,38 @@ public class StatistiqueService {
         this.statistiqueRepository = statistiqueRepository;
     }
 
-    public StatistiqueDto getStatistiqueParAnnee(Long year) {
+    @Transactional
+    public StatistiqueDto getStatistiqueParAnnee(Long year, @NonNull Boolean isAdmin, @NonNull Long idProprietaire) {
+
         return new StatistiqueDto(
-                getMontantReservationsParMois(year),
-                getPrixDepenseParMois(year),
-                getDepenseAndReservationParMois(year),
-                getNombreReservationParMois(year),
-                getTauxOccupationParMois(year)
+                getMontantReservationsParMois(year, isAdmin, idProprietaire),
+                getPrixDepenseParMois(year, isAdmin, idProprietaire),
+                getDepenseAndReservationParMois(year, isAdmin, idProprietaire),
+                getNombreReservationParMois(year, isAdmin, idProprietaire),
+                getTauxOccupationParMois(year, isAdmin, idProprietaire)
         );
+
     }
-    
-    public List<Float> getMontantReservationsParMois(Long year) {
-        List<Map<String, Object>> rawResults = statistiqueRepository.getMontantReservationsParMois(year);
+
+    public List<Float> getMontantReservationsParMois(Long year, Boolean isAdmin, Long idProprietaire) {
+        List<Map<String, Object>> rawResults;
+        if (isAdmin) {
+            rawResults = statistiqueRepository.getMontantReservationsParMois(year);
+        } else {
+            rawResults = statistiqueRepository.getMontantReservationsParMoisByOwner(year, idProprietaire);
+        }
         Map<Integer, Float> montantParMoisMap = new HashMap<>();
 
-        // Initialize all months with 0.0
         for (int month = 1; month <= 12; month++) {
             montantParMoisMap.put(month, 0.0f);
         }
 
-        // Populate the map with actual values from the query result
         for (Map<String, Object> result : rawResults) {
             Integer month = (Integer) result.get("month");
             Float totalAmount = ((Number) result.get("totalAmount")).floatValue();
             montantParMoisMap.put(month, totalAmount);
         }
 
-        // Create a list from the map
         List<Float> montantParMois = new ArrayList<>();
         for (int month = 1; month <= 12; month++) {
             montantParMois.add(montantParMoisMap.get(month));
@@ -57,8 +63,13 @@ public class StatistiqueService {
         return montantParMois;
     }
 
-    public List<Float> getPrixDepenseParMois(Long year) {
-        List<Map<String, Object>> rawResults = statistiqueRepository.getPrixDepenseParMois(year);
+    public List<Float> getPrixDepenseParMois(Long year, Boolean isAdmin, Long idProprietaire) {
+        List<Map<String, Object>> rawResults;
+        if (isAdmin) {
+            rawResults = statistiqueRepository.getPrixDepenseParMois(year);
+        } else {
+            rawResults = statistiqueRepository.getPrixDepenseParMoiByOwner(year, idProprietaire);
+        }
         Map<Integer, Float> prixParMoisMap = new HashMap<>();
 
         // Initialize all months with 0.0
@@ -82,9 +93,17 @@ public class StatistiqueService {
         return prixParMois;
     }
 
-    public List<Float> getDepenseAndReservationParMois(Long year) {
-        List<Map<String, Object>> reservationResults = statistiqueRepository.getMontantReservationsParMois(year);
-        List<Map<String, Object>> depenseResults = statistiqueRepository.getPrixDepenseParMois(year);
+    public List<Float> getDepenseAndReservationParMois(Long year, Boolean isAdmin, Long idProprietaire) {
+        List<Map<String, Object>> reservationResults;
+        List<Map<String, Object>> depenseResults;
+
+        if (isAdmin) {
+            reservationResults = statistiqueRepository.getMontantReservationsParMois(year);
+            depenseResults = statistiqueRepository.getPrixDepenseParMois(year);
+        } else {
+            reservationResults = statistiqueRepository.getMontantReservationsParMoisByOwner(year, idProprietaire);
+            depenseResults = statistiqueRepository.getPrixDepenseParMoiByOwner(year, idProprietaire);
+        }
 
         Map<Integer, Float> reservationMap = new HashMap<>();
         Map<Integer, Float> depenseMap = new HashMap<>();
@@ -119,8 +138,15 @@ public class StatistiqueService {
         return differenceParMois;
     }
 
-    public List<Integer> getNombreReservationParMois(Long year) {
-        List<Map<String, Object>> rawResults = statistiqueRepository.getNombreReservationParMois(year);
+    public List<Integer> getNombreReservationParMois(Long year, Boolean isAdmin, Long idProprietaire) {
+
+        List<Map<String, Object>> rawResults;
+        if (isAdmin) {
+            rawResults = statistiqueRepository.getNombreReservationParMois(year);
+        } else {
+            rawResults = statistiqueRepository.getNombreReservationParMoisByOwner(year, idProprietaire);
+        }
+
         Map<Integer, Integer> reservationsParMoisMap = new HashMap<>();
 
         // Initialize all months with 0
@@ -144,8 +170,13 @@ public class StatistiqueService {
         return reservationsParMois;
     }
 
-    public List<Float> getTauxOccupationParMois(Long year) {
-        List<Map<String, Object>> rawResults = statistiqueRepository.getOccupiedDaysPerMonth(year);
+    public List<Float> getTauxOccupationParMois(Long year, Boolean isAdmin, Long idProprietaire) {
+        List<Map<String, Object>> rawResults;
+        if (isAdmin) {
+            rawResults = statistiqueRepository.getOccupiedDaysPerMonth(year);
+        } else {
+            rawResults = statistiqueRepository.getOccupiedDaysPerMonthByOwner(year, idProprietaire);
+        }
         Map<Integer, Integer> occupiedDaysPerMonthMap = new HashMap<>();
 
         // Initialize all months with 0 occupied days

@@ -1,5 +1,6 @@
 package fr.esgi.al5.tayarim.controllers;
 
+import fr.esgi.al5.tayarim.auth.UserTokenInfo;
 import fr.esgi.al5.tayarim.controllers.interfaces.ControllerUtils;
 import fr.esgi.al5.tayarim.controllers.interfaces.GetByIdMethodInterface;
 import fr.esgi.al5.tayarim.dto.statistique.StatistiqueDto;
@@ -24,10 +25,10 @@ public class StatistiqueController implements ControllerUtils,
 
     @Override
     public ResponseEntity<StatistiqueDto> getById(String authHeader, Long id) {
-        //authService.verifyToken(getTokenFromHeader(authHeader), false);
+        UserTokenInfo userTokenInfo = authService.verifyToken(getTokenFromHeader(authHeader), false);
 
         return new ResponseEntity<>(
-                statistiqueService.getStatistiqueParAnnee(id),
+                statistiqueService.getStatistiqueParAnnee(id, userTokenInfo.getIsAdmin(), userTokenInfo.getId()),
                 HttpStatus.OK
         );
     }
