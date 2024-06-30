@@ -202,7 +202,7 @@ public class FactureService {
   private void generateFacture(FactureCreationDto factureCreationDto, List<Logement> logements,
       Proprietaire proprietaire) throws IOException {
 
-    Long idFacture = factureRepository.getNextFactureId();
+    Long idFacture = factureRepository.count() + 1;
     String numeroFacture = Long.toString(idFacture);
 
     if (numeroFacture.length() < 6) {
