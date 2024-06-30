@@ -187,8 +187,11 @@ CREATE TABLE IF NOT EXISTS Facture
     numeroFacture  VARCHAR(100),
     date           DATE,
     montant        FLOAT,
+    url            VARCHAR(1000),
     idProprietaire INT
 );
+CREATE SEQUENCE IF NOT EXISTS facture_id_seq START WITH 1 INCREMENT BY 1;
+ALTER SEQUENCE facture_id_seq RESTART WITH 1;
 
 ALTER TABLE Proprietaire
     ADD FOREIGN KEY (idUser) REFERENCES Utilisateur (id);

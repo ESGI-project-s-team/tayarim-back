@@ -5,6 +5,7 @@ import fr.esgi.al5.tayarim.entities.TypeLogement;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 
@@ -17,5 +18,8 @@ public interface FactureRepository extends JpaRepository<Facture, Long> {
   List<Facture> findAllByProprietaireId(Long proprietaireId);
 
   Optional<Facture> findByNumeroFacture(String numeroFacture);
+
+  @Query(value = "SELECT NEXTVAL('facture_id_seq')", nativeQuery = true)
+  Long getNextFactureId();
 
 }
