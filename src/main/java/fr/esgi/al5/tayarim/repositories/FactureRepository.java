@@ -19,7 +19,4 @@ public interface FactureRepository extends JpaRepository<Facture, Long> {
 
   Optional<Facture> findByNumeroFacture(String numeroFacture);
 
-  @Query(value = "SELECT NEXTVAL('facture_id_seq')", nativeQuery = true)
-  Long getNextFactureId();
-
 }

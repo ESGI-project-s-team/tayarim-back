@@ -1,207 +1,241 @@
-DROP TABLE IF EXISTS Notification;
-DROP TABLE IF EXISTS Facture;
-DROP TABLE IF EXISTS Contenir;
-DROP TABLE IF EXISTS Respecter;
-DROP TABLE IF EXISTS Indisponibilite;
-DROP TABLE IF EXISTS Avis;
-DROP TABLE IF EXISTS ImageLogement;
-DROP TABLE IF EXISTS Reservation;
-DROP TABLE IF EXISTS Depense;
-DROP TABLE IF EXISTS Logement;
-DROP TABLE IF EXISTS TypeLogement;
-DROP TABLE IF EXISTS Amenagement;
-DROP TABLE IF EXISTS ReglesLogement;
-DROP TABLE IF EXISTS Icone;
-DROP TABLE IF EXISTS CategorieAmenagement;
-DROP TABLE IF EXISTS Administrateur;
-DROP TABLE IF EXISTS Proprietaire;
-DROP TABLE IF EXISTS Utilisateur;
+DROP TABLE IF EXISTS NOTIFICATION;
+DROP TABLE IF EXISTS FACTURE;
+DROP TABLE IF EXISTS CONTENIR;
+DROP TABLE IF EXISTS RESPECTER;
+DROP TABLE IF EXISTS INDISPONIBILITE;
+DROP TABLE IF EXISTS AVIS;
+DROP TABLE IF EXISTS IMAGELOGEMENT;
+DROP TABLE IF EXISTS RESERVATION;
+DROP TABLE IF EXISTS DEPENSE;
+DROP TABLE IF EXISTS LOGEMENT;
+DROP TABLE IF EXISTS TYPELOGEMENT;
+DROP TABLE IF EXISTS AMENAGEMENT;
+DROP TABLE IF EXISTS REGLESLOGEMENT;
+DROP TABLE IF EXISTS IC0NE;
+DROP TABLE IF EXISTS CATEGORIEAMENAGEMENT;
+DROP TABLE IF EXISTS ADMINISTRATEUR;
+DROP TABLE IF EXISTS PROPRIETAIRE;
+DROP TABLE IF EXISTS UTILISATEUR;
 
-CREATE TABLE IF NOT EXISTS Utilisateur (
-                                           id INT PRIMARY KEY AUTO_INCREMENT,
-                                           nom VARCHAR(100),
-                                           prenom VARCHAR(100),
-                                           email VARCHAR(100),
-                                           numTel VARCHAR(100),
-                                           motDePasse VARCHAR(100)
+CREATE TABLE IF NOT EXISTS UTILISATEUR
+(
+    ID         INT PRIMARY KEY AUTO_INCREMENT,
+    NOM        VARCHAR(100),
+    PRENOM     VARCHAR(100),
+    EMAIL      VARCHAR(100),
+    NUMTEL     VARCHAR(100),
+    MOTDEPASSE VARCHAR(100)
 );
 
-CREATE TABLE IF NOT EXISTS Proprietaire (
-                                            idUser INT PRIMARY KEY,
-                                            adresse VARCHAR(300),
-                                            dateInscription DATETIME,
-                                            isPasswordUpdated BOOLEAN,
-                                            commission FLOAT,
-                                            isValidated BOOLEAN
+CREATE TABLE IF NOT EXISTS PROPRIETAIRE
+(
+    IDUSER            INT PRIMARY KEY,
+    ADRESSE           VARCHAR(300),
+    DATEINSCRIPTION   DATETIME,
+    ISPASSWORDUPDATED BOOLEAN,
+    COMMISSION        FLOAT,
+    ISVALIDATED       BOOLEAN
 );
 
-CREATE TABLE IF NOT EXISTS Administrateur (
-    idUser INT PRIMARY KEY
+CREATE TABLE IF NOT EXISTS ADMINISTRATEUR
+(
+    IDUSER INT PRIMARY KEY
 );
 
-CREATE TABLE IF NOT EXISTS Logement (
-                                        id INT PRIMARY KEY AUTO_INCREMENT,
-                                        titre VARCHAR(50),
-                                        isLouable BOOL,
-                                        nombresDeChambres INT,
-                                        nombresDeLits INT,
-                                        nombresSallesDeBains INT,
-                                        capaciteMaxPersonne INT,
-                                        nombresNuitsMin INT,
-                                        description VARCHAR(100),
-                                        note FLOAT,
-                                        prixParNuit FLOAT,
-                                        defaultCheckIn TIME,
-                                        defaultCheckOut TIME,
-                                        intervalReservation INT,
-                                        ville VARCHAR(100),
-                                        adresse VARCHAR(150),
-                                        codePostal VARCHAR(50),
-                                        pays VARCHAR(100),
-                                        etage VARCHAR(100),
-                                        numeroDePorte VARCHAR(100),
-                                        idTypeLogement INT,
-                                        idProprietaire INT
+CREATE TABLE IF NOT EXISTS LOGEMENT
+(
+    ID                   INT PRIMARY KEY AUTO_INCREMENT,
+    TITRE                VARCHAR(100),
+    ISLOUABLE            BOOL,
+    NOMBRESDECHAMBRES    INT,
+    NOMBRESDELITS        INT,
+    NOMBRESSALLESDEBAINS INT,
+    CAPACITEMAXPERSONNE  INT,
+    NOMBRESNUITSMIN      INT,
+    DESCRIPTION          VARCHAR(500),
+    NOTE                 FLOAT,
+    PRIXPARNUIT          FLOAT,
+    DEFAULTCHECKIN       TIME,
+    DEFAULTCHECKOUT      TIME,
+    INTERVALRESERVATION  INT,
+    VILLE                VARCHAR(30),
+    ADRESSE              VARCHAR(150),
+    CODEPOSTAL           VARCHAR(10),
+    PAYS                 VARCHAR(30),
+    ETAGE                VARCHAR(30),
+    NUMERODEPORTE        VARCHAR(30),
+    IDTYPELOGEMENT       INT,
+    IDPROPRIETAIRE       INT
 );
 
-CREATE TABLE IF NOT EXISTS TypeLogement (
-                                            id INT PRIMARY KEY AUTO_INCREMENT,
-                                            nom VARCHAR(100),
-                                            icone VARCHAR(1000)
+CREATE TABLE IF NOT EXISTS TYPELOGEMENT
+(
+    ID    INT PRIMARY KEY AUTO_INCREMENT,
+    NOM   VARCHAR(100),
+    ICONE VARCHAR(1000)
 );
 
-CREATE TABLE IF NOT EXISTS Reservation (
-                                           id INT PRIMARY KEY AUTO_INCREMENT,
-                                           idCommande VARCHAR(100),
-                                           statut VARCHAR(100),
-                                           email VARCHAR(100),
-                                           numtel VARCHAR(100),
-                                           nom VARCHAR(100),
-                                           prenom VARCHAR(100),
-                                           nbPersonnes INT,
-                                           montant FLOAT,
-                                           checkIn TIME,
-                                           checkOut TIME,
-                                           dateArrivee DATE,
-                                           dateDepart DATE,
-                                           idLogement INT,
-                                           dateReservation DATETIME,
-                                           paymentIntent VARCHAR(255)
-
+CREATE TABLE IF NOT EXISTS RESERVATION
+(
+    ID              INT PRIMARY KEY AUTO_INCREMENT,
+    IDCOMMANDE      VARCHAR(100),
+    STATUT          VARCHAR(100),
+    EMAIL           VARCHAR(100),
+    NUMTEL          VARCHAR(100),
+    NOM             VARCHAR(100),
+    PRENOM          VARCHAR(100),
+    NBPERSONNES     INT,
+    MONTANT         FLOAT,
+    CHECKIN         TIME,
+    CHECKOUT        TIME,
+    DATEARRIVEE     DATE,
+    DATEDEPART      DATE,
+    IDLOGEMENT      INT,
+    DATERESERVATION DATETIME,
+    PAYMENTINTENT   VARCHAR(255)
 );
 
-CREATE TABLE IF NOT EXISTS Amenagement (
-                                           id INT PRIMARY KEY AUTO_INCREMENT,
-                                           nom VARCHAR(100),
-                                           icone VARCHAR(1000),
-                                           idCategorieAmenagement INT
+CREATE TABLE IF NOT EXISTS AMENAGEMENT
+(
+    ID                     INT PRIMARY KEY AUTO_INCREMENT,
+    NOM                    VARCHAR(100),
+    ICONE                  VARCHAR(1000),
+    IDCATEGORIEAMENAGEMENT INT
 );
 
-CREATE TABLE IF NOT EXISTS CategorieAmenagement (
-                                                    id INT PRIMARY KEY AUTO_INCREMENT,
-                                                    nom VARCHAR(100)
+CREATE TABLE IF NOT EXISTS CATEGORIEAMENAGEMENT
+(
+    ID  INT PRIMARY KEY AUTO_INCREMENT,
+    NOM VARCHAR(100)
 );
 
-CREATE TABLE IF NOT EXISTS Depense (
-                                       id INT PRIMARY KEY AUTO_INCREMENT,
-                                       libelle VARCHAR(200),
-                                       prix FLOAT,
-                                       date DATE,
-                                       idLogement INT
+CREATE TABLE IF NOT EXISTS DEPENSE
+(
+    ID         INT PRIMARY KEY AUTO_INCREMENT,
+    LIBELLE    VARCHAR(200),
+    PRIX       FLOAT,
+    DATE       DATE,
+    IDLOGEMENT INT
 );
 
-
-CREATE TABLE IF NOT EXISTS Icone (
-                                     id INT PRIMARY KEY AUTO_INCREMENT,
-                                     svg VARCHAR(100)
+CREATE TABLE IF NOT EXISTS ICONE
+(
+    ID  INT PRIMARY KEY AUTO_INCREMENT,
+    SVG VARCHAR(1000)
 );
 
-CREATE TABLE IF NOT EXISTS ReglesLogement (
-                                              id INT PRIMARY KEY AUTO_INCREMENT,
-                                              nom VARCHAR(100),
-                                              icone VARCHAR(1000)
+CREATE TABLE IF NOT EXISTS REGLESLOGEMENT
+(
+    ID    INT PRIMARY KEY AUTO_INCREMENT,
+    NOM   VARCHAR(100),
+    ICONE VARCHAR(1000)
 );
 
-CREATE TABLE IF NOT EXISTS ImageLogement (
-                                             id INT PRIMARY KEY AUTO_INCREMENT,
-                                             url VARCHAR(100),
-                                             idLogement INT,
-                                             isMainImage BOOLEAN
+CREATE TABLE IF NOT EXISTS IMAGELOGEMENT
+(
+    ID          INT PRIMARY KEY AUTO_INCREMENT,
+    URL         VARCHAR(1000),
+    IDLOGEMENT  INT,
+    ISMAINIMAGE BOOLEAN
 );
 
-CREATE TABLE IF NOT EXISTS Avis (
-                                    id INT PRIMARY KEY AUTO_INCREMENT,
-                                    texte VARCHAR(100),
-                                    pseudo VARCHAR(100),
-                                    note INT,
-                                    date DATETIME,
-                                    idLogement INT
+CREATE TABLE IF NOT EXISTS AVIS
+(
+    ID         INT PRIMARY KEY AUTO_INCREMENT,
+    TEXTE      VARCHAR(100),
+    PSEUDO     VARCHAR(100),
+    NOTE       INT,
+    DATE       DATETIME,
+    IDLOGEMENT INT
 );
 
-CREATE TABLE IF NOT EXISTS Indisponibilite (
-                                               id INT PRIMARY KEY AUTO_INCREMENT,
-                                               dateDebut DATETIME,
-                                               dateFin DATETIME,
-                                               idLogement INT
+CREATE TABLE IF NOT EXISTS INDISPONIBILITE
+(
+    ID         INT PRIMARY KEY AUTO_INCREMENT,
+    DATEDEBUT  DATE,
+    DATEFIN    DATE,
+    IDLOGEMENT INT
 );
 
-CREATE TABLE IF NOT EXISTS Respecter (
-                                         idLogement INT,
-                                         idReglesLogement INT,
-                                         PRIMARY KEY(idLogement,idReglesLogement)
+CREATE TABLE IF NOT EXISTS RESPECTER
+(
+    IDLOGEMENT       INT,
+    IDREGLESLOGEMENT INT,
+    PRIMARY KEY (IDLOGEMENT, IDREGLESLOGEMENT)
 );
 
-CREATE TABLE IF NOT EXISTS Contenir (
-                                        idLogement INT,
-                                        idAmenagement INT,
-                                        PRIMARY KEY(idLogement,idAmenagement)
+CREATE TABLE IF NOT EXISTS CONTENIR
+(
+    IDLOGEMENT    INT,
+    IDAMENAGEMENT INT,
+    PRIMARY KEY (IDLOGEMENT, IDAMENAGEMENT)
 );
 
-CREATE TABLE IF NOT EXISTS Notification (
-                                            id INT PRIMARY KEY AUTO_INCREMENT,
-                                            message VARCHAR(100),
-                                            date DATETIME,
-                                            idUser INT,
-                                            type VARCHAR(100),
-                                            isRead BOOLEAN
+CREATE TABLE IF NOT EXISTS NOTIFICATION
+(
+    ID      INT PRIMARY KEY AUTO_INCREMENT,
+    MESSAGE VARCHAR(100),
+    DATE    DATETIME,
+    IDUSER  INT,
+    TYPE    VARCHAR(100),
+    ISREAD  BOOLEAN
 );
 
-CREATE TABLE IF NOT EXISTS Facture (
-                                       id INT PRIMARY KEY AUTO_INCREMENT,
-                                       numeroFacture VARCHAR(100),
-                                       date DATE,
-                                       montant FLOAT,
-                                       idProprietaire INT
+CREATE TABLE IF NOT EXISTS FACTURE
+(
+    ID             INT PRIMARY KEY AUTO_INCREMENT,
+    NUMEROFACTURE  VARCHAR(100),
+    DATE           DATE,
+    MONTANT        FLOAT,
+    URL            VARCHAR(1000),
+    IDPROPRIETAIRE INT,
+    ISSEND         BOOLEAN
 );
 
-ALTER TABLE Proprietaire ADD FOREIGN KEY (idUser) REFERENCES Utilisateur(id);
+ALTER TABLE PROPRIETAIRE
+    ADD FOREIGN KEY (IDUSER) REFERENCES UTILISATEUR (ID);
 
-ALTER TABLE Administrateur ADD FOREIGN KEY (idUser) REFERENCES Utilisateur(id);
+ALTER TABLE ADMINISTRATEUR
+    ADD FOREIGN KEY (IDUSER) REFERENCES UTILISATEUR (ID);
 
-ALTER TABLE Logement ADD FOREIGN KEY (idTypeLogement) REFERENCES TypeLogement(id);
+ALTER TABLE LOGEMENT
+    ADD FOREIGN KEY (IDTYPELOGEMENT) REFERENCES TYPELOGEMENT (ID);
 
-ALTER TABLE Logement ADD FOREIGN KEY (idProprietaire) REFERENCES Proprietaire(idUser);
+ALTER TABLE LOGEMENT
+    ADD FOREIGN KEY (IDPROPRIETAIRE) REFERENCES PROPRIETAIRE (IDUSER);
 
-ALTER TABLE Reservation ADD FOREIGN KEY (idLogement) REFERENCES Logement(id);
+ALTER TABLE RESERVATION
+    ADD FOREIGN KEY (IDLOGEMENT) REFERENCES LOGEMENT (ID);
 
-ALTER TABLE Amenagement ADD FOREIGN KEY (idCategorieAmenagement) REFERENCES CategorieAmenagement(id);
+ALTER TABLE AMENAGEMENT
+    ADD FOREIGN KEY (IDCATEGORIEAMENAGEMENT) REFERENCES CATEGORIEAMENAGEMENT (ID);
 
-ALTER TABLE Depense ADD FOREIGN KEY (idLogement) REFERENCES Logement(id);
+ALTER TABLE DEPENSE
+    ADD FOREIGN KEY (IDLOGEMENT) REFERENCES LOGEMENT (ID);
 
-ALTER TABLE ImageLogement ADD FOREIGN KEY (idLogement) REFERENCES Logement(id);
+ALTER TABLE IMAGELOGEMENT
+    ADD FOREIGN KEY (IDLOGEMENT) REFERENCES LOGEMENT (ID);
 
-ALTER TABLE Avis ADD FOREIGN KEY (idLogement) REFERENCES Logement(id);
+ALTER TABLE AVIS
+    ADD FOREIGN KEY (IDLOGEMENT) REFERENCES LOGEMENT (ID);
 
-ALTER TABLE Indisponibilite ADD FOREIGN KEY (idLogement) REFERENCES Logement(id);
+ALTER TABLE INDISPONIBILITE
+    ADD FOREIGN KEY (IDLOGEMENT) REFERENCES LOGEMENT (ID);
 
-ALTER TABLE Respecter ADD FOREIGN KEY (idLogement) REFERENCES Logement(id);
+ALTER TABLE RESPECTER
+    ADD FOREIGN KEY (IDLOGEMENT) REFERENCES LOGEMENT (ID);
 
-ALTER TABLE Respecter ADD FOREIGN KEY (idReglesLogement) REFERENCES ReglesLogement(id);
+ALTER TABLE RESPECTER
+    ADD FOREIGN KEY (IDREGLESLOGEMENT) REFERENCES ReglesLogement (ID);
 
-ALTER TABLE Contenir ADD FOREIGN KEY (idLogement) REFERENCES Logement(id);
+ALTER TABLE CONTENIR
+    ADD FOREIGN KEY (IDLOGEMENT) REFERENCES LOGEMENT (ID);
 
-ALTER TABLE Contenir ADD FOREIGN KEY (idAmenagement) REFERENCES Amenagement(id);
+ALTER TABLE CONTENIR
+    ADD FOREIGN KEY (IDAMENAGEMENT) REFERENCES AMENAGEMENT (ID);
 
-ALTER TABLE Facture ADD FOREIGN KEY (idProprietaire) REFERENCES Utilisateur(id);
+ALTER TABLE NOTIFICATION
+    ADD FOREIGN KEY (IDUSER) REFERENCES UTILISATEUR (ID);
 
-ALTER TABLE Notification ADD FOREIGN KEY (idUser) REFERENCES Utilisateur(id);
+ALTER TABLE FACTURE
+    ADD FOREIGN KEY (IDPROPRIETAIRE) REFERENCES PROPRIETAIRE (IDUSER);

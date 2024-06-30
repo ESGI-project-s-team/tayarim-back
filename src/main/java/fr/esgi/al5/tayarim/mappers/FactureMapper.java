@@ -29,7 +29,8 @@ public class FactureMapper {
         LocalDate.now(),
         1000f,
         proprietaire,
-        url
+        url,
+        false
     );
   }
 
@@ -46,7 +47,8 @@ public class FactureMapper {
         facture.getDateFacture().toString(),
         facture.getMontant(),
         facture.getProprietaire().getId(),
-        facture.getUrl()
+        facture.getUrl(),
+        facture.getIsSend()
     );
   }
 

@@ -49,19 +49,23 @@ public class Facture {
   @Column(name = "URL", nullable = false)
   private String url;
 
+  @Column(name = "ISSEND", nullable = false)
+  private Boolean isSend;
+
 
   /**
    * Constructeur par défaut de la classe Facture.
    */
   @Builder
   public Facture(Long id, String numeroFacture, LocalDate dateFacture, Float montant,
-      Proprietaire proprietaire, String url) {
+      Proprietaire proprietaire, String url, Boolean isSend) {
     this.id = id;
     this.numeroFacture = numeroFacture;
     this.dateFacture = dateFacture;
     this.montant = montant;
     this.proprietaire = proprietaire;
     this.url = url;
+    this.isSend = isSend;
   }
 
 }
