@@ -31,4 +31,8 @@ public class FactureDto {
   @NonNull
   private String url;
 
+  @NonNull
+  private Boolean isSend;
+
+
 }

@@ -96,8 +96,8 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
         );
         String jsonMessage = objectMapper.writeValueAsString(socketNotificationDto);
         session.sendMessage(new TextMessage(jsonMessage));
-      } catch (IOException e) {
-        throw new RuntimeException(e);
+      } catch (IOException ignored) {
+        // Ignored
       }
     }
   }

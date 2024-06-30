@@ -9,9 +9,15 @@ import fr.esgi.al5.tayarim.dto.facture.FactureCreationDto;
 import fr.esgi.al5.tayarim.dto.facture.FactureDto;
 import fr.esgi.al5.tayarim.services.AuthService;
 import fr.esgi.al5.tayarim.services.FactureService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -62,4 +68,20 @@ public class FactureController implements
         HttpStatus.OK
     );
   }
+
+  /**
+   * Méthode pour envoyer une facture par mail et une notification.
+   */
+  @Operation(summary = "Authenticate user", security = @SecurityRequirement(name = "bearer-key"))
+  @PutMapping("/send/{id}")
+  public ResponseEntity<FactureDto> sendFacture(@RequestAttribute("token") String authHeader,
+      @PathVariable Long id) {
+    UserTokenInfo userTokenInfo = authService.verifyToken(getTokenFromHeader(authHeader), true);
+    return new ResponseEntity<>(
+        factureService.sendFacture(id),
+        HttpStatus.OK
+    );
+  }
+
+
 }
