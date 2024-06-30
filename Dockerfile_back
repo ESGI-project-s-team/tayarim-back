@@ -32,4 +32,4 @@ WORKDIR /app
 
 COPY --from=build /app/target/Tayarim-0.0.1-SNAPSHOT.jar .
 
-CMD ["java", "-jar", "Tayarim-0.0.1-SNAPSHOT.jar"]
+CMD ["java", "-jar", "Tayarim-0.0.1-SNAPSHOT.jar", "--ENV_FILE=optional:file:.env.production[.properties]"]
