@@ -9,7 +9,7 @@
         <version>3.2.3</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>fr.esgi.al5_2</groupId>
+    <groupId>fr.esgi.al5</groupId>
     <artifactId>Tayarim</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>Tayarim</name>
