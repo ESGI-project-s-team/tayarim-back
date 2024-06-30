@@ -28,4 +28,7 @@ public class FactureDto {
   @NonNull
   private Long idProprietaire;
 
+  @NonNull
+  private String url;
+
 }

@@ -4,6 +4,7 @@ import fr.esgi.al5.tayarim.auth.UserTokenInfo;
 import fr.esgi.al5.tayarim.controllers.interfaces.ControllerUtils;
 import fr.esgi.al5.tayarim.controllers.interfaces.CreateMethodInterface;
 import fr.esgi.al5.tayarim.controllers.interfaces.GetAllMethodInterface;
+import fr.esgi.al5.tayarim.controllers.interfaces.GetByIdMethodInterface;
 import fr.esgi.al5.tayarim.dto.facture.FactureCreationDto;
 import fr.esgi.al5.tayarim.dto.facture.FactureDto;
 import fr.esgi.al5.tayarim.services.AuthService;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class FactureController implements
     ControllerUtils,
     CreateMethodInterface<FactureDto, FactureCreationDto>,
+    GetByIdMethodInterface<FactureDto>,
     GetAllMethodInterface<FactureDto> {
 
   private final FactureService factureService;
@@ -44,10 +46,20 @@ public class FactureController implements
   @Override
   public ResponseEntity<FactureDto> create(String authHeader,
       FactureCreationDto factureCreationDto) {
-    authService.verifyToken(getTokenFromHeader(authHeader), false);
+    authService.verifyToken(getTokenFromHeader(authHeader), true);
     return new ResponseEntity<>(
         factureService.create(factureCreationDto),
         HttpStatus.CREATED
+    );
+  }
+
+  @Override
+  public ResponseEntity<FactureDto> getById(String authHeader, Long id) {
+    UserTokenInfo userTokenInfo = authService.verifyToken(getTokenFromHeader(authHeader), false);
+    return new ResponseEntity<>(
+        factureService.getById(Long.toString(id), userTokenInfo.getId(),
+            userTokenInfo.getIsAdmin()),
+        HttpStatus.OK
     );
   }
 }
