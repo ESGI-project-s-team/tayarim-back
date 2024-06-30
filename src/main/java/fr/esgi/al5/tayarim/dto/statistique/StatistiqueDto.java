@@ -8,9 +8,9 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class StatistiqueDto {
-    private List<Long> montantReservationsParMois;
-    private List<Long> depenseParMois;
-    private List<Long> montantConciergerieParMois;
-    private List<Long> nombreReservationParMois;
-    private List<Long> tauxOccupationParMois;
+    private List<Float> montantReservationsParMois;
+    private List<Float> depenseParMois;
+    private List<Float> montantReservationAndDepenseParMois;
+    private List<Integer> nombreReservationParMois;
+    private List<Float> tauxOccupationParMois;
 }
