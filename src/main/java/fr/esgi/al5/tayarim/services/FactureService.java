@@ -25,9 +25,9 @@ import fr.esgi.al5.tayarim.exceptions.DepenseNotFoundError;
 import fr.esgi.al5.tayarim.exceptions.FactureBucketUploadError;
 import fr.esgi.al5.tayarim.exceptions.FactureDoesNotExistException;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireNotFoundException;
+import fr.esgi.al5.tayarim.mail.EmailService;
 import fr.esgi.al5.tayarim.mappers.DepenseMapper;
 import fr.esgi.al5.tayarim.mappers.FactureMapper;
-import fr.esgi.al5.tayarim.mappers.NotificationMapper;
 import fr.esgi.al5.tayarim.repositories.DepenseRepository;
 import fr.esgi.al5.tayarim.repositories.FactureRepository;
 import fr.esgi.al5.tayarim.repositories.LogementRepository;
@@ -68,6 +68,8 @@ public class FactureService {
   private final MyWebSocketHandler myWebSocketHandler;
   private final NotificationRepository notificationRepository;
 
+  private final EmailService emailService;
+
   /**
    * Constructeur pour le service de Facture.
    *
@@ -78,11 +80,13 @@ public class FactureService {
    * @param depenseRepository      Le repository des dépenses.
    * @param myWebSocketHandler     Le service de socket.
    * @param notificationRepository Le repository des notifications.
+   * @param emailService           Le service des emails
    */
   public FactureService(FactureRepository factureRepository,
       ProprietaireRepository proprietaireRepository, LogementRepository logementRepository,
       ReservationRepository reservationRepository, DepenseRepository depenseRepository,
-      MyWebSocketHandler myWebSocketHandler, NotificationRepository notificationRepository) {
+      MyWebSocketHandler myWebSocketHandler, NotificationRepository notificationRepository,
+      EmailService emailService) {
     this.factureRepository = factureRepository;
     this.proprietaireRepository = proprietaireRepository;
     this.logementRepository = logementRepository;
@@ -90,6 +94,7 @@ public class FactureService {
     this.depenseRepository = depenseRepository;
     this.myWebSocketHandler = myWebSocketHandler;
     this.notificationRepository = notificationRepository;
+    this.emailService = emailService;
   }
 
   /**
@@ -207,6 +212,7 @@ public class FactureService {
     ));
 
     //sendMail
+    emailService.sendEmail();
 
     facture.setIsSend(true);
 
@@ -788,21 +794,4 @@ public class FactureService {
 
   }
 
-  /**
-   * Supprime une facture.
-   *
-   * @param id L'identifiant de la facture.
-   */
-  @Transactional
-  public FactureDto delete(@NonNull Long id) {
-    Optional<Facture> optionalFacture = factureRepository.findById(id);
-    if (optionalFacture.isEmpty()) {
-      throw new FactureDoesNotExistException();
-    }
-
-    Facture facture = optionalFacture.get();
-    factureRepository.deleteById(id);
-
-    return FactureMapper.entityToDto(facture);
-  }
 }
