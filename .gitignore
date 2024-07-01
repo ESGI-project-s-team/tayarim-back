@@ -33,7 +33,8 @@ build/
 .vscode/
 
 ### Local Configuration ###
-.env
+src/main/resources/.env
+src/test/resources/.env
 demo.mv.db
 demo.trace.db
 demo_test.mv.db
