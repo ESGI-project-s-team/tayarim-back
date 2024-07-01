@@ -23,7 +23,7 @@ import lombok.NonNull;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Entity
+@Entity(name = "PROPRIETAIRE")
 @PrimaryKeyJoinColumn(name = "IDUSER")
 public class Proprietaire extends Utilisateur {
 

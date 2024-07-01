@@ -30,7 +30,7 @@ import lombok.NonNull;
  * propriétaires à travers une relation ManyToOne.
  */
 @Data
-@Entity
+@Entity(name = "LOGEMENT")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(exclude = {"id", "reglesLogements", "amenagements"})
 public class Logement {

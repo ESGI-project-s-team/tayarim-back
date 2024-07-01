@@ -20,7 +20,7 @@ import lombok.RequiredArgsConstructor;
  * l'héritage des entités Utilisateur dans la base de données.
  */
 @Data
-@Entity
+@Entity(name = "UTILISATEUR")
 @Inheritance(strategy = InheritanceType.JOINED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @RequiredArgsConstructor
