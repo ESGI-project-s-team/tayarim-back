@@ -186,13 +186,28 @@ public class StatistiqueService {
 
         // Calculate the occupied days for each month
         for (Map<String, Object> result : rawResults) {
-            Integer month = (Integer) result.get("month");
+            Integer startMonth = (Integer) result.get("month");
             Integer startDay = (Integer) result.get("startDay");
             Integer endDay = (Integer) result.get("endDay");
 
-            // Calculate the number of days occupied
-            int occupiedDays = endDay - startDay + 1;
-            occupiedDaysPerMonthMap.put(month, occupiedDaysPerMonthMap.get(month) + occupiedDays);
+            YearMonth startYearMonth = YearMonth.of(year.intValue(), startMonth);
+            int daysInStartMonth = startYearMonth.lengthOfMonth();
+
+            if (startDay <= endDay) {
+                // The reservation is within the same month
+                int occupiedDays = endDay - startDay + 1;
+                occupiedDaysPerMonthMap.put(startMonth, occupiedDaysPerMonthMap.get(startMonth) + occupiedDays);
+            } else {
+                // The reservation spans to the next month
+                int occupiedDaysInStartMonth = daysInStartMonth - startDay + 1;
+                occupiedDaysPerMonthMap.put(startMonth, occupiedDaysPerMonthMap.get(startMonth) + occupiedDaysInStartMonth);
+
+                int nextMonth = startMonth + 1;
+                if (nextMonth > 12) {
+                    nextMonth = 1; // Wrap around to January
+                }
+                occupiedDaysPerMonthMap.put(nextMonth, occupiedDaysPerMonthMap.get(nextMonth) + endDay);
+            }
         }
 
         // Calculate the occupancy rate for each month
@@ -200,8 +215,17 @@ public class StatistiqueService {
         for (int month = 1; month <= 12; month++) {
             int daysInMonth = YearMonth.of(year.intValue(), month).lengthOfMonth();
             float occupancyRate = (occupiedDaysPerMonthMap.get(month) / (float) daysInMonth) * 100;
-            occupancyRate = Math.round(occupancyRate * 100.0f) / 100.0f;
+            occupancyRate = Math.min(Math.round(occupancyRate * 100.0f) / 100.0f, 100.0f); // Ensure occupancy rate does not exceed 100%
             tauxOccupationParMois.add(occupancyRate);
+        }
+
+        //if value is > 100, set it to 100 or 0 if it is < 0
+        for (int i = 0; i < tauxOccupationParMois.size(); i++) {
+            if (tauxOccupationParMois.get(i) > 100) {
+                tauxOccupationParMois.set(i, 100.0f);
+            } else if (tauxOccupationParMois.get(i) < 0) {
+                tauxOccupationParMois.set(i, 0.0f);
+            }
         }
 
         return tauxOccupationParMois;
