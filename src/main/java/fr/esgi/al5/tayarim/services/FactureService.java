@@ -21,9 +21,11 @@ import fr.esgi.al5.tayarim.entities.Logement;
 import fr.esgi.al5.tayarim.entities.Notification;
 import fr.esgi.al5.tayarim.entities.Proprietaire;
 import fr.esgi.al5.tayarim.entities.Reservation;
+import fr.esgi.al5.tayarim.exceptions.DepenseNotFoundError;
 import fr.esgi.al5.tayarim.exceptions.FactureBucketUploadError;
 import fr.esgi.al5.tayarim.exceptions.FactureDoesNotExistException;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireNotFoundException;
+import fr.esgi.al5.tayarim.mappers.DepenseMapper;
 import fr.esgi.al5.tayarim.mappers.FactureMapper;
 import fr.esgi.al5.tayarim.mappers.NotificationMapper;
 import fr.esgi.al5.tayarim.repositories.DepenseRepository;
@@ -299,8 +301,8 @@ public class FactureService {
                     FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12));
             factureParagraph.setAlignment(Element.ALIGN_LEFT);
             document.add(factureParagraph);
-
-            Paragraph dateParagraph = new Paragraph("Date : " + LocalDate.now());
+            LocalDate monthYear = LocalDate.of(Math.toIntExact(factureCreationDto.getYear()), Math.toIntExact(factureCreationDto.getMonth()), 1);
+            Paragraph dateParagraph = new Paragraph("Date : " + monthYear);
             dateParagraph.setAlignment(Element.ALIGN_LEFT);
             document.add(dateParagraph);
 
@@ -785,4 +787,21 @@ public class FactureService {
 
     }
 
+    /**
+     * @param id
+     * @return
+     */
+
+    @Transactional
+    public FactureDto delete(@NonNull Long id) {
+        Optional<Facture> optionalFacture = factureRepository.findById(id);
+        if (optionalFacture.isEmpty()) {
+            throw new FactureDoesNotExistException();
+        }
+
+        Facture facture = optionalFacture.get();
+        factureRepository.deleteById(id);
+
+        return FactureMapper.entityToDto(facture);
+    }
 }
