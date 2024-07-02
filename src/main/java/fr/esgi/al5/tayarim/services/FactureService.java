@@ -253,8 +253,8 @@ public class FactureService {
       sellerParagraph.add(
           new Paragraph("Société", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12)));
       sellerParagraph.add(new Paragraph("Nom : Tayarim"));
-      sellerParagraph.add(new Paragraph("Adresse : "));
-      sellerParagraph.add(new Paragraph("Téléphone : "));
+      sellerParagraph.add(new Paragraph("numéro fiscal : 342599453"));
+      sellerParagraph.add(new Paragraph("Téléphone : 053 708 50 65"));
       cell1.addElement(sellerParagraph);
       tableTayarim.addCell(cell1);
 
