@@ -212,11 +212,17 @@ public class FactureService {
     ));
 
     //sendMail
-    emailService.sendEmail();
 
     facture.setIsSend(true);
+    facture = factureRepository.save(facture);
+    Proprietaire proprietaire = facture.getProprietaire();
 
-    return FactureMapper.entityToDto(factureRepository.save(facture));
+    System.out.println("Facture envoyée par mail");
+    emailService.sendFactureEmail(proprietaire.getNom(), proprietaire.getPrenom(),
+        facture.getNumeroFacture(), facture.getMontant(), facture.getUrl());
+    System.out.println("après Facture envoyée par mail");
+
+    return FactureMapper.entityToDto(facture);
   }
 
   private void generateFacture(FactureCreationDto factureCreationDto, List<Logement> logements,
@@ -232,6 +238,7 @@ public class FactureService {
     String filePath = numeroFacture + ".pdf";
 
     Document document = new Document();
+    Float finalAmount = 0f;
     try {
       PdfWriter.getInstance(document, new FileOutputStream(filePath));
       document.open();
@@ -314,8 +321,6 @@ public class FactureService {
 
       Font cellFont = FontFactory.getFont(FontFactory.HELVETICA, 10);
       cellFont.setColor(0, 0, 0);
-
-      Float finalAmount = 0f;
 
       // Create a YearMonth instance for the given year and month
       YearMonth yearMonth = YearMonth.of(Math.toIntExact(factureCreationDto.getYear()),
@@ -423,13 +428,13 @@ public class FactureService {
       // send to GCS
       String fileName = "Factures/facture_" + numeroFacture + ".pdf";
       TayarimApplication.bucket.create(fileName, Files.readAllBytes(file.toPath()));
-
+      String url = "https://storage.cloud.google.com/tayarim-tf-storage/" + fileName;
       file.delete();
       LocalDate monthYear = LocalDate.of(Math.toIntExact(factureCreationDto.getYear()),
           Math.toIntExact(factureCreationDto.getMonth()), 1);
       factureRepository.save(
           FactureMapper.creationDtoToEntity(
-              idFacture, proprietaire, numeroFacture, fileName,
+              idFacture, proprietaire, numeroFacture, finalAmount, url,
               monthYear
           )
       );

@@ -22,13 +22,14 @@ public class FactureMapper {
    * @return L'entité Depense correspondant.
    */
   public static Facture creationDtoToEntity(@NonNull Long id,
-      @NonNull Proprietaire proprietaire, @NonNull String numeroFacture, @NonNull String url,
+      @NonNull Proprietaire proprietaire, @NonNull String numeroFacture, @NonNull Float montant,
+      @NonNull String url,
       @NonNull LocalDate dateFacture) {
     return new Facture(
         id,
         numeroFacture,
         dateFacture,
-        1000f,
+        montant,
         proprietaire,
         url,
         false
