@@ -126,23 +126,34 @@ public class FactureService {
 
   }
 
-  /**
-   * Récupère toutes les factures.
-   *
-   * @param userId  L'identifiant de l'utilisateur.
-   * @param isAdmin Si l'utilisateur est un administrateur.
-   * @return La liste des factures.
-   */
-  public List<FactureDto> getAll(@NonNull Long userId, @NonNull Boolean isAdmin) {
-    if (isAdmin) {
-      return FactureMapper.entityListToDtoList(factureRepository.findAll());
-    }
+    /**
+     * Récupère toutes les factures.
+     *
+     * @param userId  L'identifiant de l'utilisateur.
+     * @param isAdmin Si l'utilisateur est un administrateur.
+     * @return La liste des factures.
+     */
+    public List<FactureDto> getAll(@NonNull Long userId, @NonNull Boolean isAdmin) {
+        List<FactureDto> factureDtoList;
+        if (isAdmin) {
+            factureDtoList = FactureMapper.entityListToDtoList(factureRepository.findAll());
+        } else {
+            List<Facture> factures = factureRepository.findAllByProprietaireId(userId).stream().filter(
+                    Facture::getIsSend
+            ).toList();
+            factureDtoList = FactureMapper.entityListToDtoList(factures);
+        }
+        //for each facture add nom and prenom of owner by idProprietaire
+        for (FactureDto factureDto : factureDtoList) {
+            Optional<Proprietaire> proprietaire = proprietaireRepository.findById(factureDto.getIdProprietaire());
+            if (proprietaire.isPresent()) {
+                factureDto.setNomProprietaire(proprietaire.get().getNom());
+                factureDto.setPrenomProprietaire(proprietaire.get().getPrenom());
+            }
+        }
 
-    List<Facture> factures = factureRepository.findAllByProprietaireId(userId).stream().filter(
-        Facture::getIsSend
-    ).toList();
-    return FactureMapper.entityListToDtoList(factures);
-  }
+        return factureDtoList;
+    }
 
   /**
    * Récupère une facture par son identifiant.
@@ -202,8 +213,8 @@ public class FactureService {
   private void generateFacture(FactureCreationDto factureCreationDto, List<Logement> logements,
       Proprietaire proprietaire) throws IOException {
 
-    Long idFacture = factureRepository.count() + 1;
-    String numeroFacture = Long.toString(idFacture);
+        Long idFacture = factureRepository.count() + 1;
+        String numeroFacture = Long.toString(idFacture);
 
     if (numeroFacture.length() < 6) {
       numeroFacture = String.format("%06d", Integer.parseInt(numeroFacture));
