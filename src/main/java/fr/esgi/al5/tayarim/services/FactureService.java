@@ -106,14 +106,6 @@ public class FactureService {
   @Transactional
   public FactureDto create(@NonNull FactureCreationDto factureCreationDto) {
 
-    /*
-    if (factureCreationDto.getYear() > LocalDate.now().getYear() || (
-        factureCreationDto.getMonth() >= LocalDate.now().getMonthValue()
-            && factureCreationDto.getYear() >= LocalDate.now().getYear())) {
-      throw new FactureDoesNotExistException();
-    }
-    */
-
     Optional<Proprietaire> optionalProprietaire = proprietaireRepository.findById(
         factureCreationDto.getIdProprietaire());
     if (optionalProprietaire.isEmpty()) {
@@ -123,13 +115,11 @@ public class FactureService {
     List<Logement> logements = logementRepository.findAllByProprietaire(optionalProprietaire.get());
 
     try {
-      generateFacture(factureCreationDto, logements,
-          optionalProprietaire.get());
+      return FactureMapper.entityToDto(generateFacture(factureCreationDto, logements,
+          optionalProprietaire.get()));
     } catch (IOException e) {
       throw new FactureBucketUploadError();
     }
-
-    return null;
 
   }
 
@@ -189,6 +179,21 @@ public class FactureService {
   }
 
   /**
+   * Supprime une facture.
+   */
+  @Transactional
+  public FactureDto delete(@NonNull Long id) {
+    Optional<Facture> optionalFacture = factureRepository.findById(id);
+    if (optionalFacture.isEmpty()) {
+      throw new FactureDoesNotExistException();
+    }
+
+    factureRepository.delete(optionalFacture.get());
+
+    return FactureMapper.entityToDto(optionalFacture.get());
+  }
+
+  /**
    * Envoie une facture par email et uen notification.
    */
   @Transactional
@@ -225,7 +230,7 @@ public class FactureService {
     return FactureMapper.entityToDto(facture);
   }
 
-  private void generateFacture(FactureCreationDto factureCreationDto, List<Logement> logements,
+  private Facture generateFacture(FactureCreationDto factureCreationDto, List<Logement> logements,
       Proprietaire proprietaire) throws IOException {
 
     Long idFacture = factureRepository.count() + 1;
@@ -238,6 +243,7 @@ public class FactureService {
     String filePath = numeroFacture + ".pdf";
 
     Document document = new Document();
+    Facture facture = null;
     Float finalAmount = 0f;
     try {
       PdfWriter.getInstance(document, new FileOutputStream(filePath));
@@ -432,15 +438,14 @@ public class FactureService {
       file.delete();
       LocalDate monthYear = LocalDate.of(Math.toIntExact(factureCreationDto.getYear()),
           Math.toIntExact(factureCreationDto.getMonth()), 1);
-      factureRepository.save(
+      facture = factureRepository.save(
           FactureMapper.creationDtoToEntity(
               idFacture, proprietaire, numeroFacture, finalAmount, url,
               monthYear
           )
       );
-
-
     }
+    return facture;
   }
 
   private void generateLogementCell(PdfPTable table, Logement logement, Boolean secondaryColor) {
