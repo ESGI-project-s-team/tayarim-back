@@ -128,34 +128,35 @@ public class FactureService {
 
   }
 
-    /**
-     * Récupère toutes les factures.
-     *
-     * @param userId  L'identifiant de l'utilisateur.
-     * @param isAdmin Si l'utilisateur est un administrateur.
-     * @return La liste des factures.
-     */
-    public List<FactureDto> getAll(@NonNull Long userId, @NonNull Boolean isAdmin) {
-        List<FactureDto> factureDtoList;
-        if (isAdmin) {
-            factureDtoList = FactureMapper.entityListToDtoList(factureRepository.findAll());
-        } else {
-            List<Facture> factures = factureRepository.findAllByProprietaireId(userId).stream().filter(
-                    Facture::getIsSend
-            ).toList();
-            factureDtoList = FactureMapper.entityListToDtoList(factures);
-        }
-        //for each facture add nom and prenom of owner by idProprietaire
-        for (FactureDto factureDto : factureDtoList) {
-            Optional<Proprietaire> proprietaire = proprietaireRepository.findById(factureDto.getIdProprietaire());
-            if (proprietaire.isPresent()) {
-                factureDto.setNomProprietaire(proprietaire.get().getNom());
-                factureDto.setPrenomProprietaire(proprietaire.get().getPrenom());
-            }
-        }
-
-        return factureDtoList;
+  /**
+   * Récupère toutes les factures.
+   *
+   * @param userId  L'identifiant de l'utilisateur.
+   * @param isAdmin Si l'utilisateur est un administrateur.
+   * @return La liste des factures.
+   */
+  public List<FactureDto> getAll(@NonNull Long userId, @NonNull Boolean isAdmin) {
+    List<FactureDto> factureDtoList;
+    if (isAdmin) {
+      factureDtoList = FactureMapper.entityListToDtoList(factureRepository.findAll());
+    } else {
+      List<Facture> factures = factureRepository.findAllByProprietaireId(userId).stream().filter(
+          Facture::getIsSend
+      ).toList();
+      factureDtoList = FactureMapper.entityListToDtoList(factures);
     }
+    //for each facture add nom and prenom of owner by idProprietaire
+    for (FactureDto factureDto : factureDtoList) {
+      Optional<Proprietaire> proprietaire = proprietaireRepository.findById(
+          factureDto.getIdProprietaire());
+      if (proprietaire.isPresent()) {
+        factureDto.setNomProprietaire(proprietaire.get().getNom());
+        factureDto.setPrenomProprietaire(proprietaire.get().getPrenom());
+      }
+    }
+
+    return factureDtoList;
+  }
 
   /**
    * Récupère une facture par son identifiant.
@@ -215,8 +216,8 @@ public class FactureService {
   private void generateFacture(FactureCreationDto factureCreationDto, List<Logement> logements,
       Proprietaire proprietaire) throws IOException {
 
-        Long idFacture = factureRepository.count() + 1;
-        String numeroFacture = Long.toString(idFacture);
+    Long idFacture = factureRepository.count() + 1;
+    String numeroFacture = Long.toString(idFacture);
 
     if (numeroFacture.length() < 6) {
       numeroFacture = String.format("%06d", Integer.parseInt(numeroFacture));
@@ -299,7 +300,8 @@ public class FactureService {
           FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12));
       factureParagraph.setAlignment(Element.ALIGN_LEFT);
       document.add(factureParagraph);
-            LocalDate monthYear = LocalDate.of(Math.toIntExact(factureCreationDto.getYear()), Math.toIntExact(factureCreationDto.getMonth()), 1);
+      LocalDate monthYear = LocalDate.of(Math.toIntExact(factureCreationDto.getYear()),
+          Math.toIntExact(factureCreationDto.getMonth()), 1);
       Paragraph dateParagraph = new Paragraph("Date : " + monthYear);
       dateParagraph.setAlignment(Element.ALIGN_LEFT);
       document.add(dateParagraph);
@@ -417,7 +419,8 @@ public class FactureService {
       TayarimApplication.bucket.create(fileName, Files.readAllBytes(file.toPath()));
 
       file.delete();
-        LocalDate monthYear = LocalDate.of(Math.toIntExact(factureCreationDto.getYear()), Math.toIntExact(factureCreationDto.getMonth()), 1);
+      LocalDate monthYear = LocalDate.of(Math.toIntExact(factureCreationDto.getYear()),
+          Math.toIntExact(factureCreationDto.getMonth()), 1);
       factureRepository.save(
           FactureMapper.creationDtoToEntity(
               idFacture, proprietaire, numeroFacture, fileName,
@@ -785,21 +788,21 @@ public class FactureService {
 
   }
 
-    /**
-     * @param id
-     * @return
-     */
-
-    @Transactional
-    public FactureDto delete(@NonNull Long id) {
-        Optional<Facture> optionalFacture = factureRepository.findById(id);
-        if (optionalFacture.isEmpty()) {
-            throw new FactureDoesNotExistException();
-        }
-
-        Facture facture = optionalFacture.get();
-        factureRepository.deleteById(id);
-
-        return FactureMapper.entityToDto(facture);
+  /**
+   * Supprime une facture.
+   *
+   * @param id L'identifiant de la facture.
+   */
+  @Transactional
+  public FactureDto delete(@NonNull Long id) {
+    Optional<Facture> optionalFacture = factureRepository.findById(id);
+    if (optionalFacture.isEmpty()) {
+      throw new FactureDoesNotExistException();
     }
+
+    Facture facture = optionalFacture.get();
+    factureRepository.deleteById(id);
+
+    return FactureMapper.entityToDto(facture);
+  }
 }

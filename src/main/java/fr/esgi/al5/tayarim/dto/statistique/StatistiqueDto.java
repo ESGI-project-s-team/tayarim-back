@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 /**
- * Dto de statistique.
+ * Classe pour la gestion des Dto de statistique.
  */
 @Data
 @AllArgsConstructor
