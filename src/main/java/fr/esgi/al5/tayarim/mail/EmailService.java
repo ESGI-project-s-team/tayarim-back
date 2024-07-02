@@ -92,8 +92,7 @@ public class EmailService {
             + "\"numeroFacture\":\"" + numeroFacture + "\","
             + "\"dateFacture\":\"" + LocalDate.now() + "\","
             + "\"montantFacture\":\"" + montantFacture.toString() + "\","
-            + "\"urlFacture\":\""
-            + "https://storage.cloud.google.com/tayarim-tf-storage/" + url + "\""
+            + "\"urlFacture\":\""+ url + "\""
             + "}"
             + "}");
     Request request = new Request.Builder()
