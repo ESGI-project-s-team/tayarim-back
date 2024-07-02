@@ -13,26 +13,30 @@ import lombok.NonNull;
 @Builder
 public class FactureDto {
 
-  @NonNull
-  private Long id;
+    @NonNull
+    private Long id;
 
-  @NonNull
-  private String numeroFacture;
+    @NonNull
+    private String numeroFacture;
 
-  @NonNull
-  private String dateFacture;
+    @NonNull
+    private String dateFacture;
 
-  @NonNull
-  private Float montant;
+    @NonNull
+    private Float montant;
 
-  @NonNull
-  private Long idProprietaire;
+    @NonNull
+    private Long idProprietaire;
 
-  @NonNull
-  private String url;
+    @NonNull
+    private String url;
 
-  @NonNull
-  private Boolean isSend;
+    @NonNull
+    private Boolean isSend;
+    
+    private String nomProprietaire;
+
+    private String prenomProprietaire;
 
 
 }
