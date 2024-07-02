@@ -124,6 +124,15 @@ public class Logement {
   @OneToMany(cascade = CascadeType.ALL, mappedBy = "logement")
   private List<ImageLogement> images;
 
+  @OneToMany(cascade = CascadeType.ALL, mappedBy = "logement")
+  private List<Reservation> reservations;
+
+  @OneToMany(cascade = CascadeType.ALL, mappedBy = "logement")
+  private List<Depense> depenses;
+
+  @OneToMany(cascade = CascadeType.ALL, mappedBy = "logement")
+  private List<Indisponibilite> indisponibilites;
+
   /**
    * Builder pour l'entité Logmeent.
    *

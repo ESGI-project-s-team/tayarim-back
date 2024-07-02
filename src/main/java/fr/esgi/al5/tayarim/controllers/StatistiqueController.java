@@ -11,25 +11,30 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Contrôleur pour la gestion des statistiques.
+ */
 @RestController
 @RequestMapping("/statistiques")
 public class StatistiqueController implements ControllerUtils,
-        GetByIdMethodInterface<StatistiqueDto> {
-    private final StatistiqueService statistiqueService;
-    private final AuthService authService;
+    GetByIdMethodInterface<StatistiqueDto> {
 
-    public StatistiqueController(StatistiqueService statistiqueService, AuthService authService) {
-        this.statistiqueService = statistiqueService;
-        this.authService = authService;
-    }
+  private final StatistiqueService statistiqueService;
+  private final AuthService authService;
 
-    @Override
-    public ResponseEntity<StatistiqueDto> getById(String authHeader, Long id) {
-        UserTokenInfo userTokenInfo = authService.verifyToken(getTokenFromHeader(authHeader), false);
+  public StatistiqueController(StatistiqueService statistiqueService, AuthService authService) {
+    this.statistiqueService = statistiqueService;
+    this.authService = authService;
+  }
 
-        return new ResponseEntity<>(
-                statistiqueService.getStatistiqueParAnnee(id, userTokenInfo.getIsAdmin(), userTokenInfo.getId()),
-                HttpStatus.OK
-        );
-    }
+  @Override
+  public ResponseEntity<StatistiqueDto> getById(String authHeader, Long id) {
+    UserTokenInfo userTokenInfo = authService.verifyToken(getTokenFromHeader(authHeader), false);
+
+    return new ResponseEntity<>(
+        statistiqueService.getStatistiqueParAnnee(id, userTokenInfo.getIsAdmin(),
+            userTokenInfo.getId()),
+        HttpStatus.OK
+    );
+  }
 }
