@@ -11,6 +11,9 @@ RUN ls -la src/main/resources
 RUN --mount=type=secret,id=USER \
     sed -i "s/USER=/USER=$(cat /run/secrets/USER)/" src/main/resources/.env.production
 
+RUN --mount=type=secret,id=MAILTRAP_API_KEY \
+    sed -i "s/MAILTRAP_API_KEY=/MAILTRAP_API_KEY=$(cat /run/secrets/MAILTRAP_API_KEY)/" src/main/resources/.env.production
+
 RUN --mount=type=secret,id=PASSWORD \
     sed -i "s/PASSWORD=/PASSWORD=$(cat /run/secrets/PASSWORD)/" src/main/resources/.env.production
 

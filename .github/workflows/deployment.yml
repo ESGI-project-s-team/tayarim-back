@@ -30,6 +30,7 @@ jobs:
             "PASSWORD=${{ secrets.PASSWORD }}"
             "STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}"
             "GCP=${{ secrets.GCP }}"
+            "MAILTRAP_API_KEY=${{ secrets.MAILTRAP_API_KEY }}"
 
 #  update-cloud-sql:
 #    runs-on: ubuntu-latest
