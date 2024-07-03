@@ -86,3 +86,4 @@
 "error_invoice_nonexistent": "This invoice does not exist",
 "error_candidate_invalid_body": "Invalid or missing data to create a candidate",
 "error_invoice_upload": "An error occurred while uploading the invoice",
+"test": "test",
