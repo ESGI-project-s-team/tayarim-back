@@ -9,19 +9,24 @@ COPY src/main/resources/.env.production src/main/resources/.env.production
 RUN ls -la src/main/resources
 
 RUN --mount=type=secret,id=USER \
-    sed -i "s/USER=/USER=$(cat /run/secrets/USER)/" src/main/resources/.env.production
+    sh -c 'PRIVATE_KEY=$(cat /run/secrets/PRIVATE_KEY) && \
+      sed -i "s/USER=/USER=$(cat /run/secrets/USER)/" src/main/resources/.env.production
 
 RUN --mount=type=secret,id=MAILTRAP_API_KEY \
-    sed -i "s/MAILTRAP_API_KEY=/MAILTRAP_API_KEY=$(cat /run/secrets/MAILTRAP_API_KEY)/" src/main/resources/.env.production
+    sh -c 'MAILTRAP_API_KEY=$(cat /run/secrets/MAILTRAP_API_KEY) && \
+      sed -i "s/MAILTRAP_API_KEY=/MAILTRAP_API_KEY=$(cat /run/secrets/MAILTRAP_API_KEY)/" src/main/resources/.env.production
 
 RUN --mount=type=secret,id=PASSWORD \
-    sed -i "s/PASSWORD=/PASSWORD=$(cat /run/secrets/PASSWORD)/" src/main/resources/.env.production
+    sh -c 'PASSWORD=$(cat /run/secrets/PASSWORD) && \
+      sed -i "s/PASSWORD=/PASSWORD=$(cat /run/secrets/PASSWORD)/" src/main/resources/.env.production
 
 RUN --mount=type=secret,id=STRIPE_SECRET_KEY \
-    sed -i "s/STRIPE_SECRET_KEY=/STRIPE_SECRET_KEY=$(cat /run/secrets/STRIPE_SECRET_KEY)/" src/main/resources/.env.production
+    sh -c 'STRIPE_SECRET_KEY=$(cat /run/secrets/STRIPE_SECRET_KEY) && \
+      sed -i "s/STRIPE_SECRET_KEY=/STRIPE_SECRET_KEY=$(cat /run/secrets/STRIPE_SECRET_KEY)/" src/main/resources/.env.production
 
 RUN --mount=type=secret,id=GCP \
-    sed -i "s/GCP=/GCP=$(cat /run/secrets/GCP)/" src/main/resources/.env.production
+    sh -c 'GCP=$(cat /run/secrets/GCP) && \
+      sed -i "s/GCP=/GCP=$(cat /run/secrets/GCP)/" src/main/resources/.env.production
 
 RUN --mount=type=secret,id=PRIVATE_KEY \
     sh -c 'PRIVATE_KEY=$(cat /run/secrets/PRIVATE_KEY) && \
