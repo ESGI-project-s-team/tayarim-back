@@ -7,6 +7,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 /**
@@ -14,6 +15,12 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class EmailService {
+
+  private final Environment env;
+
+  public EmailService(Environment env) {
+    this.env = env;
+  }
 
   /**
    * Envoi un email de confirmation de compte.
@@ -50,11 +57,12 @@ public class EmailService {
     Request request = new Request.Builder()
         .url("https://send.api.mailtrap.io/api/send")
         .method("POST", body)
-        .addHeader("Authorization", "Bearer bb1d18a1ef9e9d4089d64c2bf5d7c440")
+        .addHeader("Authorization", "Bearer " + env.getProperty("MAILTRAP_API_KEY"))
         .addHeader("Content-Type", "application/json")
         .build();
     try {
       Response response = client.newCall(request).execute();
+      System.out.println(response.body().string());
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
@@ -98,7 +106,7 @@ public class EmailService {
     Request request = new Request.Builder()
         .url("https://send.api.mailtrap.io/api/send")
         .method("POST", body)
-        .addHeader("Authorization", "Bearer bb1d18a1ef9e9d4089d64c2bf5d7c440")
+        .addHeader("Authorization", "Bearer " + env.getProperty("MAILTRAP_API_KEY"))
         .addHeader("Content-Type", "application/json")
         .build();
     try {
