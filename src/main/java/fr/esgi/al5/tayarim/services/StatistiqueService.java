@@ -27,7 +27,8 @@ public class StatistiqueService {
    * Constructeur de la classe.
    *
    * @param statistiqueRepository le repository des statistiques
-   */public StatistiqueService(StatistiqueRepository statistiqueRepository) {
+   */
+  public StatistiqueService(StatistiqueRepository statistiqueRepository) {
     this.statistiqueRepository = statistiqueRepository;
   }
 
