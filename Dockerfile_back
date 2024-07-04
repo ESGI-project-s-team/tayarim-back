@@ -24,6 +24,8 @@ RUN --mount=type=secret,id=GCP \
 RUN --mount=type=secret,id=MAILGUN_API_KEY \
     sed -i "s/MAILGUN_API_KEY=/MAILGUN_API_KEY=$(cat /run/secrets/MAILGUN_API_KEY)/" src/main/resources/.env.production
 
+RUN cat src/main/resources/.env.production
+
 RUN mvn clean package -DskipTests
 
 FROM amazoncorretto:21-alpine
