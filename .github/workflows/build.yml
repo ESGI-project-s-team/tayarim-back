@@ -21,7 +21,10 @@ jobs:
       env:
         PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
         MYSQL_USER: ${{ secrets.MYSQL_USER }}
-        MYSQL_PASS: ${{ secrets.MYSQL_PASSgit  }}
+        MYSQL_PASS: ${{ secrets.MYSQL_PASS }}
         STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
         GCP: ${{ secrets.GCP }}
-      run: mvn --batch-mode --update-snapshots verify
+      run: |
+        echo $MYSQL_USER 
+        echo $MYSQL_PASS
+        mvn --batch-mode --update-snapshots verify
