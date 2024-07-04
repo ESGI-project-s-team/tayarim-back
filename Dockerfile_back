@@ -33,6 +33,7 @@ FROM amazoncorretto:21-alpine
 WORKDIR /app
 
 COPY --from=build /app/target/Tayarim-0.0.1-SNAPSHOT.jar .
+COPY --from=build /app/src/main/resources/.env.production .
 
 EXPOSE 8080
 
