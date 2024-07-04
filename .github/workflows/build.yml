@@ -20,8 +20,8 @@ jobs:
     - name: Verify
       env:
         PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
-        USER: ${{ secrets.USER }}
-        PASSWORD: ${{ secrets.PASSWORD }}
+        MYSQL_USER: ${{ secrets.MYSQL_USER }}
+        MYSQL_PASS: ${{ secrets.MYSQL_PASSgit  }}
         STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
         GCP: ${{ secrets.GCP }}
       run: mvn --batch-mode --update-snapshots verify
