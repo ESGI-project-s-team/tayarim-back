@@ -160,6 +160,8 @@ public class ReservationService {
         )
     );
 
+    System.out.println(reservation.getLogement().getImages().get(0).getUrl());
+
     emailService.sendCreationReservationEmail(
         reservation.getNom(),
         reservation.getPrenom(),
