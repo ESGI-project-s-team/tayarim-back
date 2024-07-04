@@ -55,6 +55,7 @@ jobs:
 #              price FLOAT NOT NULL,
 #              description TEXT NOT NULL
 #            );
+
   trigger_workflow:
     runs-on: ubuntu-latest
     needs:
