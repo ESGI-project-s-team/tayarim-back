@@ -24,8 +24,6 @@ RUN --mount=type=secret,id=GCP \
 RUN --mount=type=secret,id=MAILTRAP_API_KEY \
     sh -c 'MAILTRAP_API_KEY=$(cat /run/secrets/MAILTRAP_API_KEY) && sed -i "s|MAILTRAP_API_KEY=|MAILTRAP_API_KEY=$MAILTRAP_API_KEY|" src/main/resources/.env.production'
 
-RUN cat src/main/resources/.env.production
-
 RUN mvn clean package -DskipTests
 
 FROM amazoncorretto:21-alpine
