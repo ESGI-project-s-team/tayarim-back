@@ -34,5 +34,9 @@ public class FactureDto {
   @NonNull
   private Boolean isSend;
 
+  private String nomProprietaire;
+
+  private String prenomProprietaire;
+
 
 }

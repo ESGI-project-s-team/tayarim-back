@@ -1,5 +1,7 @@
 package fr.esgi.al5.tayarim.entities;
 
+import com.google.cloud.storage.Blob;
+import fr.esgi.al5.tayarim.TayarimApplication;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -9,6 +11,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PreRemove;
+import java.util.Arrays;
 import java.util.Set;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -55,6 +59,25 @@ public class ImageLogement {
     this.url = url;
     this.logement = logement;
     this.isMainImage = isMainImage;
+  }
+
+  /**
+   * Méthode appelée avant la suppression d'une image de logement.
+   */
+  @PreRemove()
+  public void beforeDelete() {
+    int index = this.url.indexOf("House%20images/");
+    if (index == -1) {
+      index = this.url.indexOf("House images/");
+    }
+
+    String filePath = this.url.substring(index);
+
+    Blob blob = TayarimApplication.bucket.get(filePath);
+
+    if (blob != null) {
+      blob.delete();
+    }
   }
 
 }

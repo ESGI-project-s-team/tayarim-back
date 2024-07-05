@@ -19,6 +19,7 @@ import fr.esgi.al5.tayarim.exceptions.ReservationNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.ReservationPeopleCapacityError;
 import fr.esgi.al5.tayarim.exceptions.ReservationStatusUpdateError;
 import fr.esgi.al5.tayarim.exceptions.ReservationStripeError;
+import fr.esgi.al5.tayarim.mail.EmailService;
 import fr.esgi.al5.tayarim.mappers.ReservationMapper;
 import fr.esgi.al5.tayarim.repositories.AdministrateurRepository;
 import fr.esgi.al5.tayarim.repositories.IndisponibiliteRepository;
@@ -62,6 +63,8 @@ public class ReservationService {
 
   private final NotificationRepository notificationRepository;
 
+  private final EmailService emailService;
+
 
   /**
    * Constructeur pour le service de Reservation.
@@ -72,17 +75,19 @@ public class ReservationService {
    * @param myWebSocketHandler        Le service de socket.
    * @param administrateurRepository  Le service d'administrateur
    * @param notificationRepository    Le repository des notifications
+   * @param emailService              Le service d'envoi de mail
    */
   public ReservationService(ReservationRepository reservationRepository,
       LogementRepository logementRepository, IndisponibiliteRepository indisponibiliteRepository,
       MyWebSocketHandler myWebSocketHandler, AdministrateurRepository administrateurRepository,
-      NotificationRepository notificationRepository) {
+      NotificationRepository notificationRepository, EmailService emailService) {
     this.reservationRepository = reservationRepository;
     this.logementRepository = logementRepository;
     this.indisponibiliteRepository = indisponibiliteRepository;
     this.myWebSocketHandler = myWebSocketHandler;
     this.administrateurRepository = administrateurRepository;
     this.notificationRepository = notificationRepository;
+    this.emailService = emailService;
   }
 
   /**
@@ -153,6 +158,24 @@ public class ReservationService {
             LocalDateTime.now(),
             reservationCreationDto.getPaymentIntent()
         )
+    );
+
+    System.out.println(reservation.getLogement().getImages().get(0).getUrl());
+
+    emailService.sendCreationReservationEmail(
+        reservation.getNom(),
+        reservation.getPrenom(),
+        reservation.getIdCommande(),
+        LocalDate.now().toString(),
+        reservation.getMontant().toString(),
+        "https://storage.cloud.google.com/tayarim-tf-storage/"
+            + reservation.getLogement().getImages().get(0).getUrl(),
+        reservation.getLogement().getAdresse(),
+        reservation.getDateArrivee().toString(),
+        Long.toString(
+            reservation.getDateDepart().toEpochDay() - reservation.getDateArrivee().toEpochDay()),
+        reservation.getNbPersonnes().toString()
+
     );
 
     return ReservationMapper.entityToDto(
@@ -295,7 +318,25 @@ public class ReservationService {
     checkDateConclict(reservation.getIdCommande(), reservation.getDateArrivee(),
         reservation.getDateDepart(), reservation.getLogement().getId(), isAdmin);
 
-    return ReservationMapper.entityToDto(reservationRepository.save(reservation));
+    reservation = reservationRepository.save(reservation);
+
+    emailService.sendModificationReservationEmail(
+        reservation.getNom(),
+        reservation.getPrenom(),
+        reservation.getIdCommande(),
+        reservation.getDateReservation().toLocalDate().toString(),
+        reservation.getMontant().toString(),
+        "https://storage.cloud.google.com/tayarim-tf-storage/"
+            + reservation.getLogement().getImages().get(0).getUrl(),
+        reservation.getLogement().getAdresse(),
+        reservation.getDateArrivee().toString(),
+        Long.toString(
+            reservation.getDateDepart().toEpochDay() - reservation.getDateArrivee().toEpochDay()),
+        reservation.getNbPersonnes().toString()
+
+    );
+
+    return ReservationMapper.entityToDto(reservation);
 
   }
 
@@ -404,8 +445,25 @@ public class ReservationService {
     }
 
     reservation.setStatut("cancelled");
+    reservation = reservationRepository.save(reservation);
 
-    return ReservationMapper.entityToDto(reservationRepository.save(reservation));
+    emailService.sendAnnulationReservationEmail(
+        reservation.getNom(),
+        reservation.getPrenom(),
+        reservation.getIdCommande(),
+        reservation.getDateReservation().toLocalDate().toString(),
+        reservation.getMontant().toString(),
+        "https://storage.cloud.google.com/tayarim-tf-storage/"
+            + reservation.getLogement().getImages().get(0).getUrl(),
+        reservation.getLogement().getAdresse(),
+        reservation.getDateArrivee().toString(),
+        Long.toString(
+            reservation.getDateDepart().toEpochDay() - reservation.getDateArrivee().toEpochDay()),
+        reservation.getNbPersonnes().toString()
+
+    );
+
+    return ReservationMapper.entityToDto(reservation);
   }
 
   /**

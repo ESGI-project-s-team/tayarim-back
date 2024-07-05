@@ -69,6 +69,7 @@ public interface StatistiqueRepository extends JpaRepository<Reservation, Long> 
           + "GROUP BY MONTH(r.dateArrivee), DAY(r.dateArrivee), DAY(r.dateDepart)")
   List<Map<String, Object>> getOccupiedDaysPerMonth(@Param("year") @NonNull Long year);
 
+
   @Query(
       "SELECT new map(MONTH(r.dateArrivee) as month, DAY(r.dateArrivee) as startDay, "
           + "DAY(r.dateDepart) as endDay, COUNT(r.id) as reservationCount) "

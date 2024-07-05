@@ -50,6 +50,9 @@ public class Proprietaire extends Utilisateur {
   @NonNull
   private Boolean isValidated;
 
+  @OneToMany(cascade = CascadeType.ALL, mappedBy = "proprietaire")
+  private List<Facture> factures;
+
   /**
    * Builder pour l'entité Proprietaire.
    *

@@ -3,6 +3,7 @@ package fr.esgi.al5.tayarim.controllers;
 import fr.esgi.al5.tayarim.auth.UserTokenInfo;
 import fr.esgi.al5.tayarim.controllers.interfaces.ControllerUtils;
 import fr.esgi.al5.tayarim.controllers.interfaces.CreateMethodInterface;
+import fr.esgi.al5.tayarim.controllers.interfaces.DeleteMethodInterface;
 import fr.esgi.al5.tayarim.controllers.interfaces.GetAllMethodInterface;
 import fr.esgi.al5.tayarim.controllers.interfaces.GetByIdMethodInterface;
 import fr.esgi.al5.tayarim.dto.facture.FactureCreationDto;
@@ -30,7 +31,8 @@ public class FactureController implements
     ControllerUtils,
     CreateMethodInterface<FactureDto, FactureCreationDto>,
     GetByIdMethodInterface<FactureDto>,
-    GetAllMethodInterface<FactureDto> {
+    GetAllMethodInterface<FactureDto>,
+    DeleteMethodInterface<FactureDto> {
 
   private final FactureService factureService;
   private final AuthService authService;
@@ -40,6 +42,9 @@ public class FactureController implements
     this.authService = authService;
   }
 
+  /**
+   * Méthode pour récupérer toutes les factures.
+   */
   @Override
   public ResponseEntity<List<FactureDto>> getAll(String authHeader) {
     UserTokenInfo userTokenInfo = authService.verifyToken(getTokenFromHeader(authHeader), false);
@@ -49,6 +54,9 @@ public class FactureController implements
     );
   }
 
+  /**
+   * Méthode pour creer une facture et l'ajouter à la base de données.
+   */
   @Override
   public ResponseEntity<FactureDto> create(String authHeader,
       FactureCreationDto factureCreationDto) {
@@ -59,6 +67,9 @@ public class FactureController implements
     );
   }
 
+  /**
+   * Méthode pour récupérer une facture par son id.
+   */
   @Override
   public ResponseEntity<FactureDto> getById(String authHeader, Long id) {
     UserTokenInfo userTokenInfo = authService.verifyToken(getTokenFromHeader(authHeader), false);
@@ -83,5 +94,16 @@ public class FactureController implements
     );
   }
 
+  /**
+   * Méthode pour supprimer une facture.
+   */
 
+  @Override
+  public ResponseEntity<FactureDto> delete(String authHeader, Long id) {
+    authService.verifyToken(getTokenFromHeader(authHeader), true);
+    return new ResponseEntity<>(
+        factureService.delete(id),
+        HttpStatus.OK
+    );
+  }
 }

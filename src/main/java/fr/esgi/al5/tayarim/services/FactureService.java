@@ -21,11 +21,13 @@ import fr.esgi.al5.tayarim.entities.Logement;
 import fr.esgi.al5.tayarim.entities.Notification;
 import fr.esgi.al5.tayarim.entities.Proprietaire;
 import fr.esgi.al5.tayarim.entities.Reservation;
+import fr.esgi.al5.tayarim.exceptions.DepenseNotFoundError;
 import fr.esgi.al5.tayarim.exceptions.FactureBucketUploadError;
 import fr.esgi.al5.tayarim.exceptions.FactureDoesNotExistException;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireNotFoundException;
+import fr.esgi.al5.tayarim.mail.EmailService;
+import fr.esgi.al5.tayarim.mappers.DepenseMapper;
 import fr.esgi.al5.tayarim.mappers.FactureMapper;
-import fr.esgi.al5.tayarim.mappers.NotificationMapper;
 import fr.esgi.al5.tayarim.repositories.DepenseRepository;
 import fr.esgi.al5.tayarim.repositories.FactureRepository;
 import fr.esgi.al5.tayarim.repositories.LogementRepository;
@@ -66,6 +68,8 @@ public class FactureService {
   private final MyWebSocketHandler myWebSocketHandler;
   private final NotificationRepository notificationRepository;
 
+  private final EmailService emailService;
+
   /**
    * Constructeur pour le service de Facture.
    *
@@ -76,11 +80,13 @@ public class FactureService {
    * @param depenseRepository      Le repository des dépenses.
    * @param myWebSocketHandler     Le service de socket.
    * @param notificationRepository Le repository des notifications.
+   * @param emailService           Le service des emails
    */
   public FactureService(FactureRepository factureRepository,
       ProprietaireRepository proprietaireRepository, LogementRepository logementRepository,
       ReservationRepository reservationRepository, DepenseRepository depenseRepository,
-      MyWebSocketHandler myWebSocketHandler, NotificationRepository notificationRepository) {
+      MyWebSocketHandler myWebSocketHandler, NotificationRepository notificationRepository,
+      EmailService emailService) {
     this.factureRepository = factureRepository;
     this.proprietaireRepository = proprietaireRepository;
     this.logementRepository = logementRepository;
@@ -88,6 +94,7 @@ public class FactureService {
     this.depenseRepository = depenseRepository;
     this.myWebSocketHandler = myWebSocketHandler;
     this.notificationRepository = notificationRepository;
+    this.emailService = emailService;
   }
 
   /**
@@ -99,14 +106,6 @@ public class FactureService {
   @Transactional
   public FactureDto create(@NonNull FactureCreationDto factureCreationDto) {
 
-    /*
-    if (factureCreationDto.getYear() > LocalDate.now().getYear() || (
-        factureCreationDto.getMonth() >= LocalDate.now().getMonthValue()
-            && factureCreationDto.getYear() >= LocalDate.now().getYear())) {
-      throw new FactureDoesNotExistException();
-    }
-    */
-
     Optional<Proprietaire> optionalProprietaire = proprietaireRepository.findById(
         factureCreationDto.getIdProprietaire());
     if (optionalProprietaire.isEmpty()) {
@@ -116,13 +115,11 @@ public class FactureService {
     List<Logement> logements = logementRepository.findAllByProprietaire(optionalProprietaire.get());
 
     try {
-      generateFacture(factureCreationDto, logements,
-          optionalProprietaire.get());
+      return FactureMapper.entityToDto(generateFacture(factureCreationDto, logements,
+          optionalProprietaire.get()));
     } catch (IOException e) {
       throw new FactureBucketUploadError();
     }
-
-    return null;
 
   }
 
@@ -134,14 +131,26 @@ public class FactureService {
    * @return La liste des factures.
    */
   public List<FactureDto> getAll(@NonNull Long userId, @NonNull Boolean isAdmin) {
+    List<FactureDto> factureDtoList;
     if (isAdmin) {
-      return FactureMapper.entityListToDtoList(factureRepository.findAll());
+      factureDtoList = FactureMapper.entityListToDtoList(factureRepository.findAll());
+    } else {
+      List<Facture> factures = factureRepository.findAllByProprietaireId(userId).stream().filter(
+          Facture::getIsSend
+      ).toList();
+      factureDtoList = FactureMapper.entityListToDtoList(factures);
+    }
+    //for each facture add nom and prenom of owner by idProprietaire
+    for (FactureDto factureDto : factureDtoList) {
+      Optional<Proprietaire> proprietaire = proprietaireRepository.findById(
+          factureDto.getIdProprietaire());
+      if (proprietaire.isPresent()) {
+        factureDto.setNomProprietaire(proprietaire.get().getNom());
+        factureDto.setPrenomProprietaire(proprietaire.get().getPrenom());
+      }
     }
 
-    List<Facture> factures = factureRepository.findAllByProprietaireId(userId).stream().filter(
-        Facture::getIsSend
-    ).toList();
-    return FactureMapper.entityListToDtoList(factures);
+    return factureDtoList;
   }
 
   /**
@@ -165,6 +174,21 @@ public class FactureService {
     if (!isAdmin && !optionalFacture.get().getProprietaire().getId().equals(idUser)) {
       throw new FactureDoesNotExistException();
     }
+
+    return FactureMapper.entityToDto(optionalFacture.get());
+  }
+
+  /**
+   * Supprime une facture.
+   */
+  @Transactional
+  public FactureDto delete(@NonNull Long id) {
+    Optional<Facture> optionalFacture = factureRepository.findById(id);
+    if (optionalFacture.isEmpty()) {
+      throw new FactureDoesNotExistException();
+    }
+
+    factureRepository.delete(optionalFacture.get());
 
     return FactureMapper.entityToDto(optionalFacture.get());
   }
@@ -195,11 +219,18 @@ public class FactureService {
     //sendMail
 
     facture.setIsSend(true);
+    facture = factureRepository.save(facture);
+    Proprietaire proprietaire = facture.getProprietaire();
 
-    return FactureMapper.entityToDto(factureRepository.save(facture));
+    System.out.println("Facture envoyée par mail");
+    emailService.sendFactureEmail(proprietaire.getNom(), proprietaire.getPrenom(),
+        facture.getNumeroFacture(), facture.getMontant(), facture.getUrl());
+    System.out.println("après Facture envoyée par mail");
+
+    return FactureMapper.entityToDto(facture);
   }
 
-  private void generateFacture(FactureCreationDto factureCreationDto, List<Logement> logements,
+  private Facture generateFacture(FactureCreationDto factureCreationDto, List<Logement> logements,
       Proprietaire proprietaire) throws IOException {
 
     Long idFacture = factureRepository.count() + 1;
@@ -212,6 +243,8 @@ public class FactureService {
     String filePath = numeroFacture + ".pdf";
 
     Document document = new Document();
+    Facture facture = null;
+    Float finalAmount = 0f;
     try {
       PdfWriter.getInstance(document, new FileOutputStream(filePath));
       document.open();
@@ -239,8 +272,8 @@ public class FactureService {
       sellerParagraph.add(
           new Paragraph("Société", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12)));
       sellerParagraph.add(new Paragraph("Nom : Tayarim"));
-      sellerParagraph.add(new Paragraph("Adresse : "));
-      sellerParagraph.add(new Paragraph("Téléphone : "));
+      sellerParagraph.add(new Paragraph("numéro fiscal : 342599453"));
+      sellerParagraph.add(new Paragraph("Téléphone : 053 708 50 65"));
       cell1.addElement(sellerParagraph);
       tableTayarim.addCell(cell1);
 
@@ -286,15 +319,14 @@ public class FactureService {
           FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12));
       factureParagraph.setAlignment(Element.ALIGN_LEFT);
       document.add(factureParagraph);
-
-      Paragraph dateParagraph = new Paragraph("Date : " + LocalDate.now());
+      LocalDate monthYear = LocalDate.of(Math.toIntExact(factureCreationDto.getYear()),
+          Math.toIntExact(factureCreationDto.getMonth()), 1);
+      Paragraph dateParagraph = new Paragraph("Date : " + monthYear);
       dateParagraph.setAlignment(Element.ALIGN_LEFT);
       document.add(dateParagraph);
 
       Font cellFont = FontFactory.getFont(FontFactory.HELVETICA, 10);
       cellFont.setColor(0, 0, 0);
-
-      Float finalAmount = 0f;
 
       // Create a YearMonth instance for the given year and month
       YearMonth yearMonth = YearMonth.of(Math.toIntExact(factureCreationDto.getYear()),
@@ -402,17 +434,18 @@ public class FactureService {
       // send to GCS
       String fileName = "Factures/facture_" + numeroFacture + ".pdf";
       TayarimApplication.bucket.create(fileName, Files.readAllBytes(file.toPath()));
-
+      String url = "https://storage.cloud.google.com/tayarim-tf-storage/" + fileName;
       file.delete();
-
-      factureRepository.save(
+      LocalDate monthYear = LocalDate.of(Math.toIntExact(factureCreationDto.getYear()),
+          Math.toIntExact(factureCreationDto.getMonth()), 1);
+      facture = factureRepository.save(
           FactureMapper.creationDtoToEntity(
-              idFacture, proprietaire, numeroFacture, fileName
+              idFacture, proprietaire, numeroFacture, finalAmount, url,
+              monthYear
           )
       );
-
-
     }
+    return facture;
   }
 
   private void generateLogementCell(PdfPTable table, Logement logement, Boolean secondaryColor) {

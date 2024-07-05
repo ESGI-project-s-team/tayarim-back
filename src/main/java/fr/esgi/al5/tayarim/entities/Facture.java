@@ -1,5 +1,7 @@
 package fr.esgi.al5.tayarim.entities;
 
+import com.google.cloud.storage.Blob;
+import fr.esgi.al5.tayarim.TayarimApplication;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -8,8 +10,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PreRemove;
 import jakarta.persistence.SequenceGenerator;
 import java.time.LocalDate;
+import java.util.Arrays;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
@@ -66,6 +70,21 @@ public class Facture {
     this.proprietaire = proprietaire;
     this.url = url;
     this.isSend = isSend;
+  }
+
+  /**
+   * Méthode appelée avant la suppression d'une facture.
+   */
+  @PreRemove()
+  public void beforeDelete() {
+    String filePath = this.url.substring(this.url.indexOf("Factures/"));
+
+    Blob blob = TayarimApplication.bucket.get(filePath);
+
+    if (blob != null) {
+      blob.delete();
+    }
+
   }
 
 }
