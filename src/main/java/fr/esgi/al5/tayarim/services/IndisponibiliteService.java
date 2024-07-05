@@ -139,7 +139,7 @@ public class IndisponibiliteService {
           "notification_indisponibilite_creation", "Indisponibilite");
       notificationRepository.save(new Notification(
           "Indisponibilite",
-          "notification_reservation_creation",
+          "notification_indisponibilite_creation",
           LocalDate.now(),
           logement.getProprietaire(),
           false
@@ -150,7 +150,7 @@ public class IndisponibiliteService {
             "notification_indisponibilite_creation", "Indisponibilite");
         notificationRepository.save(new Notification(
             "Indisponibilite",
-            "notification_reservation_creation",
+            "notification_indisponibilite_creation",
             LocalDate.now(),
             administrateur,
             false

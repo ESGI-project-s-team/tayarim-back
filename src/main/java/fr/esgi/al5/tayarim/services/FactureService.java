@@ -1,5 +1,6 @@
 package fr.esgi.al5.tayarim.services;
 
+import com.google.cloud.storage.Blob;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Element;
@@ -223,7 +224,8 @@ public class FactureService {
     Proprietaire proprietaire = facture.getProprietaire();
 
     System.out.println("Facture envoyée par mail");
-    emailService.sendFactureEmail(proprietaire.getNom(), proprietaire.getPrenom(),
+    emailService.sendFactureEmail(proprietaire.getEmail(), proprietaire.getNom(),
+        proprietaire.getPrenom(),
         facture.getNumeroFacture(), facture.getMontant(), facture.getUrl());
     System.out.println("après Facture envoyée par mail");
 
@@ -250,8 +252,9 @@ public class FactureService {
       document.open();
 
       // Ajouter l'image de puis le dossier resources
-      String logoPath = "src/main/resources/white-logo-short-removebg.png";
-      Image img = Image.getInstance(logoPath);
+      String logoPath = "backUtils/white-logo-short-removebg.png";
+      Blob blob = TayarimApplication.bucket.get(logoPath);
+      Image img = Image.getInstance(blob.getContent());
       img.scaleToFit(100, 100);
       document.add(img);
 

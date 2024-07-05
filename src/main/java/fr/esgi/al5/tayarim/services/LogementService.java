@@ -189,9 +189,8 @@ public class LogementService {
           String fileName = "House images/".concat(logement.getId().toString()).concat("_")
               .concat(Integer.toString(cpt));
 
-          // Téléchargez le fichier dans GCS
+          // Téléchargez le fichier dans GCS en tant q'image
           TayarimApplication.bucket.create(fileName, bytes);
-
           urls.add(fileName);
 
 
