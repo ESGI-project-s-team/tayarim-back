@@ -95,6 +95,7 @@ public class ReservationService {
    *
    * @return {@link ReservationDto}
    */
+  @Transactional
   public ReservationDto createReservation(@NonNull ReservationCreationDto reservationCreationDto,
       @NonNull Boolean isAdmin) {
 
