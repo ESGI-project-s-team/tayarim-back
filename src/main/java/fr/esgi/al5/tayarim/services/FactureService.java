@@ -331,15 +331,10 @@ public class FactureService {
       Font cellFont = FontFactory.getFont(FontFactory.HELVETICA, 10);
       cellFont.setColor(0, 0, 0);
 
-      // Create a YearMonth instance for the given year and month
-      YearMonth yearMonth = YearMonth.of(Math.toIntExact(factureCreationDto.getYear()),
-          Math.toIntExact(factureCreationDto.getMonth()));
+
 
       // Get the first day of the month as a LocalDate
-      LocalDate firstDayOfMonth = yearMonth.atDay(1);
-      LocalDate lastDayOfMonth = yearMonth.atEndOfMonth();
 
-      boolean secondaryColor = false;
 
       // Ajouter les lignes de dépense
       PdfPTable table = new PdfPTable(3); // 4 colonnes
@@ -374,7 +369,15 @@ public class FactureService {
       table.addCell(creditDebitHeaderCell);
       table.addCell(totalHeaderCell);
 
+      // Create a YearMonth instance for the given year and month
+      YearMonth yearMonth = YearMonth.of(Math.toIntExact(factureCreationDto.getYear()),
+          Math.toIntExact(factureCreationDto.getMonth()));
+
+      LocalDate firstDayOfMonth = yearMonth.atDay(1);
+      LocalDate lastDayOfMonth = yearMonth.atEndOfMonth();
+
       System.out.println("Logements : " + logements.size());
+      boolean secondaryColor = false;
       for (Logement logement : logements) {
         float total = 0f;
         List<Reservation> reservations = reservationRepository
