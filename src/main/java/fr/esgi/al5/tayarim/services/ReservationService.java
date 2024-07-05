@@ -95,6 +95,7 @@ public class ReservationService {
    *
    * @return {@link ReservationDto}
    */
+  @Transactional
   public ReservationDto createReservation(@NonNull ReservationCreationDto reservationCreationDto,
       @NonNull Boolean isAdmin) {
 
@@ -160,16 +161,17 @@ public class ReservationService {
         )
     );
 
-    System.out.println(reservation.getLogement().getImages().get(0).getUrl());
+    System.out.println(reservation.getLogement().getImages().get(0).getUrl().replace(" ", "%20"));
 
     emailService.sendCreationReservationEmail(
+        reservation.getEmail(),
         reservation.getNom(),
         reservation.getPrenom(),
         reservation.getIdCommande(),
         LocalDate.now().toString(),
         reservation.getMontant().toString(),
         "https://storage.cloud.google.com/tayarim-tf-storage/"
-            + reservation.getLogement().getImages().get(0).getUrl(),
+            + reservation.getLogement().getImages().get(0).getUrl().replace(" ", "%20"),
         reservation.getLogement().getAdresse(),
         reservation.getDateArrivee().toString(),
         Long.toString(
@@ -320,7 +322,9 @@ public class ReservationService {
 
     reservation = reservationRepository.save(reservation);
 
+    System.out.println();
     emailService.sendModificationReservationEmail(
+        reservation.getEmail(),
         reservation.getNom(),
         reservation.getPrenom(),
         reservation.getIdCommande(),
@@ -448,6 +452,7 @@ public class ReservationService {
     reservation = reservationRepository.save(reservation);
 
     emailService.sendAnnulationReservationEmail(
+        reservation.getEmail(),
         reservation.getNom(),
         reservation.getPrenom(),
         reservation.getIdCommande(),

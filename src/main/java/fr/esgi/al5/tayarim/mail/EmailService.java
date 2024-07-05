@@ -37,11 +37,11 @@ public class EmailService {
     MediaType mediaType = MediaType.parse("application/json");
     String bodyString = "{"
         + "\"from\":{"
-        + "\"email\":\"mailtrap@demomailtrap.com\","
-        + "\"name\":\"Mailtrap Test\"},"
+        + "\"email\":\"mailtrap@tayarim.com\","
+        + "\"name\":\"Tayarim\"},"
         + "\"to\":["
         + "{"
-        + "\"email\":\"yaron1220@gmail.com\""
+        + "\"email\":\"" + email + "\""
         + "}"
         + "],"
         + "\"template_uuid\":\"282f9283-852d-46ac-9609-2bd368bd208f\","
@@ -77,7 +77,7 @@ public class EmailService {
    * @param montantFacture Le montant de la facture.
    * @param url            L'url de la facture.
    */
-  public void sendFactureEmail(String nom, String prenom, String numeroFacture,
+  public void sendFactureEmail(String email, String nom, String prenom, String numeroFacture,
       Float montantFacture, String url) {
     OkHttpClient client = new OkHttpClient().newBuilder()
         .build();
@@ -85,12 +85,12 @@ public class EmailService {
     RequestBody body = RequestBody.create(mediaType,
         "{"
             + "\"from\":{"
-            + "\"email\":\"mailtrap@demomailtrap.com\","
-            + "\"name\":\"Mailtrap Test\""
+            + "\"email\":\"mailtrap@tayarim.com\","
+            + "\"name\":\"Tayarim\""
             + "},"
             + "\"to\":["
             + "{"
-            + "\"email\":\"yaron1220@gmail.com\""
+            + "\"email\":\"" + email + "\""
             + "}"
             + "],"
             + "\"template_uuid\":\"19cd593e-41fe-4e47-b7d6-684be2c529f3\","
@@ -130,7 +130,8 @@ public class EmailService {
    * @param nbNuits            Le nombre de nuits.
    * @param nbPersonnes        Le nombre de personnes.
    */
-  public void sendCreationReservationEmail(String nom, String prenom, String numeroReservation,
+  public void sendCreationReservationEmail(String email, String nom, String prenom,
+      String numeroReservation,
       String dateReservation, String montantReservation, String imageReservation,
       String adresseReservation, String dateArrivee, String nbNuits, String nbPersonnes) {
     OkHttpClient client = new OkHttpClient().newBuilder()
@@ -138,11 +139,11 @@ public class EmailService {
     MediaType mediaType = MediaType.parse("application/json");
     RequestBody body = RequestBody.create(mediaType, "{"
         + "\"from\":{"
-        + "\"email\":\"mailtrap@demomailtrap.com\","
-        + "\"name\":\"Mailtrap Test\"},"
+        + "\"email\":\"mailtrap@tayarim.com\","
+        + "\"name\":\"Tayarim\"},"
         + "\"to\":["
         + "{"
-        + "\"email\":\"yaron1220@gmail.com\""
+        + "\"email\":\"" + email + "\""
         + "}"
         + "],"
         + "\"template_uuid\":\"6c2a21bc-2063-4552-8a02-a31ec93804fd\","
@@ -186,7 +187,8 @@ public class EmailService {
    * @param nbNuits            Le nombre de nuits.
    * @param nbPersonnes        Le nombre de personnes.
    */
-  public void sendAnnulationReservationEmail(String nom, String prenom, String numeroReservation,
+  public void sendAnnulationReservationEmail(String email, String nom, String prenom,
+      String numeroReservation,
       String dateReservation, String montantReservation, String imageReservation,
       String adresseReservation, String dateArrivee, String nbNuits, String nbPersonnes) {
     OkHttpClient client = new OkHttpClient().newBuilder()
@@ -194,11 +196,11 @@ public class EmailService {
     MediaType mediaType = MediaType.parse("application/json");
     RequestBody body = RequestBody.create(mediaType, "{"
         + "\"from\":{"
-        + "\"email\":\"mailtrap@demomailtrap.com\","
-        + "\"name\":\"Mailtrap Test\"},"
+        + "\"email\":\"mailtrap@tayarim.com\","
+        + "\"name\":\"Tayarim\"},"
         + "\"to\":["
         + "{"
-        + "\"email\":\"yaron1220@gmail.com\""
+        + "\"email\":\"" + email + "\""
         + "}"
         + "],"
         + "\"template_uuid\":\"41467c3f-c6cb-4cb1-a778-630197e23922\","
@@ -242,7 +244,8 @@ public class EmailService {
    * @param nbNuits            Le nombre de nuits.
    * @param nbPersonnes        Le nombre de personnes.
    */
-  public void sendModificationReservationEmail(String nom, String prenom, String numeroReservation,
+  public void sendModificationReservationEmail(String email, String nom, String prenom,
+      String numeroReservation,
       String dateReservation, String montantReservation, String imageReservation,
       String adresseReservation, String dateArrivee, String nbNuits, String nbPersonnes) {
     OkHttpClient client = new OkHttpClient().newBuilder()
@@ -250,11 +253,11 @@ public class EmailService {
     MediaType mediaType = MediaType.parse("application/json");
     RequestBody body = RequestBody.create(mediaType, "{"
         + "\"from\":{"
-        + "\"email\":\"mailtrap@demomailtrap.com\","
-        + "\"name\":\"Mailtrap Test\"},"
+        + "\"email\":\"mailtrap@tayarim.com\","
+        + "\"name\":\"Tayarim\"},"
         + "\"to\":["
         + "{"
-        + "\"email\":\"yaron1220@gmail.com\""
+        + "\"email\":\"" + email + "\""
         + "}"
         + "],"
         + "\"template_uuid\":\"50e0db32-33a5-405f-ba65-0f6f4a9fec4d\","
@@ -291,17 +294,18 @@ public class EmailService {
    * @param prenom               Le prénom de l'utilisateur.
    * @param lienReinitialisation Le lien de réinitialisation de mot de passe.
    */
-  public void sendPasswordResetEmail(String nom, String prenom, String lienReinitialisation) {
+  public void sendPasswordResetEmail(String email, String nom, String prenom,
+      String lienReinitialisation) {
     OkHttpClient client = new OkHttpClient().newBuilder()
         .build();
     MediaType mediaType = MediaType.parse("application/json");
     RequestBody body = RequestBody.create(mediaType, "{"
         + "\"from\":{"
-        + "\"email\":\"mailtrap@demomailtrap.com\","
-        + "\"name\":\"Mailtrap Test\"},"
+        + "\"email\":\"mailtrap@tayarim.com\","
+        + "\"name\":\"Tayarim\"},"
         + "\"to\":["
         + "{"
-        + "\"email\":\"yaron1220@gmail.com\""
+        + "\"email\":\"" + email + "\""
         + "}"
         + "],"
         + "\"template_uuid\":\"1e166c1e-4b7a-4aa0-8844-77f81e51b0aa\","
