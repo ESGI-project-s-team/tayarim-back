@@ -440,7 +440,7 @@ public class FactureService {
       // send to GCS
       String fileName = "Factures/facture_" + numeroFacture + ".pdf";
       TayarimApplication.bucket.create(fileName, Files.readAllBytes(file.toPath()));
-      String url = "https://storage.cloud.google.com/tayarim-tf-storage/" + fileName;
+      String url = "https://storage.googleapis.com/tayarim-tf-storage/" + fileName;
       file.delete();
       LocalDate monthYear = LocalDate.of(Math.toIntExact(factureCreationDto.getYear()),
           Math.toIntExact(factureCreationDto.getMonth()), 1);
