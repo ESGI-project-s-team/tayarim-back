@@ -170,7 +170,7 @@ public class ReservationService {
         reservation.getIdCommande(),
         LocalDate.now().toString(),
         reservation.getMontant().toString(),
-        "https://storage.cloud.google.com/tayarim-tf-storage/"
+        "https://storage.googleapis.com/tayarim-tf-storage/"
             + reservation.getLogement().getImages().get(0).getUrl().replace(" ", "%20"),
         reservation.getLogement().getAdresse(),
         reservation.getDateArrivee().toString(),
@@ -330,7 +330,7 @@ public class ReservationService {
         reservation.getIdCommande(),
         reservation.getDateReservation().toLocalDate().toString(),
         reservation.getMontant().toString(),
-        "https://storage.cloud.google.com/tayarim-tf-storage/"
+        "https://storage.googleapis.com/tayarim-tf-storage/"
             + reservation.getLogement().getImages().get(0).getUrl(),
         reservation.getLogement().getAdresse(),
         reservation.getDateArrivee().toString(),
@@ -458,7 +458,7 @@ public class ReservationService {
         reservation.getIdCommande(),
         reservation.getDateReservation().toLocalDate().toString(),
         reservation.getMontant().toString(),
-        "https://storage.cloud.google.com/tayarim-tf-storage/"
+        "https://storage.googleapis.com/tayarim-tf-storage/"
             + reservation.getLogement().getImages().get(0).getUrl(),
         reservation.getLogement().getAdresse(),
         reservation.getDateArrivee().toString(),

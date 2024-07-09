@@ -24,7 +24,7 @@ public class ImageLogementMapper {
   public static ImageLogementDto entityToDto(@NonNull ImageLogement imageLogement) {
     return new ImageLogementDto(
         imageLogement.getId(),
-        "https://storage.cloud.google.com/tayarim-tf-storage/".concat(imageLogement.getUrl()),
+        "https://storage.googleapis.com/tayarim-tf-storage/".concat(imageLogement.getUrl()),
         imageLogement.getIsMainImage()
     );
   }
