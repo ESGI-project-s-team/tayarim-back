@@ -13,8 +13,10 @@ import fr.esgi.al5.tayarim.services.FactureService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import java.util.List;
+import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -103,6 +105,23 @@ public class FactureController implements
     authService.verifyToken(getTokenFromHeader(authHeader), true);
     return new ResponseEntity<>(
         factureService.delete(id),
+        HttpStatus.OK
+    );
+  }
+
+  /**
+   * Génère lien facture.
+   */
+  @Operation(summary = "Authenticate user", security = @SecurityRequirement(name = "bearer-key"))
+  @GetMapping("/link/{id}")
+  public ResponseEntity<Map<String, String>> linkFacture(
+      @RequestAttribute("token") String authHeader,
+      @PathVariable Long id) {
+    UserTokenInfo userTokenInfo =
+        authService.verifyToken(getTokenFromHeader(authHeader), false);
+    return new ResponseEntity<>(
+        Map.of("url",
+            factureService.linkFacture(id, userTokenInfo.getId(), userTokenInfo.getIsAdmin())),
         HttpStatus.OK
     );
   }
