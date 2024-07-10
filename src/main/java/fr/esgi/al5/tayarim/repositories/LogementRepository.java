@@ -16,7 +16,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface LogementRepository extends JpaRepository<Logement, Long> {
 
-  @Query("SELECT l FROM Logement l "
+  @Query("SELECT l FROM LOGEMENT l "
       + "LEFT JOIN FETCH l.reglesLogements "
       + "LEFT JOIN FETCH l.amenagements")
   List<Logement> findAll();

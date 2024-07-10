@@ -1,7 +1,7 @@
 name: Lint
 on:
   pull_request:
-    branches: ["master", "dev", "prod"]
+    branches: ["master", "dev"]
     
 jobs:
   checkstyle:

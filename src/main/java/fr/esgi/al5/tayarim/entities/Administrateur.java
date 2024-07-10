@@ -18,7 +18,7 @@ import lombok.NonNull;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Entity
+@Entity(name = "ADMINISTRATEUR")
 @PrimaryKeyJoinColumn(name = "IDUSER")
 public class Administrateur extends Utilisateur {
 

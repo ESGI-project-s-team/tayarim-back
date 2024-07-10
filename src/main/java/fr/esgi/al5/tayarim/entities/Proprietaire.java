@@ -23,7 +23,7 @@ import lombok.NonNull;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Entity
+@Entity(name = "PROPRIETAIRE")
 @PrimaryKeyJoinColumn(name = "IDUSER")
 public class Proprietaire extends Utilisateur {
 
@@ -49,6 +49,9 @@ public class Proprietaire extends Utilisateur {
   @Column(name = "ISVALIDATED", nullable = false)
   @NonNull
   private Boolean isValidated;
+
+  @OneToMany(cascade = CascadeType.ALL, mappedBy = "proprietaire")
+  private List<Facture> factures;
 
   /**
    * Builder pour l'entité Proprietaire.

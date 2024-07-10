@@ -84,4 +84,6 @@
 "error_notification_send": "An error occurred while sending the notification",
 "error_owner_invalid_address": "The address entered is invalid",
 "error_invoice_nonexistent": "This invoice does not exist",
-"pt": "Portuguese",
+"error_candidate_invalid_body": "Invalid or missing data to create a candidate",
+"error_invoice_upload": "An error occurred while uploading the invoice",
+"test": "test",

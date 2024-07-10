@@ -30,7 +30,7 @@ import lombok.NonNull;
  * propriétaires à travers une relation ManyToOne.
  */
 @Data
-@Entity
+@Entity(name = "LOGEMENT")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(exclude = {"id", "reglesLogements", "amenagements"})
 public class Logement {
@@ -123,6 +123,15 @@ public class Logement {
 
   @OneToMany(cascade = CascadeType.ALL, mappedBy = "logement")
   private List<ImageLogement> images;
+
+  @OneToMany(cascade = CascadeType.ALL, mappedBy = "logement")
+  private List<Reservation> reservations;
+
+  @OneToMany(cascade = CascadeType.ALL, mappedBy = "logement")
+  private List<Depense> depenses;
+
+  @OneToMany(cascade = CascadeType.ALL, mappedBy = "logement")
+  private List<Indisponibilite> indisponibilites;
 
   /**
    * Builder pour l'entité Logmeent.

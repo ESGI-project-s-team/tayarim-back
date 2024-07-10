@@ -1,5 +1,6 @@
 package fr.esgi.al5.tayarim.entities;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -7,6 +8,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
+import jakarta.persistence.OneToMany;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,7 +23,7 @@ import lombok.RequiredArgsConstructor;
  * l'héritage des entités Utilisateur dans la base de données.
  */
 @Data
-@Entity
+@Entity(name = "UTILISATEUR")
 @Inheritance(strategy = InheritanceType.JOINED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @RequiredArgsConstructor
@@ -50,4 +53,7 @@ public abstract class Utilisateur {
   @Column(name = "MOTDEPASSE", nullable = false)
   @NonNull
   private String motDePasse;
+
+  @OneToMany(cascade = CascadeType.ALL, mappedBy = "utilisateur")
+  private List<Notification> notifications;
 }

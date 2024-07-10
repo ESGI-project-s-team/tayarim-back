@@ -1,30 +1,22 @@
 package fr.esgi.al5.tayarim.services;
 
-import fr.esgi.al5.tayarim.TayarimApplication;
 import fr.esgi.al5.tayarim.dto.proprietaire.ProprietaireCandidateDto;
 import fr.esgi.al5.tayarim.dto.proprietaire.ProprietaireCreationDto;
 import fr.esgi.al5.tayarim.dto.proprietaire.ProprietaireDto;
 import fr.esgi.al5.tayarim.dto.proprietaire.ProprietaireUpdateDto;
 import fr.esgi.al5.tayarim.entities.Amenagement;
-import fr.esgi.al5.tayarim.entities.ImageLogement;
 import fr.esgi.al5.tayarim.entities.Logement;
 import fr.esgi.al5.tayarim.entities.Proprietaire;
 import fr.esgi.al5.tayarim.entities.ReglesLogement;
 import fr.esgi.al5.tayarim.entities.Reservation;
-import fr.esgi.al5.tayarim.entities.TypeLogement;
-import fr.esgi.al5.tayarim.exceptions.LogementImageBucketUploadError;
 import fr.esgi.al5.tayarim.exceptions.LogementInvalidAmenagement;
 import fr.esgi.al5.tayarim.exceptions.LogementInvalidReglesLogement;
-import fr.esgi.al5.tayarim.exceptions.LogementInvalidTypeLogement;
-import fr.esgi.al5.tayarim.exceptions.LogementInvalidUpdateBody;
-import fr.esgi.al5.tayarim.exceptions.LogementNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.PasswordHashNotPossibleException;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireEmailAlreadyExistException;
-import fr.esgi.al5.tayarim.exceptions.ProprietaireInvalidCandidatureBody;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireInvalidUpdateBody;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireNumTelAlreadyExistException;
-import fr.esgi.al5.tayarim.mappers.LogementMapper;
+import fr.esgi.al5.tayarim.mail.EmailService;
 import fr.esgi.al5.tayarim.mappers.ProprietaireMapper;
 import fr.esgi.al5.tayarim.repositories.AmenagementRepository;
 import fr.esgi.al5.tayarim.repositories.ImageLogementRepository;
@@ -33,7 +25,6 @@ import fr.esgi.al5.tayarim.repositories.ProprietaireRepository;
 import fr.esgi.al5.tayarim.repositories.ReglesLogementRepository;
 import fr.esgi.al5.tayarim.repositories.ReservationRepository;
 import fr.esgi.al5.tayarim.repositories.TypeLogementRepository;
-import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +33,6 @@ import lombok.NonNull;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 
 /**
@@ -60,6 +50,7 @@ public class ProprietaireService {
   private final AmenagementRepository amenagementRepository;
   private final ImageLogementRepository imageLogementRepository;
   private final ReservationRepository reservationRepository;
+  private final EmailService emailService;
 
   /**
    * Constructeur pour le service de gestion des propriétaires.
@@ -69,7 +60,7 @@ public class ProprietaireService {
       ReglesLogementRepository reglesLogementRepository,
       AmenagementRepository amenagementRepository,
       ImageLogementRepository imageLogementRepository,
-      ReservationRepository reservationRepository) {
+      ReservationRepository reservationRepository, EmailService emailService) {
     this.proprietaireRepository = proprietaireRepository;
     this.logementRepository = logementRepository;
     this.typeLogementRepository = typeLogementRepository;
@@ -77,6 +68,7 @@ public class ProprietaireService {
     this.amenagementRepository = amenagementRepository;
     this.imageLogementRepository = imageLogementRepository;
     this.reservationRepository = reservationRepository;
+    this.emailService = emailService;
   }
 
   /**
@@ -312,7 +304,15 @@ public class ProprietaireService {
 
     proprietaire.setIsValidated(true);
 
-    return ProprietaireMapper.entityToDto(proprietaireRepository.save(proprietaire), false);
+    String generatedPassword = generatePassword();
+    proprietaire.setMotDePasse(hashPassword(generatedPassword));
+
+    proprietaire = proprietaireRepository.save(proprietaire);
+
+    emailService.sendAccountConfirmationEmail(proprietaire.getNom(), proprietaire.getPrenom(),
+        proprietaire.getEmail(), generatedPassword);
+
+    return ProprietaireMapper.entityToDto(proprietaire, false);
   }
 
   /**
@@ -397,6 +397,7 @@ public class ProprietaireService {
         }
         generatedPassword.append(allowedchar.charAt(index));
       }
+      System.out.println(generatedPassword.toString());
       result = hasLowerCase && hasUpperCase && hasDigit && hasSpecialChar;
     }
     return generatedPassword.toString();
