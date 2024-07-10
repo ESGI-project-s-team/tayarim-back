@@ -230,9 +230,18 @@ public class FactureService {
     Proprietaire proprietaire = facture.getProprietaire();
 
     System.out.println("Facture envoyée par mail");
+
+    Storage storage = TayarimApplication.bucket.getStorage();
+
+    BlobInfo blobInfo = BlobInfo.newBuilder(TayarimApplication.bucket.getName(),
+        "Factures/facture_" + facture.getNumeroFacture() + ".pdf").build();
+
+    Blob blob = storage.get(blobInfo.getBlobId()).toBuilder().setContentType("application/pdf")
+        .build();
+
     emailService.sendFactureEmail(proprietaire.getEmail(), proprietaire.getNom(),
         proprietaire.getPrenom(),
-        facture.getNumeroFacture(), facture.getMontant(), facture.getUrl());
+        facture.getNumeroFacture(), facture.getMontant(), facture.getUrl(), blob);
     System.out.println("après Facture envoyée par mail");
 
     return FactureMapper.entityToDto(facture);
