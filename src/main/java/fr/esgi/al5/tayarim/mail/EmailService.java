@@ -1,12 +1,16 @@
 package fr.esgi.al5.tayarim.mail;
 
+import com.google.cloud.storage.Blob;
+import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Base64;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
@@ -78,7 +82,9 @@ public class EmailService {
    * @param url            L'url de la facture.
    */
   public void sendFactureEmail(String email, String nom, String prenom, String numeroFacture,
-      Float montantFacture, String url) {
+      Float montantFacture, String url, Blob blob) {
+
+
     OkHttpClient client = new OkHttpClient().newBuilder()
         .build();
     MediaType mediaType = MediaType.parse("application/json");
@@ -101,7 +107,11 @@ public class EmailService {
             + "\"dateFacture\":\"" + LocalDate.now() + "\","
             + "\"montantFacture\":\"" + montantFacture.toString() + "\","
             + "\"urlFacture\":\"" + url + "\""
-            + "}"
+            + "},"
+            + "\"attachments\":[{"
+            + "\"content\":\"" + Base64.getEncoder().encodeToString(blob.getContent()) + "\","
+            + "\"filename\":\"" + blob.getName() + "\""
+            + "}]"
             + "}");
     Request request = new Request.Builder()
         .url("https://send.api.mailtrap.io/api/send")
