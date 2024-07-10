@@ -1,6 +1,9 @@
 package fr.esgi.al5.tayarim.services;
 
 import com.google.cloud.storage.Blob;
+import com.google.cloud.storage.BlobInfo;
+import com.google.cloud.storage.HttpMethod;
+import com.google.cloud.storage.Storage;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Element;
@@ -26,6 +29,7 @@ import fr.esgi.al5.tayarim.exceptions.DepenseNotFoundError;
 import fr.esgi.al5.tayarim.exceptions.FactureBucketUploadError;
 import fr.esgi.al5.tayarim.exceptions.FactureDoesNotExistException;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireNotFoundException;
+import fr.esgi.al5.tayarim.exceptions.UnauthorizedException;
 import fr.esgi.al5.tayarim.mail.EmailService;
 import fr.esgi.al5.tayarim.mappers.DepenseMapper;
 import fr.esgi.al5.tayarim.mappers.FactureMapper;
@@ -44,9 +48,11 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.time.YearMonth;
 import java.time.format.TextStyle;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import lombok.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -232,6 +238,36 @@ public class FactureService {
     return FactureMapper.entityToDto(facture);
   }
 
+
+  /**
+   * Génère un lien pour une facture.
+   */
+  public String linkFacture(@NonNull Long idFacture, @NonNull Long idUser,
+      @NonNull Boolean isAdmin) {
+    String numeroFacture = Long.toString(idFacture);
+    if (numeroFacture.length() < 6) {
+      numeroFacture = String.format("%06d", Integer.parseInt(numeroFacture));
+    }
+    Optional<Facture> optionalFacture = factureRepository.findByNumeroFacture(numeroFacture);
+    if (optionalFacture.isEmpty()) {
+      throw new FactureDoesNotExistException();
+    }
+
+    if (!isAdmin && !idUser.equals(optionalFacture.get().getProprietaire().getId())) {
+      throw new UnauthorizedException();
+    }
+
+    Storage storage = TayarimApplication.bucket.getStorage();
+
+    BlobInfo blobInfo = BlobInfo.newBuilder(TayarimApplication.bucket.getName(),
+        "Factures/facture_" + numeroFacture + ".pdf").build();
+    // Générer l'URL signée
+    return storage.signUrl(blobInfo, 15, TimeUnit.MINUTES,
+        Storage.SignUrlOption.httpMethod(HttpMethod.GET),
+        Storage.SignUrlOption.withExtHeaders(new HashMap<>())).toString();
+
+  }
+
   private Facture generateFacture(FactureCreationDto factureCreationDto, List<Logement> logements,
       Proprietaire proprietaire) throws IOException {
 
@@ -331,10 +367,7 @@ public class FactureService {
       Font cellFont = FontFactory.getFont(FontFactory.HELVETICA, 10);
       cellFont.setColor(0, 0, 0);
 
-
-
       // Get the first day of the month as a LocalDate
-
 
       // Ajouter les lignes de dépense
       PdfPTable table = new PdfPTable(3); // 4 colonnes
