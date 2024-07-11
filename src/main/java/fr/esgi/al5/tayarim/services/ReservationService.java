@@ -338,7 +338,6 @@ public class ReservationService {
         Long.toString(
             reservation.getDateDepart().toEpochDay() - reservation.getDateArrivee().toEpochDay()),
         reservation.getNbPersonnes().toString()
-
     );
 
     return ReservationMapper.entityToDto(reservation);
@@ -566,18 +565,18 @@ public class ReservationService {
   }
 
   /**
-   * Trouve la réservation d'un client
+   * Trouve la réservation d'un client.
    */
-  public ReservationDto find(@NonNull ReservationFindDto reservationFindDto){
+  public ReservationDto find(@NonNull ReservationFindDto reservationFindDto) {
 
     Optional<Reservation> optionalReservation = reservationRepository
-      .findClientReservation(
-        reservationFindDto.getCode(), 
-        reservationFindDto.getIdentifier(),
-        LocalDate.parse(reservationFindDto.getDateArrivee())
-      );
+        .findClientReservation(
+            reservationFindDto.getCode(),
+            reservationFindDto.getIdentifier(),
+            LocalDate.parse(reservationFindDto.getDateArrivee())
+        );
 
-    if (optionalReservation.isEmpty()){
+    if (optionalReservation.isEmpty()) {
       throw new ReservationNotFoundException();
     }
 
@@ -585,4 +584,23 @@ public class ReservationService {
 
   }
 
+  /**
+   * Envoie un message.
+   */
+  public void message(@NonNull Long idCommande, @NonNull String message) {
+
+    Optional<Reservation> optionalReservation = reservationRepository.findById(idCommande);
+
+    if (optionalReservation.isEmpty()) {
+      throw new ReservationNotFoundException();
+    }
+
+    Reservation reservation = optionalReservation.get();
+
+    administrateurRepository.findAll().forEach(
+        administrateur -> emailService.sendClientMessageEmail(message, administrateur.getEmail(),
+            reservation.getEmail(), reservation.getIdCommande(), reservation.getNom(),
+            reservation.getPrenom()));
+
+  }
 }

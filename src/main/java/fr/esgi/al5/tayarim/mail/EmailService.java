@@ -84,7 +84,6 @@ public class EmailService {
   public void sendFactureEmail(String email, String nom, String prenom, String numeroFacture,
       Float montantFacture, String url, Blob blob) {
 
-
     OkHttpClient client = new OkHttpClient().newBuilder()
         .build();
     MediaType mediaType = MediaType.parse("application/json");
@@ -323,6 +322,45 @@ public class EmailService {
         + "\"nom\":\"" + nom + "\","
         + "\"prenom\":\"" + prenom + "\","
         + "\"lienReinitialisation\":\"" + lienReinitialisation + "\""
+        + "}"
+        + "}");
+    Request request = new Request.Builder()
+        .url("https://send.api.mailtrap.io/api/send")
+        .method("POST", body)
+        .addHeader("Authorization", "Bearer " + env.getProperty("MAILTRAP_API_KEY"))
+        .addHeader("Content-Type", "application/json")
+        .build();
+    try {
+      Response response = client.newCall(request).execute();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  /**
+   * Envoi le message du client.
+   */
+  public void sendClientMessageEmail(String message, String email, String emailClient,
+      String numeroResa, String nom,
+      String prenom) {
+    OkHttpClient client = new OkHttpClient().newBuilder()
+        .build();
+    MediaType mediaType = MediaType.parse("application/json");
+    RequestBody body = RequestBody.create(mediaType, "{"
+        + "\"from\":{"
+        + "\"email\":\"mailtrap@tayarim.com\","
+        + "\"name\":\"Mailtrap Test\""
+        + "},"
+        + "\"to\":[{"
+        + "\"email\":\"" + email + "\""
+        + "}],"
+        + "\"template_uuid\":\"667cbf99-8f38-451f-94d6-e86cb51dfaa8\","
+        + "\"template_variables\":{"
+        + "\"numeroResa\":\"" + numeroResa + "\","
+        + "\"nom\":\"" + nom + "\","
+        + "\"prenom\":\"" + prenom + "\","
+        + "\"email\":\"" + emailClient + "\","
+        + "\"message\":\"" + message + "\""
         + "}"
         + "}");
     Request request = new Request.Builder()

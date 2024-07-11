@@ -39,11 +39,12 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
       Collection<String> statut, LocalDate start, LocalDate end);
 
   @Query("SELECT r "
-    + "FROM RESERVATION r "
-    + "WHERE r.idCommande = :idCommande "
-    + "AND (r.email = :identifier OR r.numTel = :identifier) "
-    + "AND r.dateArrivee = :dateArrivee")
+      + "FROM RESERVATION r "
+      + "WHERE r.idCommande = :idCommande "
+      + "AND (r.email = :identifier OR r.numTel = :identifier) "
+      + "AND r.dateArrivee = :dateArrivee")
   Optional<Reservation> findClientReservation(
-    @Param("idCommande") String idCommande, @Param("identifier") String identifier, 
-    @Param("dateArrivee") LocalDate dateArrivee);
+      @Param("idCommande") String idCommande, @Param("identifier") String identifier,
+      @Param("dateArrivee") LocalDate dateArrivee
+  );
 }

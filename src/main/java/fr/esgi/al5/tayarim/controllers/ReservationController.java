@@ -5,15 +5,14 @@ import fr.esgi.al5.tayarim.controllers.interfaces.ControllerUtils;
 import fr.esgi.al5.tayarim.controllers.interfaces.GetAllMethodInterface;
 import fr.esgi.al5.tayarim.controllers.interfaces.GetByIdMethodInterface;
 import fr.esgi.al5.tayarim.controllers.interfaces.UpdateMethodInterface;
-import fr.esgi.al5.tayarim.dto.paiement.PaiementCancelDto;
 import fr.esgi.al5.tayarim.dto.reservation.ReservationCreationDto;
 import fr.esgi.al5.tayarim.dto.reservation.ReservationDto;
 import fr.esgi.al5.tayarim.dto.reservation.ReservationFindDto;
+import fr.esgi.al5.tayarim.dto.reservation.ReservationMessageDto;
 import fr.esgi.al5.tayarim.dto.reservation.ReservationUpdateDto;
 import fr.esgi.al5.tayarim.dto.reservation.ReservationUpdatePaymentIntentDto;
 import fr.esgi.al5.tayarim.services.AuthService;
 import fr.esgi.al5.tayarim.services.ReservationService;
-import fr.esgi.al5.tayarim.socket.MyWebSocketHandler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
@@ -138,9 +137,22 @@ public class ReservationController implements
    * Trouve la reservation du client.
    */
   @PostMapping("/find")
-  public ResponseEntity<ReservationDto> find(@RequestBody @Valid ReservationFindDto reservationFindDto) {
+  public ResponseEntity<ReservationDto> find(
+      @RequestBody @Valid ReservationFindDto reservationFindDto) {
     return new ResponseEntity<>(
         reservationService.find(reservationFindDto),
+        HttpStatus.OK
+    );
+  }
+
+  /**
+   * Envoie un message.
+   */
+  @PostMapping("/message/{id}")
+  public ResponseEntity message(@PathVariable Long id,
+      @RequestBody @Valid ReservationMessageDto reservationMessageDto) {
+    reservationService.message(id, reservationMessageDto.getMessage());
+    return new ResponseEntity<>(
         HttpStatus.OK
     );
   }

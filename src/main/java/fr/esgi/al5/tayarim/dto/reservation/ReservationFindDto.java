@@ -27,10 +27,10 @@ public class ReservationFindDto {
   private String code;
 
   @NotBlank(message = "error_reservation_invalid_identifier")
-  @Pattern(
-    regexp = 
-    "([\\w-.]+@([\\w-]+\\.)+[\\w-]{2,4})|(^[+]?[(]?\\d{3}[)]?[-\\s.]?\\d{3}[-\\s.]?\\d{4,6}$)", 
-    message = "error_reservation_invalid_identifier")
+  @Pattern(regexp = "([\\w-.]+@([\\w-]+\\.)+[\\w-]{2,4})"
+      + "|(^[+]?[(]?\\d{3}[)]?[-\\s.]?\\d{3}[-\\s.]?\\d{4,6}$)",
+      message = "error_reservation_invalid_identifier"
+  )
   private String identifier;
 
   @NotBlank(message = "error_reservation_invalid_arrival")
