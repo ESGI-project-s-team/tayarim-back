@@ -25,11 +25,11 @@ public class AdministrateurCreationDto {
 
   @NotBlank(message = "error_admin_invalid_name")
   @Size(min = 1, max = 20, message = "error_admin_invalid_name")
-  @Pattern(regexp = "[a-zA-Z]*", message = "error_admin_invalid_name")
+  @Pattern(regexp = "[a-zA-Z -]*", message = "error_admin_invalid_name")
   private String nom;
 
   @NotBlank(message = "error_admin_invalid_firstName")
-  @Pattern(regexp = "[a-zA-Z]*", message = "error_admin_invalid_firstName")
+  @Pattern(regexp = "[a-zA-Z -]*", message = "error_admin_invalid_firstName")
   @Size(min = 1, max = 20, message = "error_admin_invalid_firstName")
   private String prenom;
 
