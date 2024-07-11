@@ -5,6 +5,7 @@ import com.stripe.exception.StripeException;
 import com.stripe.model.PaymentIntent;
 import fr.esgi.al5.tayarim.dto.reservation.ReservationCreationDto;
 import fr.esgi.al5.tayarim.dto.reservation.ReservationDto;
+import fr.esgi.al5.tayarim.dto.reservation.ReservationFindDto;
 import fr.esgi.al5.tayarim.dto.reservation.ReservationUpdateDto;
 import fr.esgi.al5.tayarim.entities.Administrateur;
 import fr.esgi.al5.tayarim.entities.Logement;
@@ -562,6 +563,26 @@ public class ReservationService {
     reservation.setStatut("payed");
 
     return ReservationMapper.entityToDto(reservationRepository.save(reservation));
+  }
+
+  /**
+   * Trouve la réservation d'un client
+   */
+  public ReservationDto find(@NonNull ReservationFindDto reservationFindDto){
+
+    Optional<Reservation> optionalReservation = reservationRepository
+      .findClientReservation(
+        reservationFindDto.getCode(), 
+        reservationFindDto.getIdentifier(),
+        LocalDate.parse(reservationFindDto.getDateArrivee())
+      );
+
+    if (optionalReservation.isEmpty()){
+      throw new ReservationNotFoundException();
+    }
+
+    return ReservationMapper.entityToDto(optionalReservation.get());
+
   }
 
 }

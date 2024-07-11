@@ -8,6 +8,7 @@ import fr.esgi.al5.tayarim.controllers.interfaces.UpdateMethodInterface;
 import fr.esgi.al5.tayarim.dto.paiement.PaiementCancelDto;
 import fr.esgi.al5.tayarim.dto.reservation.ReservationCreationDto;
 import fr.esgi.al5.tayarim.dto.reservation.ReservationDto;
+import fr.esgi.al5.tayarim.dto.reservation.ReservationFindDto;
 import fr.esgi.al5.tayarim.dto.reservation.ReservationUpdateDto;
 import fr.esgi.al5.tayarim.dto.reservation.ReservationUpdatePaymentIntentDto;
 import fr.esgi.al5.tayarim.services.AuthService;
@@ -129,6 +130,17 @@ public class ReservationController implements
     UserTokenInfo userTokenInfo = authService.verifyToken(getTokenFromHeader(authHeader), true);
     return new ResponseEntity<>(
         reservationService.cancel(id),
+        HttpStatus.OK
+    );
+  }
+
+  /**
+   * Trouve la reservation du client.
+   */
+  @PostMapping("/find")
+  public ResponseEntity<ReservationDto> find(@RequestBody @Valid ReservationFindDto reservationFindDto) {
+    return new ResponseEntity<>(
+        reservationService.find(reservationFindDto),
         HttpStatus.OK
     );
   }
