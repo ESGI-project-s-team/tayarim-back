@@ -48,6 +48,7 @@ public class ProprietaireServiceTest {
         .email("test@gmail.com")
         .numTel("0612345678")
         .adresse("13 FakeStreet City, 12345 Country")
+        .lang("fr")
         .build();
 
     Proprietaire proprietaire = Proprietaire.builder()
@@ -60,6 +61,7 @@ public class ProprietaireServiceTest {
         .isPasswordUpdated(Boolean.TRUE)
         .adresse("13 FakeStreet City, 12345 Country")
         .isValidated(Boolean.TRUE)
+        .langue("fr")
         .build();
     proprietaire.setLogements(null);
     proprietaire.setId(1L);
@@ -95,6 +97,7 @@ public class ProprietaireServiceTest {
         .isPasswordUpdated(Boolean.TRUE)
         .adresse("13 FakeStreet City, 12345 Country")
         .isValidated(Boolean.TRUE)
+        .langue("fr")
         .build();
     proprietaire.setLogements(null);
     proprietaire.setId(1L);
@@ -108,6 +111,7 @@ public class ProprietaireServiceTest {
         .isPasswordUpdated(Boolean.TRUE)
         .adresse("13 FakeStreet City, 12345 Country")
         .isValidated(Boolean.TRUE)
+        .langue("fr")
         .build();
     proprietaire2.setLogements(null);
     proprietaire2.setId(2L);
@@ -134,6 +138,7 @@ public class ProprietaireServiceTest {
         .isPasswordUpdated(Boolean.TRUE)
         .adresse("13 FakeStreet City, 12345 Country")
         .isValidated(Boolean.TRUE)
+        .langue("fr")
         .build();
     proprietaire.setLogements(null);
     proprietaire.setId(1L);
@@ -168,6 +173,7 @@ public class ProprietaireServiceTest {
         .isPasswordUpdated(Boolean.TRUE)
         .adresse("13 FakeStreet City, 12345 Country")
         .isValidated(Boolean.TRUE)
+        .langue("fr")
         .build();
     proprietaire.setLogements(null);
     proprietaire.setId(1L);
@@ -197,6 +203,7 @@ public class ProprietaireServiceTest {
         .prenom("Mathieu")
         .email("test@gmail.com")
         .numTel("0612345678")
+        .lang("fr")
         .build();
     Proprietaire proprietaire = Proprietaire.builder()
         .nom("Ferreira")
@@ -208,6 +215,7 @@ public class ProprietaireServiceTest {
         .isPasswordUpdated(Boolean.TRUE)
         .adresse("13 FakeStreet City, 12345 Country")
         .isValidated(Boolean.TRUE)
+        .langue("fr")
         .build();
     proprietaire.setLogements(null);
     proprietaire.setId(id);
@@ -252,6 +260,7 @@ public class ProprietaireServiceTest {
         .isPasswordUpdated(Boolean.TRUE)
         .adresse("13 FakeStreet City, 12345 Country")
         .isValidated(Boolean.TRUE)
+        .langue("fr")
         .build();
     proprietaire.setLogements(null);
     proprietaire.setId(id);
@@ -289,6 +298,7 @@ public class ProprietaireServiceTest {
         .isPasswordUpdated(Boolean.TRUE)
         .adresse("13 FakeStreet City, 12345 Country")
         .isValidated(Boolean.TRUE)
+        .langue("fr")
         .build();
     when(proprietaireRepository.findById(id)).thenReturn(Optional.ofNullable(proprietaire));
 
@@ -316,6 +326,7 @@ public class ProprietaireServiceTest {
         .isPasswordUpdated(Boolean.TRUE)
         .adresse("13 FakeStreet City, 12345 Country")
         .isValidated(Boolean.TRUE)
+        .langue("fr")
         .build();
     when(proprietaireRepository.findById(id)).thenReturn(Optional.ofNullable(proprietaire));
 

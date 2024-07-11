@@ -53,5 +53,8 @@ public class ProprietaireDto {
   @NonNull
   private Boolean isValidated;
 
+  @NonNull
+  private String lang;
+
   // No need for explicit getters, setters, or constructors
 }

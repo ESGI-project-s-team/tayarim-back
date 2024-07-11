@@ -48,5 +48,8 @@ public class ProprietaireUpdateDto {
   @DecimalMax(value = "99.99", message = "error_owner_invalid_commission")
   private Float commission;
 
+  @Pattern(regexp = "fr|en", message = "error_owner_invalid_lang")
+  @Size(min = 2, max = 2, message = "error_owner_invalid_lang")
+  private String lang;
   // No need for explicit getters, setters, or constructors
 }

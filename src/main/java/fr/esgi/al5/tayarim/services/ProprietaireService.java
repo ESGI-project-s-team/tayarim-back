@@ -173,6 +173,8 @@ public class ProprietaireService {
             || proprietaireUpdateDto.getMotDePasse().isBlank())
             && (proprietaireUpdateDto.getCommission() == null
             || proprietaireUpdateDto.getCommission().isNaN())
+            && (proprietaireUpdateDto.getLang() == null
+            || proprietaireUpdateDto.getLang().isBlank())
 
     ) {
       throw new ProprietaireInvalidUpdateBody();
@@ -223,6 +225,9 @@ public class ProprietaireService {
         (proprietaireUpdateDto.getAdresse() != null && !proprietaireUpdateDto.getAdresse()
             .isBlank())
             ? proprietaireUpdateDto.getAdresse() : proprietaire.getAdresse());
+    proprietaire.setLanguage(
+        (proprietaireUpdateDto.getLang() != null && !proprietaireUpdateDto.getLang().isBlank())
+            ? proprietaireUpdateDto.getLang() : proprietaire.getLanguage());
 
     return ProprietaireMapper.entityToDto(proprietaireRepository.save(proprietaire), false);
   }

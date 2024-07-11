@@ -83,6 +83,7 @@ public class ProprietaireControllerTest {
         .email("test@gmail.com")
         .numTel("0612345678")
         .adresse("13 FakeStreet City, 12345 Country")
+        .lang("fr")
         .build();
     proprietaire = Proprietaire.builder()
         .nom("Ferreira")
@@ -94,6 +95,7 @@ public class ProprietaireControllerTest {
         .isPasswordUpdated(Boolean.TRUE)
         .adresse("13 FakeStreet City, 12345 Country")
         .isValidated(Boolean.TRUE)
+        .langue("fr")
         .build();
     proprietaireDto = ProprietaireDto.builder()
         .id(1L)
@@ -107,6 +109,7 @@ public class ProprietaireControllerTest {
         .commission(20f)
         .adresse("13 FakeStreet City, 12345 Country")
         .isValidated(Boolean.TRUE)
+        .lang("fr")
         .build();
     proprietaireDto2 = ProprietaireDto.builder()
         .id(2L)
@@ -120,6 +123,7 @@ public class ProprietaireControllerTest {
         .commission(20f)
         .adresse("13 FakeStreet City, 12345 Country")
         .isValidated(Boolean.TRUE)
+        .lang("fr")
         .build();
     proprietaireDtos = List.of(proprietaireDto, proprietaireDto2);
     proprietaireDtoWithLogement = ProprietaireDto.builder()
@@ -161,6 +165,7 @@ public class ProprietaireControllerTest {
         .commission(20f)
         .adresse("13 FakeStreet City, 12345 Country")
         .isValidated(Boolean.TRUE)
+        .lang("fr")
         .build();
     proprietaireUpdateDto = ProprietaireUpdateDto.builder()
         .prenom("Karl")

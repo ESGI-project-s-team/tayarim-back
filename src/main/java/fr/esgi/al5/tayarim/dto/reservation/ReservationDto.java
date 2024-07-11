@@ -61,4 +61,7 @@ public class ReservationDto {
   private String dateReservation;
 
   private String paymentIntent;
+
+  @NonNull
+  private String lang;
 }

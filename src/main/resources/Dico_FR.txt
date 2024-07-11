@@ -86,3 +86,7 @@
 "error_invoice_nonexistent": "Cette facture n'existe pas",
 "error_candidate_invalid_body": "Donnée invalide ou manquante pour la création du candidat",
 "error_invoice_upload": "Une erreur est survenue lors de l'upload de la facture",
+"error_owner_invalid_lang": "La langue saisie est invalide",
+"error_reservation_invalid_code": "Le code de réservation est invalide",
+"error_reservation_invalid_identifier": "L'identifiant de réservation est invalide",
+"error_reservation_invalid_message": "Le message est invalide",

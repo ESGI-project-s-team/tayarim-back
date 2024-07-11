@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NonNull;
 
 /**
  * DTO pour la mise à jour des informations d'un administrateur. Utilisé pour passer les données
@@ -36,6 +37,10 @@ public class AdministrateurUpdateDto {
   @Pattern(regexp = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?\\d)(?=.*?[!@#$%&*()_+\\-=\\[\\]?]).{8,}$",
       message = "error_admin_invalid_password")
   private String motDePasse;
+
+  @Pattern(regexp = "fr|en", message = "error_admin_invalid_lang")
+  @Size(min = 2, max = 2, message = "error_admin_invalid_lang")
+  private String lang;
 
   // No need for explicit getters, setters, or constructors
 }

@@ -127,6 +127,7 @@ public class AdministrateurService {
             && administrateurUpdateDto.getEmail() == null
             && administrateurUpdateDto.getNumTel() == null
             && administrateurUpdateDto.getMotDePasse() == null
+            && administrateurUpdateDto.getLang() == null
     ) {
       throw new AdministrateurInvalidUpdateBody();
     }
@@ -162,6 +163,9 @@ public class AdministrateurService {
             : administrateur.getNumTel());
     administrateur.setMotDePasse(administrateurUpdateDto.getMotDePasse() != null ? hashPassword(
         administrateurUpdateDto.getMotDePasse()) : administrateur.getMotDePasse());
+    administrateur.setLanguage(
+        administrateurUpdateDto.getLang() != null ? administrateurUpdateDto.getLang()
+            : administrateur.getLanguage());
 
     return AdministrateurMapper.entityToDto(administrateurRepository.save(administrateur));
   }

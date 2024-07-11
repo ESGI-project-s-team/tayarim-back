@@ -46,5 +46,10 @@ public class ProprietaireCreationDto {
   @Size(min = 1, max = 300, message = "error_owner_invalid_address")
   private String adresse;
 
+  @NotBlank(message = "error_owner_invalid_lang")
+  @Size(min = 2, max = 2, message = "error_owner_invalid_lang")
+  @Pattern(regexp = "fr|en", message = "error_owner_invalid_lang")
+  private String lang;
+
   // No need for explicit getters, setters, or constructors
 }

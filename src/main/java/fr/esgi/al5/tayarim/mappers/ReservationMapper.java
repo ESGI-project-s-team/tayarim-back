@@ -61,7 +61,8 @@ public class ReservationMapper {
         dateDepart,
         logement,
         dateReservation,
-        paymentIntent
+        paymentIntent,
+        reservationCreationDto.getLang()
     );
   }
 
@@ -89,7 +90,8 @@ public class ReservationMapper {
         reservation.getLogement().getId(),
         reservation.getLogement().getTitre(),
         reservation.getDateReservation().toString(),
-        reservation.getPaymentIntent()
+        reservation.getPaymentIntent(),
+        reservation.getLanguage()
     );
   }
 
