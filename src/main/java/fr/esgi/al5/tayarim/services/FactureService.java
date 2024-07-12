@@ -25,11 +25,13 @@ import fr.esgi.al5.tayarim.entities.Logement;
 import fr.esgi.al5.tayarim.entities.Notification;
 import fr.esgi.al5.tayarim.entities.Proprietaire;
 import fr.esgi.al5.tayarim.entities.Reservation;
+import fr.esgi.al5.tayarim.exceptions.DepenseNotFoundError;
 import fr.esgi.al5.tayarim.exceptions.FactureBucketUploadError;
 import fr.esgi.al5.tayarim.exceptions.FactureDoesNotExistException;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.UnauthorizedException;
 import fr.esgi.al5.tayarim.mail.EmailService;
+import fr.esgi.al5.tayarim.mappers.DepenseMapper;
 import fr.esgi.al5.tayarim.mappers.FactureMapper;
 import fr.esgi.al5.tayarim.repositories.DepenseRepository;
 import fr.esgi.al5.tayarim.repositories.FactureRepository;
@@ -75,9 +77,6 @@ public class FactureService {
 
   private final EmailService emailService;
 
-  private final ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-
-
   /**
    * Constructeur pour le service de Facture.
    *
@@ -103,8 +102,6 @@ public class FactureService {
     this.myWebSocketHandler = myWebSocketHandler;
     this.notificationRepository = notificationRepository;
     this.emailService = emailService;
-    this.messageSource.setBasename("messages");
-    this.messageSource.setDefaultEncoding("UTF-8");
   }
 
   /**
@@ -283,6 +280,9 @@ public class FactureService {
   private Facture generateFacture(FactureCreationDto factureCreationDto, List<Logement> logements,
       Proprietaire proprietaire) throws IOException {
 
+    ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+    messageSource.setBasename("messages");
+    messageSource.setDefaultEncoding("UTF-8");
     Locale locale = (proprietaire.getLanguage().equals("en") ? Locale.ENGLISH : Locale.FRANCE);
     String factureCompany = messageSource.getMessage("facture_company", null, locale);
     String factureName = messageSource.getMessage("facture_name", null, locale);
@@ -303,17 +303,18 @@ public class FactureService {
 
     if (numeroFacture.length() < 6) {
       numeroFacture = String.format("%06d", Integer.parseInt(numeroFacture));
+      System.out.println(numeroFacture);
     }
     String filePath = numeroFacture + ".pdf";
 
     Document document = new Document();
-    Facture facture;
-    float finalAmount = 0f;
+    Facture facture = null;
+    Float finalAmount = 0f;
     try {
       PdfWriter.getInstance(document, new FileOutputStream(filePath));
       document.open();
 
-      // Ajouter l'image depuis le dossier resources
+      // Ajouter l'image de puis le dossier resources
       String logoPath = "backUtils/white-logo-short-removebg.png";
       Blob blob = TayarimApplication.bucket.get(logoPath);
       Image img = Image.getInstance(blob.getContent());
@@ -405,8 +406,12 @@ public class FactureService {
 
       Font headerFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD);
 
-      PdfPCell descHeaderCell = new PdfPCell(new Phrase(factureProduct, headerFont));
-      getDefaultDescCell(descHeaderCell);
+      PdfPCell descHeaderCell = new PdfPCell(
+          new Phrase(factureProduct, headerFont));
+      descHeaderCell.setBackgroundColor(new BaseColor(173, 216, 230));
+      descHeaderCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+      descHeaderCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+      descHeaderCell.setPaddingBottom(5);
 
       PdfPCell creditDebitHeaderCell = new PdfPCell(new Phrase(factureCreditDebit, headerFont));
       creditDebitHeaderCell.setBackgroundColor(new BaseColor(173, 216, 230));
@@ -497,9 +502,7 @@ public class FactureService {
       String fileName = "Factures/facture_" + numeroFacture + ".pdf";
       TayarimApplication.bucket.create(fileName, Files.readAllBytes(file.toPath()));
       String url = "https://storage.googleapis.com/tayarim-tf-storage/" + fileName;
-      if (!file.delete()) {
-        System.out.println("Failed to delete the file");
-      }
+      file.delete();
       LocalDate monthYear = LocalDate.of(Math.toIntExact(factureCreationDto.getYear()),
           Math.toIntExact(factureCreationDto.getMonth()), 1);
       facture = factureRepository.save(
@@ -519,6 +522,9 @@ public class FactureService {
     cellFont.setColor(0, 0, 0);
     cellFont.setStyle(Font.BOLD);
 
+    ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+    messageSource.setBasename("messages");
+    messageSource.setDefaultEncoding("UTF-8");
     Locale locale = (lang.equals("en") ? Locale.ENGLISH : Locale.FRANCE);
     String factureHouse = messageSource.getMessage("facture_house", null, locale);
 
@@ -546,16 +552,25 @@ public class FactureService {
 
     emptyCell2.setBorder(Rectangle.NO_BORDER);
     emptyCell2.enableBorderSide(Rectangle.TOP);
-    setCellInTable(table, secondaryColor, descCell, emptyCell, emptyCell2);
+    emptyCell2.enableBorderSide(Rectangle.LEFT);
+    emptyCell2.enableBorderSide(Rectangle.RIGHT);
 
-  }
-
-  private void setBackgroundColor(Boolean secondaryColor, PdfPCell cell) {
     if (secondaryColor) {
-      cell.setBackgroundColor(new BaseColor(220, 220, 220));
+      BaseColor lightGrey = new BaseColor(220, 220, 220);
+      descCell.setBackgroundColor(lightGrey);
+      emptyCell.setBackgroundColor(lightGrey);
+      emptyCell2.setBackgroundColor(lightGrey);
     } else {
-      cell.setBackgroundColor(new BaseColor(255, 255, 255));
+      BaseColor white = new BaseColor(255, 255, 255);
+      descCell.setBackgroundColor(white);
+      emptyCell.setBackgroundColor(white);
+      emptyCell2.setBackgroundColor(white);
     }
+
+    table.addCell(descCell);
+    table.addCell(emptyCell);
+    table.addCell(emptyCell2);
+
   }
 
   private void generateReservationCell(PdfPTable table, Reservation reservation,
@@ -564,6 +579,9 @@ public class FactureService {
     Font cellFont = FontFactory.getFont(FontFactory.HELVETICA, 10);
     cellFont.setColor(0, 0, 0);
 
+    ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+    messageSource.setBasename("messages");
+    messageSource.setDefaultEncoding("UTF-8");
     Locale locale = (lang.equals("en") ? Locale.ENGLISH : Locale.FRANCE);
     String factureReservationFrom = messageSource.getMessage("facture_reservation_from", null,
         locale);
@@ -600,12 +618,6 @@ public class FactureService {
             cellFont
         )
     );
-    getDefaultCreditDebitCell(table, secondaryColor, descCell, creditDebitCell);
-
-  }
-
-  private void getDefaultCreditDebitCell(PdfPTable table, Boolean secondaryColor, PdfPCell descCell,
-      PdfPCell creditDebitCell) {
     creditDebitCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
     creditDebitCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
     creditDebitCell.setPaddingBottom(5);
@@ -617,19 +629,23 @@ public class FactureService {
     emptyCell.setBorder(Rectangle.NO_BORDER);
     emptyCell.enableBorderSide(Rectangle.LEFT);
     emptyCell.enableBorderSide(Rectangle.RIGHT);
-    setCellInTable(table, secondaryColor, descCell, creditDebitCell, emptyCell);
-  }
 
-  private void setCellInTable(PdfPTable table, Boolean secondaryColor, PdfPCell descCell,
-      PdfPCell creditDebitCell, PdfPCell emptyCell) {
-
-    setBackgroundColor(secondaryColor, descCell);
-    setBackgroundColor(secondaryColor, creditDebitCell);
-    setBackgroundColor(secondaryColor, emptyCell);
+    if (secondaryColor) {
+      BaseColor lightGrey = new BaseColor(220, 220, 220);
+      descCell.setBackgroundColor(lightGrey);
+      creditDebitCell.setBackgroundColor(lightGrey);
+      emptyCell.setBackgroundColor(lightGrey);
+    } else {
+      BaseColor white = new BaseColor(255, 255, 255);
+      descCell.setBackgroundColor(white);
+      creditDebitCell.setBackgroundColor(white);
+      emptyCell.setBackgroundColor(white);
+    }
 
     table.addCell(descCell);
     table.addCell(creditDebitCell);
     table.addCell(emptyCell);
+
   }
 
   private void generateCommissionCell(PdfPTable table, Reservation reservation,
@@ -638,6 +654,9 @@ public class FactureService {
     Font cellFont = FontFactory.getFont(FontFactory.HELVETICA, 10);
     cellFont.setColor(0, 0, 0);
 
+    ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+    messageSource.setBasename("messages");
+    messageSource.setDefaultEncoding("UTF-8");
     Locale locale = (lang.equals("en") ? Locale.ENGLISH : Locale.FRANCE);
     String factureCommission = messageSource.getMessage("facture_commission", null, locale);
 
@@ -662,7 +681,33 @@ public class FactureService {
             cellFont
         )
     );
-    getDefaultCreditDebitCell(table, secondaryColor, descCell, creditDebitCell);
+    creditDebitCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+    creditDebitCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+    creditDebitCell.setPaddingBottom(5);
+    creditDebitCell.setBorder(Rectangle.NO_BORDER);
+    creditDebitCell.enableBorderSide(Rectangle.LEFT);
+    creditDebitCell.enableBorderSide(Rectangle.RIGHT);
+
+    PdfPCell emptyCell = new PdfPCell(new Phrase(""));
+    emptyCell.setBorder(Rectangle.NO_BORDER);
+    emptyCell.enableBorderSide(Rectangle.LEFT);
+    emptyCell.enableBorderSide(Rectangle.RIGHT);
+
+    if (secondaryColor) {
+      BaseColor lightGrey = new BaseColor(220, 220, 220);
+      descCell.setBackgroundColor(lightGrey);
+      creditDebitCell.setBackgroundColor(lightGrey);
+      emptyCell.setBackgroundColor(lightGrey);
+    } else {
+      BaseColor white = new BaseColor(255, 255, 255);
+      descCell.setBackgroundColor(white);
+      creditDebitCell.setBackgroundColor(white);
+      emptyCell.setBackgroundColor(white);
+    }
+
+    table.addCell(descCell);
+    table.addCell(creditDebitCell);
+    table.addCell(emptyCell);
 
   }
 
@@ -701,9 +746,17 @@ public class FactureService {
     emptyCell.enableBorderSide(Rectangle.RIGHT);
     emptyCell.enableBorderSide(Rectangle.LEFT);
 
-    setBackgroundColor(secondaryColor, descCell);
-    setBackgroundColor(secondaryColor, creditDebitCell);
-    setBackgroundColor(secondaryColor, emptyCell);
+    if (secondaryColor) {
+      BaseColor lightGrey = new BaseColor(220, 220, 220);
+      descCell.setBackgroundColor(lightGrey);
+      creditDebitCell.setBackgroundColor(lightGrey);
+      emptyCell.setBackgroundColor(lightGrey);
+    } else {
+      BaseColor white = new BaseColor(255, 255, 255);
+      descCell.setBackgroundColor(white);
+      creditDebitCell.setBackgroundColor(white);
+      emptyCell.setBackgroundColor(white);
+    }
 
     table.addCell(descCell);
     table.addCell(creditDebitCell);
@@ -716,15 +769,15 @@ public class FactureService {
     Font cellFont = FontFactory.getFont(FontFactory.HELVETICA, 10);
     cellFont.setColor(0, 0, 0);
 
-    PdfPCell defaultCell = new PdfPCell(new Phrase("", cellFont));
+    PdfPCell descCell = new PdfPCell(new Phrase("", cellFont));
 
-    defaultCell.setHorizontalAlignment(Element.ALIGN_CENTER);
-    defaultCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
-    defaultCell.setPaddingBottom(5);
-    defaultCell.setBorder(Rectangle.NO_BORDER);
-    defaultCell.enableBorderSide(Rectangle.LEFT);
-    defaultCell.enableBorderSide(Rectangle.RIGHT);
-    defaultCell.enableBorderSide(Rectangle.BOTTOM);
+    descCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+    descCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+    descCell.setPaddingBottom(5);
+    descCell.setBorder(Rectangle.NO_BORDER);
+    descCell.enableBorderSide(Rectangle.LEFT);
+    descCell.enableBorderSide(Rectangle.RIGHT);
+    descCell.enableBorderSide(Rectangle.BOTTOM);
 
     PdfPCell totalCell = new PdfPCell(
         new Phrase(String.format("%.2f", total) + " €", cellFont));
@@ -736,12 +789,29 @@ public class FactureService {
     totalCell.enableBorderSide(Rectangle.RIGHT);
     totalCell.enableBorderSide(Rectangle.BOTTOM);
 
-    setBackgroundColor(secondaryColor, defaultCell);
-    setBackgroundColor(secondaryColor, totalCell);
-    setBackgroundColor(secondaryColor, defaultCell);
+    PdfPCell emptyCell = new PdfPCell(new Phrase(""));
+    emptyCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+    emptyCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+    emptyCell.setPaddingBottom(5);
+    emptyCell.setBorder(Rectangle.NO_BORDER);
+    emptyCell.enableBorderSide(Rectangle.LEFT);
+    emptyCell.enableBorderSide(Rectangle.RIGHT);
+    emptyCell.enableBorderSide(Rectangle.BOTTOM);
 
-    table.addCell(defaultCell);
-    table.addCell(defaultCell);
+    if (secondaryColor) {
+      BaseColor lightGrey = new BaseColor(220, 220, 220);
+      descCell.setBackgroundColor(lightGrey);
+      totalCell.setBackgroundColor(lightGrey);
+      emptyCell.setBackgroundColor(lightGrey);
+    } else {
+      BaseColor white = new BaseColor(255, 255, 255);
+      descCell.setBackgroundColor(white);
+      totalCell.setBackgroundColor(white);
+      emptyCell.setBackgroundColor(white);
+    }
+
+    table.addCell(descCell);
+    table.addCell(emptyCell);
     table.addCell(totalCell);
 
   }
@@ -752,6 +822,9 @@ public class FactureService {
     Font cellFont = FontFactory.getFont(FontFactory.HELVETICA, 10);
     cellFont.setColor(0, 0, 0);
 
+    ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+    messageSource.setBasename("messages");
+    messageSource.setDefaultEncoding("UTF-8");
     Locale locale = (lang.equals("en") ? Locale.ENGLISH : Locale.FRANCE);
     String factureConcierge = messageSource.getMessage("facture_concierge", null, locale);
 
@@ -773,19 +846,51 @@ public class FactureService {
             cellFont
         )
     );
-    getDefaultCreditDebitCell(table, secondaryColor, descCell, creditDebitCell);
+    creditDebitCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+    creditDebitCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+    creditDebitCell.setPaddingBottom(5);
+    creditDebitCell.setBorder(Rectangle.NO_BORDER);
+    creditDebitCell.enableBorderSide(Rectangle.LEFT);
+    creditDebitCell.enableBorderSide(Rectangle.RIGHT);
+
+    PdfPCell emptyCell = new PdfPCell(new Phrase(""));
+    emptyCell.setBorder(Rectangle.NO_BORDER);
+    emptyCell.enableBorderSide(Rectangle.LEFT);
+    emptyCell.enableBorderSide(Rectangle.RIGHT);
+
+    if (secondaryColor) {
+      BaseColor lightGrey = new BaseColor(220, 220, 220);
+      descCell.setBackgroundColor(lightGrey);
+      creditDebitCell.setBackgroundColor(lightGrey);
+      emptyCell.setBackgroundColor(lightGrey);
+    } else {
+      BaseColor white = new BaseColor(255, 255, 255);
+      descCell.setBackgroundColor(white);
+      creditDebitCell.setBackgroundColor(white);
+      emptyCell.setBackgroundColor(white);
+    }
+
+    table.addCell(descCell);
+    table.addCell(creditDebitCell);
+    table.addCell(emptyCell);
 
   }
 
   private void generateFinalTotalCell(PdfPTable table, Float finalTotal, String lang) {
 
+    ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+    messageSource.setBasename("messages");
+    messageSource.setDefaultEncoding("UTF-8");
     Locale locale = (lang.equals("en") ? Locale.ENGLISH : Locale.FRANCE);
     String factureTotal = messageSource.getMessage("facture_total", null, locale);
 
     Font headerFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD);
 
     PdfPCell descCell = new PdfPCell(new Phrase(factureTotal, headerFont));
-    getDefaultDescCell(descCell);
+    descCell.setBackgroundColor(new BaseColor(173, 216, 230));
+    descCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+    descCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+    descCell.setPaddingBottom(5);
 
     PdfPCell totalCell = new PdfPCell(
         new Phrase(String.format("%.2f", finalTotal) + " €", headerFont));
@@ -799,13 +904,6 @@ public class FactureService {
     table.addCell(descCell);
     table.addCell(totalCell);
 
-  }
-
-  private void getDefaultDescCell(PdfPCell descCell) {
-    descCell.setBackgroundColor(new BaseColor(173, 216, 230));
-    descCell.setHorizontalAlignment(Element.ALIGN_CENTER);
-    descCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
-    descCell.setPaddingBottom(5);
   }
 
 }
