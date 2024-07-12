@@ -40,6 +40,7 @@ public class ProprietaireRepositoryTest {
         .isPasswordUpdated(Boolean.TRUE)
         .adresse("13 FakeStreet City, 12345 Country")
         .isValidated(Boolean.TRUE)
+        .langue("fr")
         .build();
 
     Proprietaire savedProprietaire = proprietaireRepository.save(proprietaire);
@@ -78,6 +79,7 @@ public class ProprietaireRepositoryTest {
         .isPasswordUpdated(Boolean.TRUE)
         .adresse("13 FakeStreet City, 12345 Country")
         .isValidated(Boolean.TRUE)
+        .langue("fr")
         .build();
     proprietaireRepository.save(proprietaire);
 
@@ -101,6 +103,7 @@ public class ProprietaireRepositoryTest {
         .isPasswordUpdated(Boolean.TRUE)
         .adresse("13 FakeStreet City, 12345 Country")
         .isValidated(Boolean.TRUE)
+        .langue("fr")
         .build();
     Proprietaire proprietaire2 = Proprietaire.builder()
         .nom("Ferreira")
@@ -112,6 +115,7 @@ public class ProprietaireRepositoryTest {
         .isPasswordUpdated(Boolean.TRUE)
         .adresse("13 FakeStreet City, 12345 Country")
         .isValidated(Boolean.TRUE)
+        .langue("fr")
         .build();
     proprietaireRepository.save(proprietaire);
     proprietaireRepository.save(proprietaire2);
@@ -136,6 +140,7 @@ public class ProprietaireRepositoryTest {
         .isPasswordUpdated(Boolean.TRUE)
         .adresse("13 FakeStreet City, 12345 Country")
         .isValidated(Boolean.TRUE)
+        .langue("fr")
         .build();
     proprietaireRepository.save(proprietaire);
 
@@ -166,6 +171,7 @@ public class ProprietaireRepositoryTest {
         .isPasswordUpdated(Boolean.TRUE)
         .adresse("13 FakeStreet City, 12345 Country")
         .isValidated(Boolean.TRUE)
+        .langue("fr")
         .build();
     proprietaireRepository.save(proprietaire);
 
@@ -196,6 +202,7 @@ public class ProprietaireRepositoryTest {
         .isPasswordUpdated(Boolean.TRUE)
         .adresse("13 FakeStreet City, 12345 Country")
         .isValidated(Boolean.TRUE)
+        .langue("fr")
         .build();
     proprietaireRepository.save(proprietaire);
 

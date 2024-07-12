@@ -1,10 +1,8 @@
 package fr.esgi.al5.tayarim.dto.proprietaire;
 
-import jakarta.validation.GroupSequence;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -48,5 +46,8 @@ public class ProprietaireUpdateDto {
   @DecimalMax(value = "99.99", message = "error_owner_invalid_commission")
   private Float commission;
 
+  @Pattern(regexp = "fr|en", message = "error_owner_invalid_lang")
+  @Size(min = 2, max = 2, message = "error_owner_invalid_lang")
+  private String lang;
   // No need for explicit getters, setters, or constructors
 }

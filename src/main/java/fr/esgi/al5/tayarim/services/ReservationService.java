@@ -5,6 +5,7 @@ import com.stripe.exception.StripeException;
 import com.stripe.model.PaymentIntent;
 import fr.esgi.al5.tayarim.dto.reservation.ReservationCreationDto;
 import fr.esgi.al5.tayarim.dto.reservation.ReservationDto;
+import fr.esgi.al5.tayarim.dto.reservation.ReservationFindDto;
 import fr.esgi.al5.tayarim.dto.reservation.ReservationUpdateDto;
 import fr.esgi.al5.tayarim.entities.Administrateur;
 import fr.esgi.al5.tayarim.entities.Logement;
@@ -176,8 +177,8 @@ public class ReservationService {
         reservation.getDateArrivee().toString(),
         Long.toString(
             reservation.getDateDepart().toEpochDay() - reservation.getDateArrivee().toEpochDay()),
-        reservation.getNbPersonnes().toString()
-
+        reservation.getNbPersonnes().toString(),
+        reservation.getLanguage()
     );
 
     return ReservationMapper.entityToDto(
@@ -336,8 +337,8 @@ public class ReservationService {
         reservation.getDateArrivee().toString(),
         Long.toString(
             reservation.getDateDepart().toEpochDay() - reservation.getDateArrivee().toEpochDay()),
-        reservation.getNbPersonnes().toString()
-
+        reservation.getNbPersonnes().toString(),
+        reservation.getLanguage()
     );
 
     return ReservationMapper.entityToDto(reservation);
@@ -464,7 +465,8 @@ public class ReservationService {
         reservation.getDateArrivee().toString(),
         Long.toString(
             reservation.getDateDepart().toEpochDay() - reservation.getDateArrivee().toEpochDay()),
-        reservation.getNbPersonnes().toString()
+        reservation.getNbPersonnes().toString(),
+        reservation.getLanguage()
 
     );
 
@@ -564,4 +566,43 @@ public class ReservationService {
     return ReservationMapper.entityToDto(reservationRepository.save(reservation));
   }
 
+  /**
+   * Trouve la réservation d'un client.
+   */
+  public ReservationDto find(@NonNull ReservationFindDto reservationFindDto) {
+
+    Optional<Reservation> optionalReservation = reservationRepository
+        .findClientReservation(
+            reservationFindDto.getCode(),
+            reservationFindDto.getIdentifier(),
+            LocalDate.parse(reservationFindDto.getDateArrivee())
+        );
+
+    if (optionalReservation.isEmpty()) {
+      throw new ReservationNotFoundException();
+    }
+
+    return ReservationMapper.entityToDto(optionalReservation.get());
+
+  }
+
+  /**
+   * Envoie un message.
+   */
+  public void message(@NonNull Long idCommande, @NonNull String message) {
+
+    Optional<Reservation> optionalReservation = reservationRepository.findById(idCommande);
+
+    if (optionalReservation.isEmpty()) {
+      throw new ReservationNotFoundException();
+    }
+
+    Reservation reservation = optionalReservation.get();
+
+    administrateurRepository.findAll().forEach(
+        administrateur -> emailService.sendClientMessageEmail(message, administrateur.getEmail(),
+            reservation.getEmail(), reservation.getIdCommande(), reservation.getNom(),
+            reservation.getPrenom(), administrateur.getLanguage()));
+
+  }
 }

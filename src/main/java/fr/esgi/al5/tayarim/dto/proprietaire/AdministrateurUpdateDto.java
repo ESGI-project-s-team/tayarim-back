@@ -37,5 +37,9 @@ public class AdministrateurUpdateDto {
       message = "error_admin_invalid_password")
   private String motDePasse;
 
+  @Pattern(regexp = "fr|en", message = "error_admin_invalid_lang")
+  @Size(min = 2, max = 2, message = "error_admin_invalid_lang")
+  private String lang;
+
   // No need for explicit getters, setters, or constructors
 }

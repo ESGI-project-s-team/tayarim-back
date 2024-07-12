@@ -49,6 +49,7 @@ public class AdministrateurMapper {
         .prenom(administrateur.getPrenom())
         .email(administrateur.getEmail())
         .numTel(administrateur.getNumTel())
+        .lang(administrateur.getLanguage())
         .build();
   }
 

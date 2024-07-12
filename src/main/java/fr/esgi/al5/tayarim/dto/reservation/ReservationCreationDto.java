@@ -33,11 +33,11 @@ public class ReservationCreationDto {
 
   @NotBlank(message = "error_reservation_invalid_name")
   @Size(min = 1, max = 20, message = "error_reservation_invalid_name")
-  @Pattern(regexp = "[a-zA-Z]*", message = "error_reservation_invalid_name")
+  @Pattern(regexp = "[a-zA-Z -]*", message = "error_reservation_invalid_name")
   private String nom;
 
   @NotBlank(message = "error_reservation_invalid_firstName")
-  @Pattern(regexp = "[a-zA-Z]*", message = "error_reservation_invalid_firstName")
+  @Pattern(regexp = "[a-zA-Z -]*", message = "error_reservation_invalid_firstName")
   @Size(min = 1, max = 20, message = "error_reservation_invalid_firstName")
   private String prenom;
 
@@ -64,5 +64,10 @@ public class ReservationCreationDto {
 
   @Size(min = 1, message = "error_reservation_invalid_payment_intent")
   private String paymentIntent;
+
+  @NotBlank(message = "error_reservation_invalid_lang")
+  @Size(min = 2, max = 2, message = "error_reservation_invalid_lang")
+  @Pattern(regexp = "fr|en", message = "error_reservation_invalid_lang")
+  private String lang;
 
 }

@@ -32,13 +32,4 @@ public class TokenCacheService {
     return cache.get(key);
   }
 
-  /**
-   * Retourne la totalité du cache sous forme d'une carte.
-   *
-   * @return La carte contenant tous les couples identifiant-token.
-   */
-  public Map<Long, String> getFullCache() {
-    return cache;
-  }
-
 }

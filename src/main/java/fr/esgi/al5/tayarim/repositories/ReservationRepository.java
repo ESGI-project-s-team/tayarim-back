@@ -1,9 +1,6 @@
 package fr.esgi.al5.tayarim.repositories;
 
-import fr.esgi.al5.tayarim.entities.Logement;
-import fr.esgi.al5.tayarim.entities.Proprietaire;
 import fr.esgi.al5.tayarim.entities.Reservation;
-import fr.esgi.al5.tayarim.entities.TypeLogement;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
@@ -37,4 +34,14 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
   List<Reservation> findAllByLogementIdAndStatutInAndDateDepartBetween(Long idLogement,
       Collection<String> statut, LocalDate start, LocalDate end);
+
+  @Query("SELECT r "
+      + "FROM RESERVATION r "
+      + "WHERE r.idCommande = :idCommande "
+      + "AND (r.email = :identifier OR r.numTel = :identifier) "
+      + "AND r.dateArrivee = :dateArrivee")
+  Optional<Reservation> findClientReservation(
+      @Param("idCommande") String idCommande, @Param("identifier") String identifier,
+      @Param("dateArrivee") LocalDate dateArrivee
+  );
 }

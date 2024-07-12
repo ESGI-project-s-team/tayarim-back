@@ -45,12 +45,11 @@ public class AuthController implements ControllerUtils {
    */
   @PostMapping("/login")
   public ResponseEntity<AuthLoginResponseDto> login(@Valid @RequestBody AuthLoginDto authLoginDto) {
-    ResponseEntity<AuthLoginResponseDto> response = new ResponseEntity<>(
+
+    return new ResponseEntity<>(
         authService.login(authLoginDto.getEmail(), authLoginDto.getMotDePasse()),
         HttpStatus.OK
     );
-
-    return response;
   }
 
   /**
@@ -75,7 +74,7 @@ public class AuthController implements ControllerUtils {
   /**
    * Actualise le token de l'utilisateur à partir de son token JWT et du refresh token.
    *
-   * @param authRefreshDto Corps de la requêtes contenant le refresh token.
+   * @param authRefreshDto Corps de la requête contenant le refresh token.
    * @return Un ResponseEntity contenant le DTO de réponse de refresh et le statut HTTP.
    */
   @PostMapping("/refresh")

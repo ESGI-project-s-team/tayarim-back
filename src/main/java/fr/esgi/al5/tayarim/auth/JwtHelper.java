@@ -82,15 +82,11 @@ public class JwtHelper {
       throw new TokenExpireOrInvalidException();
     }
 
-    long id = -1L;
+    long id;
 
     try {
       id = Long.parseLong(extractSubject(token).split(";")[0]);
     } catch (Exception e) {
-      throw new TokenExpireOrInvalidException();
-    }
-
-    if (id == -1L) {
       throw new TokenExpireOrInvalidException();
     }
 

@@ -1,9 +1,7 @@
 package fr.esgi.al5.tayarim.mappers;
 
-import fr.esgi.al5.tayarim.dto.logement.TypeLogementDto;
 import fr.esgi.al5.tayarim.dto.notification.NotificationDto;
 import fr.esgi.al5.tayarim.entities.Notification;
-import fr.esgi.al5.tayarim.entities.TypeLogement;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.NonNull;

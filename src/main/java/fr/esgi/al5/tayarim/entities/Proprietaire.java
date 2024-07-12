@@ -70,9 +70,10 @@ public class Proprietaire extends Utilisateur {
       @NonNull String numTel, @NonNull String motDePasse, @NonNull LocalDateTime dateInscription,
       @NonNull String adresse,
       @NonNull Boolean isPasswordUpdated,
-      @NonNull Boolean isValidated) {
+      @NonNull Boolean isValidated,
+      @NonNull String langue) {
     // Utiliser super() pour appeler le constructeur de la classe parente
-    super(nom, prenom, email, numTel, motDePasse);
+    super(nom, prenom, email, numTel, motDePasse, langue);
 
     // Initialisation des champs propres à Proprietaire
     this.dateInscription = dateInscription;

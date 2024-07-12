@@ -37,6 +37,7 @@ public class ProprietaireMapper {
         .adresse(proprietaireCreationDto.getAdresse())
         .isPasswordUpdated(false)
         .isValidated(true)
+        .langue(proprietaireCreationDto.getLang())
         .build();
   }
 
@@ -54,7 +55,8 @@ public class ProprietaireMapper {
         LocalDateTime.now(),
         proprietaireCandidateDto.getAdresse(),
         false,
-        false
+        false,
+        proprietaireCandidateDto.getLang()
     );
   }
 
@@ -82,6 +84,7 @@ public class ProprietaireMapper {
         .commission(proprietaire.getCommission())
         .adresse(proprietaire.getAdresse())
         .isValidated(proprietaire.getIsValidated())
+        .lang(proprietaire.getLanguage())
         .build();
   }
 

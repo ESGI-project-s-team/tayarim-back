@@ -26,7 +26,7 @@ public class Administrateur extends Utilisateur {
   public Administrateur(@NonNull String nom, @NonNull String prenom, @NonNull String email,
       @NonNull String numTel, @NonNull String motDePasse) {
     // Utiliser super() pour appeler le constructeur de la classe parente
-    super(nom, prenom, email, numTel, motDePasse);
+    super(nom, prenom, email, numTel, motDePasse, "fr");
   }
 
 

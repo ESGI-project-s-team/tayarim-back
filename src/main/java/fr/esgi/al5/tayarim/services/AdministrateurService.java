@@ -9,7 +9,6 @@ import fr.esgi.al5.tayarim.exceptions.AdministrateurInvalidUpdateBody;
 import fr.esgi.al5.tayarim.exceptions.AdministrateurNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.AdministrateurNumTelAlreadyExistException;
 import fr.esgi.al5.tayarim.exceptions.PasswordHashNotPossibleException;
-import fr.esgi.al5.tayarim.exceptions.ProprietaireInvalidUpdateBody;
 import fr.esgi.al5.tayarim.mappers.AdministrateurMapper;
 import fr.esgi.al5.tayarim.repositories.AdministrateurRepository;
 import java.util.List;
@@ -127,6 +126,7 @@ public class AdministrateurService {
             && administrateurUpdateDto.getEmail() == null
             && administrateurUpdateDto.getNumTel() == null
             && administrateurUpdateDto.getMotDePasse() == null
+            && administrateurUpdateDto.getLang() == null
     ) {
       throw new AdministrateurInvalidUpdateBody();
     }
@@ -162,6 +162,9 @@ public class AdministrateurService {
             : administrateur.getNumTel());
     administrateur.setMotDePasse(administrateurUpdateDto.getMotDePasse() != null ? hashPassword(
         administrateurUpdateDto.getMotDePasse()) : administrateur.getMotDePasse());
+    administrateur.setLanguage(
+        administrateurUpdateDto.getLang() != null ? administrateurUpdateDto.getLang()
+            : administrateur.getLanguage());
 
     return AdministrateurMapper.entityToDto(administrateurRepository.save(administrateur));
   }
