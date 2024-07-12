@@ -54,6 +54,8 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import lombok.NonNull;
+
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -280,6 +282,25 @@ public class FactureService {
   private Facture generateFacture(FactureCreationDto factureCreationDto, List<Logement> logements,
       Proprietaire proprietaire) throws IOException {
 
+    ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+        messageSource.setBasename("messages");
+        messageSource.setDefaultEncoding("UTF-8");
+        Locale locale = (proprietaire.getLanguage().equals("en") ? Locale.ENGLISH : Locale.FRANCE);
+        String factureCompany = messageSource.getMessage("facture_company", null, locale);
+        String factureName = messageSource.getMessage("facture_name", null, locale);
+        String factureFiscal = messageSource.getMessage("facture_fiscal", null, locale);
+        String facturePhone = messageSource.getMessage("facture_phone", null, locale);
+        String factureClient = messageSource.getMessage("facture_client", null, locale);
+        String factureFirstName = messageSource.getMessage("facture_firstName", null, locale);
+        String factureAddress = messageSource.getMessage("facture_address", null, locale);
+        String factureMail = messageSource.getMessage("facture_mail", null, locale);
+        String factureNumber = messageSource.getMessage("facture_number", null, locale);
+        String factureMonth = messageSource.getMessage("facture_month", null, locale);
+        String factureProduct = messageSource.getMessage("facture_products", null, locale);
+        String factureCreditDebit = messageSource.getMessage("facture_credit_debit", null, locale);
+        String factureTotal = messageSource.getMessage("facture_total", null, locale);
+
+
     Long idFacture = factureRepository.count() + 1;
     String numeroFacture = Long.toString(idFacture);
 
@@ -318,10 +339,10 @@ public class FactureService {
       cell1.setBorder(Rectangle.BOX);
       Paragraph sellerParagraph = new Paragraph();
       sellerParagraph.add(
-          new Paragraph("Société", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12)));
-      sellerParagraph.add(new Paragraph("Nom : Tayarim"));
-      sellerParagraph.add(new Paragraph("numéro fiscal : 342599453"));
-      sellerParagraph.add(new Paragraph("Téléphone : 053 708 50 65"));
+          new Paragraph(factureCompany, FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12)));
+      sellerParagraph.add(new Paragraph(factureName + " : Tayarim"));
+      sellerParagraph.add(new Paragraph(factureFiscal + " : 342599453"));
+      sellerParagraph.add(new Paragraph(facturePhone + " : 053 708 50 65"));
       cell1.addElement(sellerParagraph);
       tableTayarim.addCell(cell1);
 
@@ -348,19 +369,19 @@ public class FactureService {
       cell2.setPaddingBottom(10);
       Paragraph buyerParagraph = new Paragraph();
       buyerParagraph.add(
-          new Paragraph("Client", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12)));
-      buyerParagraph.add(new Paragraph("Nom : " + proprietaire.getNom()));
-      buyerParagraph.add(new Paragraph("Prénom : " + proprietaire.getPrenom()));
-      buyerParagraph.add(new Paragraph("Adresse : " + proprietaire.getAdresse()));
-      buyerParagraph.add(new Paragraph("Téléphone : " + proprietaire.getNumTel()));
-      buyerParagraph.add(new Paragraph("Email : " + proprietaire.getEmail()));
+          new Paragraph(factureClient, FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12)));
+      buyerParagraph.add(new Paragraph(factureName + " : " + proprietaire.getNom()));
+      buyerParagraph.add(new Paragraph(factureFirstName + " : " + proprietaire.getPrenom()));
+      buyerParagraph.add(new Paragraph(factureAddress + " : " + proprietaire.getAdresse()));
+      buyerParagraph.add(new Paragraph(facturePhone + " : " + proprietaire.getNumTel()));
+      buyerParagraph.add(new Paragraph(factureMail + " : " + proprietaire.getEmail()));
       cell2.addElement(buyerParagraph);
       tableClient.addCell(cell2);
 
       document.add(tableClient);
 
       Paragraph factureParagraph = new Paragraph(
-          "Facture N° " + numeroFacture + " pour le mois de " + Month.of(
+          factureNumber + " " + numeroFacture + " " + factureMonth + " " + Month.of(
                   Math.toIntExact(factureCreationDto.getMonth()))
               .getDisplayName(TextStyle.FULL_STANDALONE, Locale.FRENCH) + " "
               + factureCreationDto.getYear(),
@@ -389,19 +410,19 @@ public class FactureService {
       Font headerFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD);
 
       PdfPCell descHeaderCell = new PdfPCell(
-          new Phrase("Désignation des produits ou prestations", headerFont));
+          new Phrase(factureProduct, headerFont));
       descHeaderCell.setBackgroundColor(new BaseColor(173, 216, 230));
       descHeaderCell.setHorizontalAlignment(Element.ALIGN_CENTER);
       descHeaderCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
       descHeaderCell.setPaddingBottom(5);
 
-      PdfPCell creditDebitHeaderCell = new PdfPCell(new Phrase("Credit/Debit", headerFont));
+      PdfPCell creditDebitHeaderCell = new PdfPCell(new Phrase(factureCreditDebit, headerFont));
       creditDebitHeaderCell.setBackgroundColor(new BaseColor(173, 216, 230));
       creditDebitHeaderCell.setHorizontalAlignment(Element.ALIGN_CENTER);
       creditDebitHeaderCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
       creditDebitHeaderCell.setPaddingBottom(5);
 
-      PdfPCell totalHeaderCell = new PdfPCell(new Phrase("Total", headerFont));
+      PdfPCell totalHeaderCell = new PdfPCell(new Phrase(factureTotal, headerFont));
       totalHeaderCell.setBackgroundColor(new BaseColor(173, 216, 230));
       totalHeaderCell.setHorizontalAlignment(Element.ALIGN_CENTER);
       totalHeaderCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
@@ -426,21 +447,21 @@ public class FactureService {
             .findAllByLogementIdAndStatutInAndDateDepartBetween(
                 logement.getId(), List.of("done"), firstDayOfMonth, lastDayOfMonth);
 
-        generateLogementCell(table, logement, secondaryColor);
+        generateLogementCell(table, logement, secondaryColor, proprietaire.getLanguage());
         secondaryColor = !secondaryColor;
 
         if (logement.getIsLouable()) {
 
           for (Reservation reservation : reservations) {
-            generateReservationCell(table, reservation, secondaryColor);
+            generateReservationCell(table, reservation, secondaryColor, proprietaire.getLanguage());
             total += reservation.getMontant();
             secondaryColor = !secondaryColor;
-            generateCommissionCell(table, reservation, proprietaire, secondaryColor);
+            generateCommissionCell(table, reservation, proprietaire, secondaryColor, proprietaire.getLanguage());
             total -= (reservation.getMontant() * proprietaire.getCommission()) / 100;
             secondaryColor = !secondaryColor;
           }
         } else {
-          generateConciergerieCell(table, logement, secondaryColor);
+          generateConciergerieCell(table, logement, secondaryColor, proprietaire.getLanguage());
           total -= logement.getPrixParNuit();
           secondaryColor = !secondaryColor;
         }
@@ -467,7 +488,7 @@ public class FactureService {
       totalTable.setSpacingBefore(10f);
       totalTable.setSpacingAfter(10f);
 
-      generateFinalTotalCell(totalTable, finalAmount);
+      generateFinalTotalCell(totalTable, finalAmount, proprietaire.getLanguage());
 
       document.add(totalTable);
 
@@ -496,15 +517,21 @@ public class FactureService {
     return facture;
   }
 
-  private void generateLogementCell(PdfPTable table, Logement logement, Boolean secondaryColor) {
+  private void generateLogementCell(PdfPTable table, Logement logement, Boolean secondaryColor, String lang) {
     System.out.println("Logement : " + logement.getAdresse());
     Font cellFont = FontFactory.getFont(FontFactory.HELVETICA, 10);
     cellFont.setColor(0, 0, 0);
     cellFont.setStyle(Font.BOLD);
 
+    ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+        messageSource.setBasename("messages");
+        messageSource.setDefaultEncoding("UTF-8");
+        Locale locale = (lang.equals("en") ? Locale.ENGLISH : Locale.FRANCE);
+        String factureHouse = messageSource.getMessage("facture_house", null, locale);
+
     PdfPCell descCell = new PdfPCell(
         new Phrase(
-            "Logement : " + logement.getAdresse() + "\n",
+            factureHouse + " : " + logement.getAdresse() + "\n",
             cellFont
         )
     );
@@ -548,24 +575,34 @@ public class FactureService {
   }
 
   private void generateReservationCell(PdfPTable table, Reservation reservation,
-      Boolean secondaryColor) {
+      Boolean secondaryColor, String lang) {
 
     Font cellFont = FontFactory.getFont(FontFactory.HELVETICA, 10);
     cellFont.setColor(0, 0, 0);
 
+    ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+    messageSource.setBasename("messages");
+    messageSource.setDefaultEncoding("UTF-8");
+    Locale locale = (lang.equals("en") ? Locale.ENGLISH : Locale.FRANCE);
+    String factureReservationFrom = messageSource.getMessage("facture_reservation_from", null, locale);
+    String factureReservationTo = messageSource.getMessage("facture_reservation_to", null, locale);
+    String facturePersonFor = messageSource.getMessage("facture_person_for", null, locale);
+    String factureNight = messageSource.getMessage("facture_night", null, locale);
+
+
     PdfPCell descCell = new PdfPCell(
         new Phrase(
-            "        Réservation du "
+            "        " + factureReservationFrom +" "
                 + reservation.getDateArrivee().toString()
-                + " au "
+                + " " + factureReservationTo + " "
                 + reservation.getDateDepart().toString()
                 + "\n"
                 + "        "
                 + reservation.getNbPersonnes()
-                + " personnes pour "
+                + " " + facturePersonFor + " "
                 + (reservation.getDateDepart().toEpochDay() - reservation.getDateArrivee()
                 .toEpochDay())
-                + " nuits\n",
+                + " "+ factureNight + "\n",
             cellFont
         )
     );
@@ -613,14 +650,20 @@ public class FactureService {
   }
 
   private void generateCommissionCell(PdfPTable table, Reservation reservation,
-      Proprietaire proprietaire, Boolean secondaryColor) {
+      Proprietaire proprietaire, Boolean secondaryColor, String lang) {
 
     Font cellFont = FontFactory.getFont(FontFactory.HELVETICA, 10);
     cellFont.setColor(0, 0, 0);
 
+    ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+    messageSource.setBasename("messages");
+    messageSource.setDefaultEncoding("UTF-8");
+    Locale locale = (lang.equals("en") ? Locale.ENGLISH : Locale.FRANCE);
+    String factureCommission = messageSource.getMessage("facture_commission", null, locale);
+    
     PdfPCell descCell = new PdfPCell(
         new Phrase(
-            "        commission ("
+            "        "+ factureCommission +" ("
                 + String.format("%.2f", proprietaire.getCommission())
                 + "%)",
             cellFont
@@ -775,14 +818,21 @@ public class FactureService {
   }
 
   private void generateConciergerieCell(PdfPTable table, Logement logement,
-      Boolean secondaryColor) {
+      Boolean secondaryColor, String lang) {
 
     Font cellFont = FontFactory.getFont(FontFactory.HELVETICA, 10);
     cellFont.setColor(0, 0, 0);
 
+    ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+    messageSource.setBasename("messages");
+    messageSource.setDefaultEncoding("UTF-8");
+    Locale locale = (lang.equals("en") ? Locale.ENGLISH : Locale.FRANCE);
+    String factureConcierge = messageSource.getMessage("facture_concierge", null, locale);
+    
+
     PdfPCell descCell = new PdfPCell(
         new Phrase(
-            "        Conciergerie",
+            "        " + factureConcierge,
             cellFont
         )
     );
@@ -828,11 +878,17 @@ public class FactureService {
 
   }
 
-  private void generateFinalTotalCell(PdfPTable table, Float finalTotal) {
+  private void generateFinalTotalCell(PdfPTable table, Float finalTotal, String lang) {
 
+    ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+    messageSource.setBasename("messages");
+    messageSource.setDefaultEncoding("UTF-8");
+    Locale locale = (lang.equals("en") ? Locale.ENGLISH : Locale.FRANCE);
+    String factureTotal = messageSource.getMessage("facture_total", null, locale);
+    
     Font headerFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD);
 
-    PdfPCell descCell = new PdfPCell(new Phrase("Total", headerFont));
+    PdfPCell descCell = new PdfPCell(new Phrase(factureTotal, headerFont));
     descCell.setBackgroundColor(new BaseColor(173, 216, 230));
     descCell.setHorizontalAlignment(Element.ALIGN_CENTER);
     descCell.setVerticalAlignment(Element.ALIGN_MIDDLE);

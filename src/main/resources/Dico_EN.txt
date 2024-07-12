@@ -90,4 +90,4 @@
 "error_reservation_invalid_code": "The code entered is invalid",
 "error_reservation_invalid_identifier": "The identifier entered is invalid",
 "error_reservation_invalid_message": "The message entered is invalid",
-"test": "test",
+"error_reservation_notExist": "This reservation does not exist",

@@ -13,6 +13,8 @@ import com.google.cloud.storage.StorageOptions;
 import com.google.common.collect.Lists;
 
 import fr.esgi.al5.tayarim.mail.EmailService;
+import fr.esgi.al5.tayarim.repositories.FactureRepository;
+import fr.esgi.al5.tayarim.services.FactureService;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
@@ -62,70 +64,6 @@ public class TayarimApplication {
     Storage storage = StorageOptions.newBuilder().setCredentials(credentials).build().getService();
 
     TayarimApplication.bucket = storage.get("tayarim-tf-storage");
-
-    EmailService emailService = new EmailService(env);
-    emailService.sendAccountConfirmationEmail("Ferreira", "Mathieu",
-        "ferreira.mathieu.pro@gmail.com", "abcdefg", "fr");
-    emailService.sendAccountConfirmationEmail("Ferreira", "Karl",
-        "ferreira.mathieu.pro@gmail.com", "hijklm", "en");
-
-        Storage storageFacture = TayarimApplication.bucket.getStorage();
-
-        BlobInfo blobInfo = BlobInfo.newBuilder(TayarimApplication.bucket.getName(),
-            "Factures/facture_000001.pdf").build();
-    
-        Blob blob = storageFacture.get(blobInfo.getBlobId()).toBuilder().setContentType("application/pdf")
-            .build();
-
-    emailService.sendFactureEmail( "ferreira.mathieu.pro@gmail.com","Ferreira", "Mathieu",
-        "000001", 123f, blob, "fr");
-        emailService.sendFactureEmail( "ferreira.mathieu.pro@gmail.com","Ferreira", "Karl",
-        "000001", 123f, blob, "en");
-
-    emailService.sendCreationReservationEmail("ferreira.mathieu.pro@gmail.com", "Ferreira", 
-    "Mathieu", "RESA-123456", LocalDate.now().toString(), 
-    "123", "https://storage.googleapis.com/tayarim-tf-storage/House%20images/1_2", "10 Fake Street, FakeCity", 
-    LocalDate.now().toString(), "3", "2", 
-    "fr");
-    emailService.sendCreationReservationEmail("ferreira.mathieu.pro@gmail.com", "Ferreira", 
-    "Karl", "RESA-123456", LocalDate.now().toString(), 
-    "123", "https://storage.googleapis.com/tayarim-tf-storage/House%20images/1_2", "10 Fake Street, FakeCity", 
-    LocalDate.now().toString(), "3", "2", 
-    "en");
-
-    emailService.sendAnnulationReservationEmail("ferreira.mathieu.pro@gmail.com", "Ferreira", 
-    "Mathieu", "RESA-123456", LocalDate.now().toString(), 
-    "123", "https://storage.googleapis.com/tayarim-tf-storage/House%20images/1_2", "10 Fake Street, FakeCity", 
-    LocalDate.now().toString(), "3", "2", 
-    "fr");
-    emailService.sendAnnulationReservationEmail("ferreira.mathieu.pro@gmail.com", "Ferreira", 
-    "Karl", "RESA-123456", LocalDate.now().toString(), 
-    "123", "https://storage.googleapis.com/tayarim-tf-storage/House%20images/1_2", "10 Fake Street, FakeCity", 
-    LocalDate.now().toString(), "3", "2", 
-    "en");
-
-    emailService.sendModificationReservationEmail("ferreira.mathieu.pro@gmail.com", "Ferreira", 
-    "Mathieu", "RESA-123456", LocalDate.now().toString(), 
-    "123", "https://storage.googleapis.com/tayarim-tf-storage/House%20images/1_2", "10 Fake Street, FakeCity", 
-    LocalDate.now().toString(), "3", "2", 
-    "fr");
-    emailService.sendModificationReservationEmail("ferreira.mathieu.pro@gmail.com", "Ferreira", 
-    "Karl", "RESA-123456", LocalDate.now().toString(), 
-    "123", "https://storage.googleapis.com/tayarim-tf-storage/House%20images/1_2", "10 Fake Street, FakeCity", 
-    LocalDate.now().toString(), "3", "2", 
-    "en");
-
-    emailService.sendPasswordResetEmail("ferreira.mathieu.pro@gmail.com", "Ferreira", 
-    "Mathieu", "exemple.com", "fr");
-    emailService.sendPasswordResetEmail("ferreira.mathieu.pro@gmail.com", "Ferreira", 
-    "Karl", "exemple.com", "en");
-
-    emailService.sendClientMessageEmail("Ceci est un message de test", "ferreira.mathieu.pro@gmail.com",
-    "ferreira.mathieu.pro@gmail.com", "RESA-XXXXXX", "Ferreira", 
-    "Mathieu", "fr");
-    emailService.sendClientMessageEmail("Ceci est un message de test", "ferreira.mathieu.pro@gmail.com",
-    "ferreira.mathieu.pro@gmail.com", "RESA-XXXXXX", "Ferreira", 
-    "Mathieu", "en");
   }
 
 

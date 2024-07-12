@@ -90,3 +90,4 @@
 "error_reservation_invalid_code": "Le code de réservation est invalide",
 "error_reservation_invalid_identifier": "L'identifiant de réservation est invalide",
 "error_reservation_invalid_message": "Le message est invalide",
+"error_reservation_notExist": "Cette réservation n'existe pas",
