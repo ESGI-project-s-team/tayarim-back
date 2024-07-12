@@ -1,6 +1,5 @@
 package fr.esgi.al5.tayarim.dto.reservation;
 
-import java.time.LocalTime;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NonNull;

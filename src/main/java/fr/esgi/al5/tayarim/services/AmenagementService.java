@@ -2,12 +2,8 @@ package fr.esgi.al5.tayarim.services;
 
 
 import fr.esgi.al5.tayarim.dto.amenagement.AmenagementDto;
-import fr.esgi.al5.tayarim.dto.logement.LogementDto;
-import fr.esgi.al5.tayarim.dto.regleslogement.ReglesLogementDto;
 import fr.esgi.al5.tayarim.mappers.AmenagementMapper;
-import fr.esgi.al5.tayarim.mappers.ReglesLogementMapper;
 import fr.esgi.al5.tayarim.repositories.AmenagementRepository;
-import fr.esgi.al5.tayarim.repositories.ReglesLogementRepository;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

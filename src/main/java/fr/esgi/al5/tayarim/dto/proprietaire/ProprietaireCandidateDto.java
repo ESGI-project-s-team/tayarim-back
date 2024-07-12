@@ -1,18 +1,13 @@
 package fr.esgi.al5.tayarim.dto.proprietaire;
 
-import jakarta.mail.Multipart;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
  * DTO pour la candidature de nouveaux propriétaires dans le système. Contient des champs avec des

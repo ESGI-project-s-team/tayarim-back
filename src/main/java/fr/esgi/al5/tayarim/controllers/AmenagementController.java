@@ -2,11 +2,7 @@ package fr.esgi.al5.tayarim.controllers;
 
 import fr.esgi.al5.tayarim.controllers.interfaces.ControllerUtils;
 import fr.esgi.al5.tayarim.dto.amenagement.AmenagementDto;
-import fr.esgi.al5.tayarim.dto.regleslogement.ReglesLogementDto;
 import fr.esgi.al5.tayarim.services.AmenagementService;
-import fr.esgi.al5.tayarim.services.AuthService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,12 +19,9 @@ public class AmenagementController implements
     ControllerUtils {
 
   private final AmenagementService amenagementService;
-  private final AuthService authService;
 
-  public AmenagementController(AmenagementService amenagementService,
-      AuthService authService) {
+  public AmenagementController(AmenagementService amenagementService) {
     this.amenagementService = amenagementService;
-    this.authService = authService;
   }
 
   /**

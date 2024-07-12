@@ -1,28 +1,13 @@
 package fr.esgi.al5.tayarim;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
 import com.google.auth.oauth2.GoogleCredentials;
-import com.google.cloud.storage.Blob;
-import com.google.cloud.storage.BlobId;
-import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Bucket;
-import com.google.cloud.storage.BucketInfo;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import com.google.common.collect.Lists;
-import fr.esgi.al5.tayarim.mail.EmailService;
-import fr.esgi.al5.tayarim.repositories.FactureRepository;
-import fr.esgi.al5.tayarim.services.FactureService;
 import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.Base64;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;

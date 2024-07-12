@@ -9,7 +9,6 @@ import fr.esgi.al5.tayarim.exceptions.AdministrateurInvalidUpdateBody;
 import fr.esgi.al5.tayarim.exceptions.AdministrateurNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.AdministrateurNumTelAlreadyExistException;
 import fr.esgi.al5.tayarim.exceptions.PasswordHashNotPossibleException;
-import fr.esgi.al5.tayarim.exceptions.ProprietaireInvalidUpdateBody;
 import fr.esgi.al5.tayarim.mappers.AdministrateurMapper;
 import fr.esgi.al5.tayarim.repositories.AdministrateurRepository;
 import java.util.List;

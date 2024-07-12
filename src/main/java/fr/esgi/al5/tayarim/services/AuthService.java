@@ -13,7 +13,6 @@ import fr.esgi.al5.tayarim.exceptions.AdministrateurNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.TokenExpireOrInvalidException;
 import fr.esgi.al5.tayarim.exceptions.UtilisateurNotFoundException;
-import java.util.AbstractMap;
 import java.util.Map.Entry;
 import java.util.UUID;
 import lombok.NonNull;
@@ -107,15 +106,7 @@ public class AuthService {
       throw new AdministrateurNotFoundException();
     }
 
-    /*
-    String uuid = tokenCacheService.getFromCache(id);
-    if (uuid == null) {
-      uuid = UUID.randomUUID().toString();
-      tokenCacheService.addToCache(id, uuid);
-    }
-    */
-
-    String refreshToken = "";
+    String refreshToken;
     String foundToken = tokenCacheService.getFromCache(id);
     if (foundToken == null) {
       String uuid = UUID.randomUUID().toString();
@@ -191,7 +182,7 @@ public class AuthService {
    */
   public void logout(@NonNull String token) {
 
-    UserTokenInfo userTokenInfo = verifyToken(token, false);
+    verifyToken(token, false);
 
     //tokenCacheService.addToCache(entry.getKey(), UUID.randomUUID().toString());
 

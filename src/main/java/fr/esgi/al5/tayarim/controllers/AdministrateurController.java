@@ -8,7 +8,6 @@ import fr.esgi.al5.tayarim.controllers.interfaces.UpdateMethodInterface;
 import fr.esgi.al5.tayarim.dto.proprietaire.AdministrateurDto;
 import fr.esgi.al5.tayarim.dto.proprietaire.AdministrateurUpdateDto;
 import fr.esgi.al5.tayarim.exceptions.UnauthorizedException;
-import fr.esgi.al5.tayarim.exceptions.UnsupportedMethodPathException;
 import fr.esgi.al5.tayarim.services.AdministrateurService;
 import fr.esgi.al5.tayarim.services.AuthService;
 import java.util.List;

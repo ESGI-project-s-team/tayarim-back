@@ -10,7 +10,6 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,11 +28,6 @@ public class LogementCreationDto {
   @Size(min = 1, max = 100, message = "error_home_invalid_title")
   @NotBlank(message = "error_home_invalid_title")
   private String titre;
-
-  /*
-  @NotBlank(message = "error_home_invalid_louable")
-  @Pattern(regexp = "true|false", message = "error_home_invalid_louable")
-  private String isLouable;*/
 
   @NotNull(message = "error_home_invalid_louable")
   private Boolean isLouable;

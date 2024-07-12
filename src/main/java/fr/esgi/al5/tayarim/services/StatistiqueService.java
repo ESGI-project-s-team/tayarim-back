@@ -1,8 +1,6 @@
 package fr.esgi.al5.tayarim.services;
 
 import fr.esgi.al5.tayarim.dto.statistique.StatistiqueDto;
-import fr.esgi.al5.tayarim.entities.Reservation;
-import fr.esgi.al5.tayarim.repositories.ReservationRepository;
 import fr.esgi.al5.tayarim.repositories.StatistiqueRepository;
 import java.time.YearMonth;
 import java.util.ArrayList;

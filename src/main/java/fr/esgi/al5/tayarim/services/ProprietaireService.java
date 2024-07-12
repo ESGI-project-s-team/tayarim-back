@@ -19,12 +19,10 @@ import fr.esgi.al5.tayarim.exceptions.ProprietaireNumTelAlreadyExistException;
 import fr.esgi.al5.tayarim.mail.EmailService;
 import fr.esgi.al5.tayarim.mappers.ProprietaireMapper;
 import fr.esgi.al5.tayarim.repositories.AmenagementRepository;
-import fr.esgi.al5.tayarim.repositories.ImageLogementRepository;
 import fr.esgi.al5.tayarim.repositories.LogementRepository;
 import fr.esgi.al5.tayarim.repositories.ProprietaireRepository;
 import fr.esgi.al5.tayarim.repositories.ReglesLogementRepository;
 import fr.esgi.al5.tayarim.repositories.ReservationRepository;
-import fr.esgi.al5.tayarim.repositories.TypeLogementRepository;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,10 +43,8 @@ public class ProprietaireService {
 
   private final ProprietaireRepository proprietaireRepository;
   private final LogementRepository logementRepository;
-  private final TypeLogementRepository typeLogementRepository;
   private final ReglesLogementRepository reglesLogementRepository;
   private final AmenagementRepository amenagementRepository;
-  private final ImageLogementRepository imageLogementRepository;
   private final ReservationRepository reservationRepository;
   private final EmailService emailService;
 
@@ -56,17 +52,14 @@ public class ProprietaireService {
    * Constructeur pour le service de gestion des propriétaires.
    */
   public ProprietaireService(ProprietaireRepository proprietaireRepository,
-      LogementRepository logementRepository, TypeLogementRepository typeLogementRepository,
+      LogementRepository logementRepository,
       ReglesLogementRepository reglesLogementRepository,
       AmenagementRepository amenagementRepository,
-      ImageLogementRepository imageLogementRepository,
       ReservationRepository reservationRepository, EmailService emailService) {
     this.proprietaireRepository = proprietaireRepository;
     this.logementRepository = logementRepository;
-    this.typeLogementRepository = typeLogementRepository;
     this.reglesLogementRepository = reglesLogementRepository;
     this.amenagementRepository = amenagementRepository;
-    this.imageLogementRepository = imageLogementRepository;
     this.reservationRepository = reservationRepository;
     this.emailService = emailService;
   }

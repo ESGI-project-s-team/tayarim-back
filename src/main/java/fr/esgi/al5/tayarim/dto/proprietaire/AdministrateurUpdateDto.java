@@ -6,7 +6,6 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NonNull;
 
 /**
  * DTO pour la mise à jour des informations d'un administrateur. Utilisé pour passer les données

@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 /**
- * Entité représentant une Reservation dans le système. représenté par l'entité Reservation. La
+ * Entité représentant une Reservation dans le système. Représenté par l'entité Reservation. La
  * gestion des Reservation est effectuée en liaison avec les logement à travers une relation
  * ManyToOne.
  */

@@ -1,9 +1,6 @@
 package fr.esgi.al5.tayarim.repositories;
 
-import fr.esgi.al5.tayarim.entities.Logement;
-import fr.esgi.al5.tayarim.entities.Proprietaire;
 import fr.esgi.al5.tayarim.entities.Reservation;
-import fr.esgi.al5.tayarim.entities.TypeLogement;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
