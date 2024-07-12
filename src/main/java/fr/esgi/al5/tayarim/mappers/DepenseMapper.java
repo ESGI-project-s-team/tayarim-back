@@ -2,10 +2,8 @@ package fr.esgi.al5.tayarim.mappers;
 
 import fr.esgi.al5.tayarim.dto.depense.DepenseCreationDto;
 import fr.esgi.al5.tayarim.dto.depense.DepenseDto;
-import fr.esgi.al5.tayarim.dto.logement.TypeLogementDto;
 import fr.esgi.al5.tayarim.entities.Depense;
 import fr.esgi.al5.tayarim.entities.Logement;
-import fr.esgi.al5.tayarim.entities.TypeLogement;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;

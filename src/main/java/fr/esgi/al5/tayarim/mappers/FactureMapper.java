@@ -1,6 +1,5 @@
 package fr.esgi.al5.tayarim.mappers;
 
-import fr.esgi.al5.tayarim.dto.facture.FactureCreationDto;
 import fr.esgi.al5.tayarim.dto.facture.FactureDto;
 import fr.esgi.al5.tayarim.entities.Facture;
 import fr.esgi.al5.tayarim.entities.Proprietaire;

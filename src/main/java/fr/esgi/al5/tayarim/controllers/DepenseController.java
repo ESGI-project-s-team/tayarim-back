@@ -10,30 +10,16 @@ import fr.esgi.al5.tayarim.controllers.interfaces.UpdateMethodInterface;
 import fr.esgi.al5.tayarim.dto.depense.DepenseCreationDto;
 import fr.esgi.al5.tayarim.dto.depense.DepenseDto;
 import fr.esgi.al5.tayarim.dto.depense.DepenseUpdateDto;
-import fr.esgi.al5.tayarim.dto.reservation.ReservationCreationDto;
-import fr.esgi.al5.tayarim.dto.reservation.ReservationDto;
-import fr.esgi.al5.tayarim.dto.reservation.ReservationUpdateDto;
-import fr.esgi.al5.tayarim.dto.reservation.ReservationUpdatePaymentIntentDto;
 import fr.esgi.al5.tayarim.services.AuthService;
 import fr.esgi.al5.tayarim.services.DepenseService;
-import fr.esgi.al5.tayarim.services.ReservationService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import jakarta.validation.Valid;
 import java.util.List;
-import lombok.NonNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestAttribute;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Contrôleur pour la gestion des depenses.
+ * Contrôleur pour la gestion des dépenses.
  */
 @RestController
 @RequestMapping("/depenses")

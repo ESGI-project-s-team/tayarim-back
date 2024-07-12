@@ -56,4 +56,8 @@ public abstract class Utilisateur {
 
   @OneToMany(cascade = CascadeType.ALL, mappedBy = "utilisateur")
   private List<Notification> notifications;
+
+  @Column(name = "LANGUAGE", nullable = false)
+  @NonNull
+  private String language;
 }

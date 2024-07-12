@@ -1,12 +1,7 @@
 package fr.esgi.al5.tayarim.mappers;
 
-import fr.esgi.al5.tayarim.dto.logement.LogementCreationDto;
-import fr.esgi.al5.tayarim.dto.logement.LogementDto;
 import fr.esgi.al5.tayarim.dto.logement.TypeLogementDto;
-import fr.esgi.al5.tayarim.entities.Logement;
-import fr.esgi.al5.tayarim.entities.Proprietaire;
 import fr.esgi.al5.tayarim.entities.TypeLogement;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.NonNull;

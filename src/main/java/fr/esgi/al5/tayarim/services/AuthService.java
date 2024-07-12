@@ -13,7 +13,6 @@ import fr.esgi.al5.tayarim.exceptions.AdministrateurNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.TokenExpireOrInvalidException;
 import fr.esgi.al5.tayarim.exceptions.UtilisateurNotFoundException;
-import java.util.AbstractMap;
 import java.util.Map.Entry;
 import java.util.UUID;
 import lombok.NonNull;
@@ -74,6 +73,7 @@ public class AuthService {
     String prenom;
     String numTel;
     boolean isPasswordUpdated;
+    String lang;
     try {
       proprietaireDto = proprietaireService.getProprietaireByEmail(email);
       id = proprietaireDto.getId();
@@ -81,6 +81,7 @@ public class AuthService {
       prenom = proprietaireDto.getPrenom();
       numTel = proprietaireDto.getNumTel();
       isPasswordUpdated = proprietaireDto.getIsPasswordUpdated();
+      lang = proprietaireDto.getLang();
     } catch (Exception e) {
       try {
         isPasswordUpdated = true;
@@ -89,6 +90,7 @@ public class AuthService {
         nom = administrateurDto.getNom();
         prenom = administrateurDto.getPrenom();
         numTel = administrateurDto.getNumTel();
+        lang = administrateurDto.getLang();
         isAdmin = true;
       } catch (Exception exception) {
         throw new UtilisateurNotFoundException();
@@ -104,15 +106,7 @@ public class AuthService {
       throw new AdministrateurNotFoundException();
     }
 
-    /*
-    String uuid = tokenCacheService.getFromCache(id);
-    if (uuid == null) {
-      uuid = UUID.randomUUID().toString();
-      tokenCacheService.addToCache(id, uuid);
-    }
-    */
-
-    String refreshToken = "";
+    String refreshToken;
     String foundToken = tokenCacheService.getFromCache(id);
     if (foundToken == null) {
       String uuid = UUID.randomUUID().toString();
@@ -134,7 +128,8 @@ public class AuthService {
 
     return new AuthLoginResponseDto(id, isAdmin, nom, prenom, email, numTel, isPasswordUpdated,
         accessToken,
-        refreshToken);
+        refreshToken,
+        lang);
   }
 
   /**
@@ -187,7 +182,7 @@ public class AuthService {
    */
   public void logout(@NonNull String token) {
 
-    UserTokenInfo userTokenInfo = verifyToken(token, false);
+    verifyToken(token, false);
 
     //tokenCacheService.addToCache(entry.getKey(), UUID.randomUUID().toString());
 

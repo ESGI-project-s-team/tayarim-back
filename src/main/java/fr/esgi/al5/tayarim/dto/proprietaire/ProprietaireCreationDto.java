@@ -1,7 +1,6 @@
 package fr.esgi.al5.tayarim.dto.proprietaire;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -24,11 +23,11 @@ public class ProprietaireCreationDto {
 
   @NotBlank(message = "error_owner_invalid_name")
   @Size(min = 1, max = 20, message = "error_owner_invalid_name")
-  @Pattern(regexp = "[a-zA-Z]*", message = "error_owner_invalid_name")
+  @Pattern(regexp = "[a-zA-Z -]*", message = "error_owner_invalid_name")
   private String nom;
 
   @NotBlank(message = "error_owner_invalid_firstName")
-  @Pattern(regexp = "[a-zA-Z]*", message = "error_owner_invalid_firstName")
+  @Pattern(regexp = "[a-zA-Z -]*", message = "error_owner_invalid_firstName")
   @Size(min = 1, max = 20, message = "error_owner_invalid_firstName")
   private String prenom;
 
@@ -45,6 +44,11 @@ public class ProprietaireCreationDto {
   @NotBlank(message = "error_owner_invalid_address")
   @Size(min = 1, max = 300, message = "error_owner_invalid_address")
   private String adresse;
+
+  @NotBlank(message = "error_owner_invalid_lang")
+  @Size(min = 2, max = 2, message = "error_owner_invalid_lang")
+  @Pattern(regexp = "fr|en", message = "error_owner_invalid_lang")
+  private String lang;
 
   // No need for explicit getters, setters, or constructors
 }

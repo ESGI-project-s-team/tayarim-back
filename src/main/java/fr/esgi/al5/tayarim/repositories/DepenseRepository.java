@@ -1,7 +1,6 @@
 package fr.esgi.al5.tayarim.repositories;
 
 import fr.esgi.al5.tayarim.entities.Depense;
-import fr.esgi.al5.tayarim.entities.TypeLogement;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;

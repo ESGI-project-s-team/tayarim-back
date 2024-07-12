@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 /**
- * Entité représentant une Reservation dans le système. représenté par l'entité Reservation. La
+ * Entité représentant une Reservation dans le système. Représenté par l'entité Reservation. La
  * gestion des Reservation est effectuée en liaison avec les logement à travers une relation
  * ManyToOne.
  */
@@ -80,6 +80,9 @@ public class Reservation {
   @Column(name = "PAYMENTINTENT")
   private String paymentIntent;
 
+  @Column(name = "LANGUAGE", nullable = false)
+  private String language;
+
   /**
    * Builder pour l'entité Reservation.
    *
@@ -105,7 +108,7 @@ public class Reservation {
       @NonNull LocalTime checkIn, @NonNull LocalTime checkOut,
       @NonNull LocalDate dateArrivee, @NonNull LocalDate dateDepart,
       @NonNull Logement logement, @NonNull LocalDateTime dateReservation,
-      String paymentIntent
+      String paymentIntent, @NonNull String language
   ) {
     this.idCommande = idCommande;
     this.statut = statut;
@@ -122,5 +125,6 @@ public class Reservation {
     this.logement = logement;
     this.dateReservation = dateReservation;
     this.paymentIntent = paymentIntent;
+    this.language = language;
   }
 }

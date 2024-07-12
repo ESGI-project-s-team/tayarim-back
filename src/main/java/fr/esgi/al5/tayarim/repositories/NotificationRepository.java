@@ -1,7 +1,6 @@
 package fr.esgi.al5.tayarim.repositories;
 
 import fr.esgi.al5.tayarim.entities.Notification;
-import fr.esgi.al5.tayarim.entities.TypeLogement;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

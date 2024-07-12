@@ -1,14 +1,9 @@
 package fr.esgi.al5.tayarim.mappers;
 
-import fr.esgi.al5.tayarim.dto.indisponibilite.IndisponibiliteCreationDto;
 import fr.esgi.al5.tayarim.dto.indisponibilite.IndisponibiliteDto;
-import fr.esgi.al5.tayarim.dto.reservation.ReservationCreationDto;
-import fr.esgi.al5.tayarim.dto.reservation.ReservationDto;
 import fr.esgi.al5.tayarim.entities.Indisponibilite;
 import fr.esgi.al5.tayarim.entities.Logement;
-import fr.esgi.al5.tayarim.entities.Reservation;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.NonNull;

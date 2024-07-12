@@ -1,24 +1,13 @@
 package fr.esgi.al5.tayarim.mappers;
 
-import fr.esgi.al5.tayarim.dto.logement.LogementCreationDto;
-import fr.esgi.al5.tayarim.dto.logement.LogementDto;
 import fr.esgi.al5.tayarim.dto.reservation.ReservationCreationDto;
 import fr.esgi.al5.tayarim.dto.reservation.ReservationDto;
-import fr.esgi.al5.tayarim.entities.Amenagement;
 import fr.esgi.al5.tayarim.entities.Logement;
-import fr.esgi.al5.tayarim.entities.Proprietaire;
-import fr.esgi.al5.tayarim.entities.ReglesLogement;
 import fr.esgi.al5.tayarim.entities.Reservation;
-import fr.esgi.al5.tayarim.entities.TypeLogement;
-import fr.esgi.al5.tayarim.repositories.ProprietaireRepository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.NonNull;
 import org.springframework.stereotype.Component;
 
@@ -61,7 +50,8 @@ public class ReservationMapper {
         dateDepart,
         logement,
         dateReservation,
-        paymentIntent
+        paymentIntent,
+        reservationCreationDto.getLang()
     );
   }
 
@@ -89,7 +79,8 @@ public class ReservationMapper {
         reservation.getLogement().getId(),
         reservation.getLogement().getTitre(),
         reservation.getDateReservation().toString(),
-        reservation.getPaymentIntent()
+        reservation.getPaymentIntent(),
+        reservation.getLanguage()
     );
   }
 
