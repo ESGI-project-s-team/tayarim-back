@@ -241,7 +241,7 @@ public class FactureService {
 
     emailService.sendFactureEmail(proprietaire.getEmail(), proprietaire.getNom(),
         proprietaire.getPrenom(),
-        facture.getNumeroFacture(), facture.getMontant(), facture.getUrl(), blob);
+        facture.getNumeroFacture(), facture.getMontant(), blob, proprietaire.getLanguage());
     System.out.println("après Facture envoyée par mail");
 
     return FactureMapper.entityToDto(facture);

@@ -74,6 +74,7 @@ public class AuthService {
     String prenom;
     String numTel;
     boolean isPasswordUpdated;
+    String lang;
     try {
       proprietaireDto = proprietaireService.getProprietaireByEmail(email);
       id = proprietaireDto.getId();
@@ -81,6 +82,7 @@ public class AuthService {
       prenom = proprietaireDto.getPrenom();
       numTel = proprietaireDto.getNumTel();
       isPasswordUpdated = proprietaireDto.getIsPasswordUpdated();
+      lang = proprietaireDto.getLang();
     } catch (Exception e) {
       try {
         isPasswordUpdated = true;
@@ -89,6 +91,7 @@ public class AuthService {
         nom = administrateurDto.getNom();
         prenom = administrateurDto.getPrenom();
         numTel = administrateurDto.getNumTel();
+        lang = administrateurDto.getLang();
         isAdmin = true;
       } catch (Exception exception) {
         throw new UtilisateurNotFoundException();
@@ -134,7 +137,8 @@ public class AuthService {
 
     return new AuthLoginResponseDto(id, isAdmin, nom, prenom, email, numTel, isPasswordUpdated,
         accessToken,
-        refreshToken);
+        refreshToken,
+        lang);
   }
 
   /**

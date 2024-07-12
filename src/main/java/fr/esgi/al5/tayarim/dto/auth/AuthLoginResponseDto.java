@@ -41,5 +41,8 @@ public class AuthLoginResponseDto {
 
   @NonNull
   private String refreshToken;
+
+  @NonNull
+  private String lang;
   // No need for explicit getters, setters, or constructors
 }

@@ -177,8 +177,8 @@ public class ReservationService {
         reservation.getDateArrivee().toString(),
         Long.toString(
             reservation.getDateDepart().toEpochDay() - reservation.getDateArrivee().toEpochDay()),
-        reservation.getNbPersonnes().toString()
-
+        reservation.getNbPersonnes().toString(),
+        reservation.getLanguage()
     );
 
     return ReservationMapper.entityToDto(
@@ -337,7 +337,8 @@ public class ReservationService {
         reservation.getDateArrivee().toString(),
         Long.toString(
             reservation.getDateDepart().toEpochDay() - reservation.getDateArrivee().toEpochDay()),
-        reservation.getNbPersonnes().toString()
+        reservation.getNbPersonnes().toString(),
+        reservation.getLanguage()
     );
 
     return ReservationMapper.entityToDto(reservation);
@@ -464,7 +465,8 @@ public class ReservationService {
         reservation.getDateArrivee().toString(),
         Long.toString(
             reservation.getDateDepart().toEpochDay() - reservation.getDateArrivee().toEpochDay()),
-        reservation.getNbPersonnes().toString()
+        reservation.getNbPersonnes().toString(),
+        reservation.getLanguage()
 
     );
 
@@ -600,7 +602,7 @@ public class ReservationService {
     administrateurRepository.findAll().forEach(
         administrateur -> emailService.sendClientMessageEmail(message, administrateur.getEmail(),
             reservation.getEmail(), reservation.getIdCommande(), reservation.getNom(),
-            reservation.getPrenom()));
+            reservation.getPrenom(), administrateur.getLanguage()));
 
   }
 }

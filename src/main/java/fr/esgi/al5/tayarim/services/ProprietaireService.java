@@ -315,7 +315,7 @@ public class ProprietaireService {
     proprietaire = proprietaireRepository.save(proprietaire);
 
     emailService.sendAccountConfirmationEmail(proprietaire.getNom(), proprietaire.getPrenom(),
-        proprietaire.getEmail(), generatedPassword);
+        proprietaire.getEmail(), generatedPassword, proprietaire.getLanguage());
 
     return ProprietaireMapper.entityToDto(proprietaire, false);
   }
