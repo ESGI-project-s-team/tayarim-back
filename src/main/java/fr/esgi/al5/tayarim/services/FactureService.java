@@ -54,11 +54,9 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import lombok.NonNull;
-
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 
 /**
  * Classe de service gérant les factures.
@@ -283,23 +281,22 @@ public class FactureService {
       Proprietaire proprietaire) throws IOException {
 
     ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-        messageSource.setBasename("messages");
-        messageSource.setDefaultEncoding("UTF-8");
-        Locale locale = (proprietaire.getLanguage().equals("en") ? Locale.ENGLISH : Locale.FRANCE);
-        String factureCompany = messageSource.getMessage("facture_company", null, locale);
-        String factureName = messageSource.getMessage("facture_name", null, locale);
-        String factureFiscal = messageSource.getMessage("facture_fiscal", null, locale);
-        String facturePhone = messageSource.getMessage("facture_phone", null, locale);
-        String factureClient = messageSource.getMessage("facture_client", null, locale);
-        String factureFirstName = messageSource.getMessage("facture_firstName", null, locale);
-        String factureAddress = messageSource.getMessage("facture_address", null, locale);
-        String factureMail = messageSource.getMessage("facture_mail", null, locale);
-        String factureNumber = messageSource.getMessage("facture_number", null, locale);
-        String factureMonth = messageSource.getMessage("facture_month", null, locale);
-        String factureProduct = messageSource.getMessage("facture_products", null, locale);
-        String factureCreditDebit = messageSource.getMessage("facture_credit_debit", null, locale);
-        String factureTotal = messageSource.getMessage("facture_total", null, locale);
-
+    messageSource.setBasename("messages");
+    messageSource.setDefaultEncoding("UTF-8");
+    Locale locale = (proprietaire.getLanguage().equals("en") ? Locale.ENGLISH : Locale.FRANCE);
+    String factureCompany = messageSource.getMessage("facture_company", null, locale);
+    String factureName = messageSource.getMessage("facture_name", null, locale);
+    String factureFiscal = messageSource.getMessage("facture_fiscal", null, locale);
+    String facturePhone = messageSource.getMessage("facture_phone", null, locale);
+    String factureClient = messageSource.getMessage("facture_client", null, locale);
+    String factureFirstName = messageSource.getMessage("facture_firstName", null, locale);
+    String factureAddress = messageSource.getMessage("facture_address", null, locale);
+    String factureMail = messageSource.getMessage("facture_mail", null, locale);
+    String factureNumber = messageSource.getMessage("facture_number", null, locale);
+    String factureMonth = messageSource.getMessage("facture_month", null, locale);
+    String factureProduct = messageSource.getMessage("facture_products", null, locale);
+    String factureCreditDebit = messageSource.getMessage("facture_credit_debit", null, locale);
+    String factureTotal = messageSource.getMessage("facture_total", null, locale);
 
     Long idFacture = factureRepository.count() + 1;
     String numeroFacture = Long.toString(idFacture);
@@ -383,7 +380,7 @@ public class FactureService {
       Paragraph factureParagraph = new Paragraph(
           factureNumber + " " + numeroFacture + " " + factureMonth + " " + Month.of(
                   Math.toIntExact(factureCreationDto.getMonth()))
-              .getDisplayName(TextStyle.FULL_STANDALONE, Locale.FRENCH) + " "
+              .getDisplayName(TextStyle.FULL_STANDALONE, locale) + " "
               + factureCreationDto.getYear(),
           FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12));
       factureParagraph.setAlignment(Element.ALIGN_LEFT);
@@ -456,7 +453,8 @@ public class FactureService {
             generateReservationCell(table, reservation, secondaryColor, proprietaire.getLanguage());
             total += reservation.getMontant();
             secondaryColor = !secondaryColor;
-            generateCommissionCell(table, reservation, proprietaire, secondaryColor, proprietaire.getLanguage());
+            generateCommissionCell(table, reservation, proprietaire, secondaryColor,
+                proprietaire.getLanguage());
             total -= (reservation.getMontant() * proprietaire.getCommission()) / 100;
             secondaryColor = !secondaryColor;
           }
@@ -517,17 +515,18 @@ public class FactureService {
     return facture;
   }
 
-  private void generateLogementCell(PdfPTable table, Logement logement, Boolean secondaryColor, String lang) {
+  private void generateLogementCell(PdfPTable table, Logement logement, Boolean secondaryColor,
+      String lang) {
     System.out.println("Logement : " + logement.getAdresse());
     Font cellFont = FontFactory.getFont(FontFactory.HELVETICA, 10);
     cellFont.setColor(0, 0, 0);
     cellFont.setStyle(Font.BOLD);
 
     ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-        messageSource.setBasename("messages");
-        messageSource.setDefaultEncoding("UTF-8");
-        Locale locale = (lang.equals("en") ? Locale.ENGLISH : Locale.FRANCE);
-        String factureHouse = messageSource.getMessage("facture_house", null, locale);
+    messageSource.setBasename("messages");
+    messageSource.setDefaultEncoding("UTF-8");
+    Locale locale = (lang.equals("en") ? Locale.ENGLISH : Locale.FRANCE);
+    String factureHouse = messageSource.getMessage("facture_house", null, locale);
 
     PdfPCell descCell = new PdfPCell(
         new Phrase(
@@ -584,15 +583,15 @@ public class FactureService {
     messageSource.setBasename("messages");
     messageSource.setDefaultEncoding("UTF-8");
     Locale locale = (lang.equals("en") ? Locale.ENGLISH : Locale.FRANCE);
-    String factureReservationFrom = messageSource.getMessage("facture_reservation_from", null, locale);
+    String factureReservationFrom = messageSource.getMessage("facture_reservation_from", null,
+        locale);
     String factureReservationTo = messageSource.getMessage("facture_reservation_to", null, locale);
     String facturePersonFor = messageSource.getMessage("facture_person_for", null, locale);
     String factureNight = messageSource.getMessage("facture_night", null, locale);
 
-
     PdfPCell descCell = new PdfPCell(
         new Phrase(
-            "        " + factureReservationFrom +" "
+            "        " + factureReservationFrom + " "
                 + reservation.getDateArrivee().toString()
                 + " " + factureReservationTo + " "
                 + reservation.getDateDepart().toString()
@@ -602,7 +601,7 @@ public class FactureService {
                 + " " + facturePersonFor + " "
                 + (reservation.getDateDepart().toEpochDay() - reservation.getDateArrivee()
                 .toEpochDay())
-                + " "+ factureNight + "\n",
+                + " " + factureNight + "\n",
             cellFont
         )
     );
@@ -660,10 +659,10 @@ public class FactureService {
     messageSource.setDefaultEncoding("UTF-8");
     Locale locale = (lang.equals("en") ? Locale.ENGLISH : Locale.FRANCE);
     String factureCommission = messageSource.getMessage("facture_commission", null, locale);
-    
+
     PdfPCell descCell = new PdfPCell(
         new Phrase(
-            "        "+ factureCommission +" ("
+            "        " + factureCommission + " ("
                 + String.format("%.2f", proprietaire.getCommission())
                 + "%)",
             cellFont
@@ -828,7 +827,6 @@ public class FactureService {
     messageSource.setDefaultEncoding("UTF-8");
     Locale locale = (lang.equals("en") ? Locale.ENGLISH : Locale.FRANCE);
     String factureConcierge = messageSource.getMessage("facture_concierge", null, locale);
-    
 
     PdfPCell descCell = new PdfPCell(
         new Phrase(
@@ -885,7 +883,7 @@ public class FactureService {
     messageSource.setDefaultEncoding("UTF-8");
     Locale locale = (lang.equals("en") ? Locale.ENGLISH : Locale.FRANCE);
     String factureTotal = messageSource.getMessage("facture_total", null, locale);
-    
+
     Font headerFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD);
 
     PdfPCell descCell = new PdfPCell(new Phrase(factureTotal, headerFont));

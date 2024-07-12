@@ -11,11 +11,9 @@ import com.google.cloud.storage.BucketInfo;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import com.google.common.collect.Lists;
-
 import fr.esgi.al5.tayarim.mail.EmailService;
 import fr.esgi.al5.tayarim.repositories.FactureRepository;
 import fr.esgi.al5.tayarim.services.FactureService;
-
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
