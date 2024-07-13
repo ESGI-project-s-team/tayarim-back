@@ -8,6 +8,7 @@ import fr.esgi.al5.tayarim.dto.proprietaire.ProprietaireCreationDto;
 import fr.esgi.al5.tayarim.dto.proprietaire.ProprietaireDto;
 import fr.esgi.al5.tayarim.dto.proprietaire.ProprietaireUpdateDto;
 import fr.esgi.al5.tayarim.entities.Proprietaire;
+import fr.esgi.al5.tayarim.mail.EmailService;
 import fr.esgi.al5.tayarim.repositories.LogementRepository;
 import fr.esgi.al5.tayarim.repositories.ProprietaireRepository;
 import fr.esgi.al5.tayarim.services.ProprietaireService;
@@ -36,6 +37,9 @@ public class ProprietaireServiceTest {
 
   @Mock
   private LogementRepository logementRepository;
+
+  @Mock
+  private EmailService emailService;
 
   @Test
   public void creerProprietaire_ReturnsProprietaireDto() {
