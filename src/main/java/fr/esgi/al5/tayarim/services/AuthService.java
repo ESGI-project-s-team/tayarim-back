@@ -7,15 +7,23 @@ import fr.esgi.al5.tayarim.auth.UserTokenInfo;
 import fr.esgi.al5.tayarim.dto.auth.AuthLoginResponseDto;
 import fr.esgi.al5.tayarim.dto.auth.AuthRefreshResponseDto;
 import fr.esgi.al5.tayarim.dto.auth.AuthResponseDto;
+import fr.esgi.al5.tayarim.dto.auth.UserUpdatePasswordDto;
 import fr.esgi.al5.tayarim.dto.proprietaire.AdministrateurDto;
 import fr.esgi.al5.tayarim.dto.proprietaire.ProprietaireDto;
+import fr.esgi.al5.tayarim.entities.Utilisateur;
 import fr.esgi.al5.tayarim.exceptions.AdministrateurNotFoundException;
+import fr.esgi.al5.tayarim.exceptions.PasswordHashNotPossibleException;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.TokenExpireOrInvalidException;
 import fr.esgi.al5.tayarim.exceptions.UtilisateurNotFoundException;
+import fr.esgi.al5.tayarim.mail.EmailService;
+import fr.esgi.al5.tayarim.repositories.UtilisateurRepository;
+import java.security.SecureRandom;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.NonNull;
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +42,10 @@ public class AuthService {
 
   private final TokenCacheService tokenCacheService;
 
+  private final UtilisateurRepository utilisateurRepository;
+
+  private final EmailService emailService;
+
   /**
    * Constructeur pour le service d'authentification.
    *
@@ -41,14 +53,19 @@ public class AuthService {
    * @param administrateurService Le service de gestion des administrateurs.
    * @param jwtHelper             L'outil d'assistance JWT.
    * @param tokenCacheService     Le service de cache des tokens.
+   * @param utilisateurRepository Le repository des utilisateurs.
+   * @param emailService          Le service d'envoi d'emails.
    */
   public AuthService(ProprietaireService proprietaireService,
       AdministrateurService administrateurService, JwtHelper jwtHelper,
-      TokenCacheService tokenCacheService) {
+      TokenCacheService tokenCacheService, UtilisateurRepository utilisateurRepository,
+      EmailService emailService) {
     this.proprietaireService = proprietaireService;
     this.administrateurService = administrateurService;
     this.jwtHelper = jwtHelper;
     this.tokenCacheService = tokenCacheService;
+    this.utilisateurRepository = utilisateurRepository;
+    this.emailService = emailService;
   }
 
   /**
@@ -244,5 +261,130 @@ public class AuthService {
     }
 
     return new UserTokenInfo(id, isAdmin, isPasswordUpdated);
+  }
+
+  /**
+   * Envoie un email de récupération de mot de passe à l'utilisateur.
+   *
+   * @param email L'email de l'utilisateur.
+   */
+  public void sendRecover(@NonNull String email) {
+
+    Optional<Utilisateur> optionalUtilisateur = utilisateurRepository.findByEmail(email);
+
+    if (optionalUtilisateur.isEmpty()) {
+      throw new UtilisateurNotFoundException();
+    }
+
+    Utilisateur utilisateur = optionalUtilisateur.get();
+
+    String token = jwtHelper.generateRecoverToken(utilisateur.getEmail());
+
+    emailService.sendPasswordResetEmail(utilisateur.getEmail(), utilisateur.getNom(),
+        utilisateur.getPrenom(), token, utilisateur.getLanguage());
+
+  }
+
+  /**
+   * Réinitialise le mot de passe de l'utilisateur à partir d'un token de récupération.
+   *
+   * @param userUpdatePasswordDto DTO contenant le token de récupération et le nouveau mot de
+   *                              passe.
+   */
+  @Transactional
+  public void recover(@NonNull UserUpdatePasswordDto userUpdatePasswordDto) {
+
+    String token = userUpdatePasswordDto.getToken();
+    if (!jwtHelper.validateRecoverToken(token)) {
+      throw new TokenExpireOrInvalidException();
+    }
+
+    String email = jwtHelper.extractRecoveredEmail(token);
+
+    Optional<Utilisateur> optionalUtilisateur = utilisateurRepository.findByEmail(email);
+
+    if (optionalUtilisateur.isEmpty()) {
+      throw new UtilisateurNotFoundException();
+    }
+
+    Utilisateur utilisateur = optionalUtilisateur.get();
+
+    String password = userUpdatePasswordDto.getMotDePasse();
+
+    String hashedPassword = hashPassword(password);
+
+    utilisateur.setMotDePasse(hashedPassword);
+
+    utilisateurRepository.save(utilisateur);
+
+  }
+
+  /**
+   * Vérifie la validité du token de récupération.
+   *
+   * @param token Le token de récupération à vérifier.
+   */
+  public void verifyRecover(@NonNull String token) {
+
+    if (!jwtHelper.validateRecoverToken(token)) {
+      throw new TokenExpireOrInvalidException();
+    }
+
+    String email = jwtHelper.extractRecoveredEmail(token);
+
+    Optional<Utilisateur> optionalUtilisateur = utilisateurRepository.findByEmail(email);
+
+    if (optionalUtilisateur.isEmpty()) {
+      throw new UtilisateurNotFoundException();
+    }
+
+  }
+
+  private String generatePassword() {
+    String allowedchar = "abcdefghijklmnopqrstuvwxyz"
+        + "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        + "0123456789"
+        + "!@#$%&*()_+-=[]?";
+    SecureRandom random = new SecureRandom();
+    StringBuilder generatedPassword = null;
+    boolean result = false;
+    while (!result) {
+      boolean hasLowerCase = false;
+      boolean hasUpperCase = false;
+      boolean hasDigit = false;
+      boolean hasSpecialChar = false;
+      generatedPassword = new StringBuilder(16);
+      for (int i = 0; i < 16; i++) {
+        int index = random.nextInt(allowedchar.length());
+        if (index > 61) {
+          hasSpecialChar = true;
+        } else if (index > 51) {
+          hasDigit = true;
+        } else if (index > 25) {
+          hasUpperCase = true;
+        } else {
+          hasLowerCase = true;
+        }
+        generatedPassword.append(allowedchar.charAt(index));
+      }
+      System.out.println(generatedPassword.toString());
+      result = hasLowerCase && hasUpperCase && hasDigit && hasSpecialChar;
+    }
+    return generatedPassword.toString();
+  }
+
+  private String hashPassword(@NonNull String password) {
+    String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt(12));
+
+    if (!verifyHashedPassword(password, hashedPassword)) {
+      throw new PasswordHashNotPossibleException();
+    }
+
+    return hashedPassword;
+  }
+
+  private boolean verifyHashedPassword(@NonNull String password, @NonNull String hashedPassword) {
+    return BCrypt.checkpw(password, hashedPassword);
+
   }
 }

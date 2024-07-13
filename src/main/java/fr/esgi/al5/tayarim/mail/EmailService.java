@@ -57,6 +57,7 @@ public class EmailService {
     String msgSignatureYaronTayarim = messageSource.getMessage("msg_signature_yaron_tayarim", null,
         locale);
     String msgCopyright = messageSource.getMessage("msg_copyright", null, locale);
+    String msgDoConnection = messageSource.getMessage("msg_do_connection", null, locale);
 
     OkHttpClient client = new OkHttpClient().newBuilder()
         .build();
@@ -83,6 +84,8 @@ public class EmailService {
         + "\"msg_details_pass\":\"" + msgDetailsPass + "\","
         + "\"password\":\"" + password + "\","
         + "\"msg_pass_reset\":\"" + msgPassReset + "\","
+        + "\"url_connection\":\"" + "https://tayarim.com/" + lang + "/owner-connection" + "\","
+        + "\"msg_do_connection\":\"" + msgDoConnection + "\","
         + "\"msg_help\":\"" + msgHelp + "\","
         + "\"msg_sincerely\":\"" + msgSincerely + "\","
         + "\"msg_signature_yaron_tayarim\":\"" + msgSignatureYaronTayarim + "\","
@@ -502,10 +505,13 @@ public class EmailService {
    *
    * @param nom                  Le nom de l'utilisateur.
    * @param prenom               Le prénom de l'utilisateur.
-   * @param lienReinitialisation Le lien de réinitialisation de mot de passe.
+   * @param token                Le token de réinitialisation de mot de passe.
    */
   public void sendPasswordResetEmail(String email, String nom, String prenom,
-      String lienReinitialisation, String lang) {
+      String token, String lang) {
+
+    String lienReinitialisation = "https://tayarim.com/" + lang + "/recover?token=" + token;
+
     ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
     messageSource.setBasename("messages");
     messageSource.setDefaultEncoding("UTF-8");
