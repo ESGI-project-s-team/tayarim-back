@@ -13,6 +13,7 @@ import fr.esgi.al5.tayarim.entities.Notification;
 import fr.esgi.al5.tayarim.entities.Reservation;
 import fr.esgi.al5.tayarim.exceptions.LogementNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.NotificationSendError;
+import fr.esgi.al5.tayarim.exceptions.ReservationCreationInvalidError;
 import fr.esgi.al5.tayarim.exceptions.ReservationDateConflictError;
 import fr.esgi.al5.tayarim.exceptions.ReservationDateInvalideError;
 import fr.esgi.al5.tayarim.exceptions.ReservationDateTooShortError;
@@ -104,6 +105,14 @@ public class ReservationService {
         reservationCreationDto.getIdLogement());
     if (optionalLogement.isEmpty()) {
       throw new LogementNotFoundException();
+    }
+
+    if (!isAdmin && ((reservationCreationDto.getEmail() == null
+        || reservationCreationDto.getEmail().isBlank())
+        || (reservationCreationDto.getNumTel() == null
+        || reservationCreationDto.getNumTel().isBlank()))
+    ) {
+      throw new ReservationCreationInvalidError();
     }
 
     if (!isAdmin && reservationCreationDto.getNbPersonnes() > optionalLogement.get()

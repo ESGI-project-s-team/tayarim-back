@@ -57,6 +57,7 @@ public class EmailService {
     String msgSignatureYaronTayarim = messageSource.getMessage("msg_signature_yaron_tayarim", null,
         locale);
     String msgCopyright = messageSource.getMessage("msg_copyright", null, locale);
+    String msgDoConnection = messageSource.getMessage("msg_do_connection", null, locale);
 
     OkHttpClient client = new OkHttpClient().newBuilder()
         .build();
@@ -83,6 +84,8 @@ public class EmailService {
         + "\"msg_details_pass\":\"" + msgDetailsPass + "\","
         + "\"password\":\"" + password + "\","
         + "\"msg_pass_reset\":\"" + msgPassReset + "\","
+        + "\"url_connection\":\"" + "https://tayarim.com/" + lang + "/owner-connection" + "\","
+        + "\"msg_do_connection\":\"" + msgDoConnection + "\","
         + "\"msg_help\":\"" + msgHelp + "\","
         + "\"msg_sincerely\":\"" + msgSincerely + "\","
         + "\"msg_signature_yaron_tayarim\":\"" + msgSignatureYaronTayarim + "\","

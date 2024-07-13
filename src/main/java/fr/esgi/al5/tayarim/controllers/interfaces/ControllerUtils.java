@@ -27,6 +27,7 @@ import fr.esgi.al5.tayarim.exceptions.ProprietaireInvalidCandidatureBody;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireInvalidUpdateBody;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.ProprietaireNumTelAlreadyExistException;
+import fr.esgi.al5.tayarim.exceptions.ReservationCreationInvalidError;
 import fr.esgi.al5.tayarim.exceptions.ReservationDateConflictError;
 import fr.esgi.al5.tayarim.exceptions.ReservationDateInvalideError;
 import fr.esgi.al5.tayarim.exceptions.ReservationDateTooShortError;
@@ -114,6 +115,19 @@ public interface ControllerUtils {
   @ExceptionHandler(ProprietaireInvalidCandidatureBody.class)
   default Map<String, List<String>> proprietaireInvalidCandidatureBody(
       ProprietaireInvalidCandidatureBody ex) {
+    return mapException(ex);
+  }
+
+  /**
+   * Gère les exceptions lorsque le corps de mise à jour de l'administrateur est invalide.
+   *
+   * @param ex L'exception capturée.
+   * @return Une carte des erreurs avec le message approprié.
+   */
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ExceptionHandler(ReservationCreationInvalidError.class)
+  default Map<String, List<String>> reservationCreationInvalidError(
+      ReservationCreationInvalidError ex) {
     return mapException(ex);
   }
 

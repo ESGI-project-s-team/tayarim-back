@@ -93,3 +93,4 @@
 "error_reservation_notExist": "This reservation does not exist",
 "error_user_invalid_token": "The token is invalid",
 "error_user_invalid_password": "The password is invalid",
+"error_reservation_creation_invalid": "Invalid or missing data to create a reservation",

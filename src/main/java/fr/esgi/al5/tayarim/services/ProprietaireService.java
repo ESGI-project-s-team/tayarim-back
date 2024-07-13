@@ -87,13 +87,19 @@ public class ProprietaireService {
     }
     proprietaireCreationDto.setNumTel(numTel);
 
-    String generatedPassword = hashPassword(generatePassword());
-
-    System.out.println(generatedPassword); // waiting for SMTP
+    String generatedPassword = generatePassword();
+    String hashedPassword = hashPassword(generatedPassword);
 
     Proprietaire proprietaire = ProprietaireMapper.creationDtoToEntity(proprietaireCreationDto,
-        hashPassword(generatedPassword.toString()));
-    return ProprietaireMapper.entityToDto(proprietaireRepository.save(proprietaire), false);
+        hashedPassword);
+
+    proprietaire = proprietaireRepository.save(proprietaire);
+
+    emailService.sendAccountConfirmationEmail(proprietaireCreationDto.getNom(),
+        proprietaireCreationDto.getPrenom(), proprietaireCreationDto.getEmail(), generatedPassword,
+        proprietaireCreationDto.getLang());
+
+    return ProprietaireMapper.entityToDto(proprietaire, false);
   }
 
   /**
