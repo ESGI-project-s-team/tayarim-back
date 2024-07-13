@@ -502,10 +502,13 @@ public class EmailService {
    *
    * @param nom                  Le nom de l'utilisateur.
    * @param prenom               Le prénom de l'utilisateur.
-   * @param lienReinitialisation Le lien de réinitialisation de mot de passe.
+   * @param token                Le token de réinitialisation de mot de passe.
    */
   public void sendPasswordResetEmail(String email, String nom, String prenom,
-      String lienReinitialisation, String lang) {
+      String token, String lang) {
+
+    String lienReinitialisation = "https://tayarim.com/" + lang + "/recover?token=" + token;
+
     ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
     messageSource.setBasename("messages");
     messageSource.setDefaultEncoding("UTF-8");

@@ -9,6 +9,7 @@ import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import java.time.Instant;
 import java.util.Date;
+import java.util.UUID;
 import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -46,6 +47,25 @@ public class JwtHelper {
         .subject(subject)
         .issuedAt(Date.from(now))
         .expiration(expiration) //24h
+        .signWith(getSignKey())
+        .compact();
+  }
+
+  /**
+   * Génère un token JWT pour la récupération de mot de passe.
+   *
+   * @param email L'email de l'utilisateur.
+   */
+  public String generateRecoverToken(String email) {
+    String subject = UUID.randomUUID().toString().concat(";").concat(email);
+
+    Instant now = Instant.now();
+    Date expiration;
+    expiration = Date.from(now.plusSeconds(600)); //10min
+    return Jwts.builder()
+        .subject(subject)
+        .issuedAt(Date.from(now))
+        .expiration(expiration)
         .signWith(getSignKey())
         .compact();
   }
@@ -94,6 +114,29 @@ public class JwtHelper {
   }
 
   /**
+   * Extrait l'email de récupération à partir d'un token JWT.
+   *
+   * @param token Le token JWT.
+   * @return L'email extrait du token.
+   * @throws TokenExpireOrInvalidException Si le token est expiré ou invalide.
+   */
+  public String extractRecoveredEmail(String token) {
+    if (extractSubject(token).split(";")[1] == null) {
+      throw new TokenExpireOrInvalidException();
+    }
+
+    String email;
+
+    try {
+      email = extractSubject(token).split(";")[1];
+    } catch (Exception e) {
+      throw new TokenExpireOrInvalidException();
+    }
+
+    return email;
+  }
+
+  /**
    * Détermine si l'utilisateur associé au token est un administrateur.
    *
    * @param token Le token JWT.
@@ -139,6 +182,10 @@ public class JwtHelper {
         && extractedId.equals(id)
         && extractedUuid.equals(uuid)
         && !isTokenExpired(token);
+  }
+
+  public Boolean validateRecoverToken(String token) {
+    return !isTokenExpired(token);
   }
 
   private Claims getTokenBody(String token) {
