@@ -171,24 +171,24 @@ public class ReservationService {
         )
     );
 
-    System.out.println(reservation.getLogement().getImages().get(0).getUrl().replace(" ", "%20"));
-
-    emailService.sendCreationReservationEmail(
-        reservation.getEmail(),
-        reservation.getNom(),
-        reservation.getPrenom(),
-        reservation.getIdCommande(),
-        LocalDate.now().toString(),
-        reservation.getMontant().toString(),
-        "https://storage.googleapis.com/tayarim-tf-storage/"
-            + reservation.getLogement().getImages().get(0).getUrl().replace(" ", "%20"),
-        reservation.getLogement().getAdresse(),
-        reservation.getDateArrivee().toString(),
-        Long.toString(
-            reservation.getDateDepart().toEpochDay() - reservation.getDateArrivee().toEpochDay()),
-        reservation.getNbPersonnes().toString(),
-        reservation.getLanguage()
-    );
+    if (reservation.getEmail() != null && !reservation.getEmail().isBlank()) {
+      emailService.sendCreationReservationEmail(
+          reservation.getEmail(),
+          reservation.getNom(),
+          reservation.getPrenom(),
+          reservation.getIdCommande(),
+          LocalDate.now().toString(),
+          reservation.getMontant().toString(),
+          "https://storage.googleapis.com/tayarim-tf-storage/"
+              + reservation.getLogement().getImages().get(0).getUrl().replace(" ", "%20"),
+          reservation.getLogement().getAdresse(),
+          reservation.getDateArrivee().toString(),
+          Long.toString(
+              reservation.getDateDepart().toEpochDay() - reservation.getDateArrivee().toEpochDay()),
+          reservation.getNbPersonnes().toString(),
+          reservation.getLanguage()
+      );
+    }
 
     return ReservationMapper.entityToDto(
         reservation
