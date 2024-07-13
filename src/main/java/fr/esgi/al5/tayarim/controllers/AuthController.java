@@ -8,6 +8,7 @@ import fr.esgi.al5.tayarim.dto.auth.AuthRefreshResponseDto;
 import fr.esgi.al5.tayarim.dto.auth.AuthResponseDto;
 import fr.esgi.al5.tayarim.dto.auth.UserRecoverDto;
 import fr.esgi.al5.tayarim.dto.auth.UserUpdatePasswordDto;
+import fr.esgi.al5.tayarim.dto.auth.UserVerifyRecoverDto;
 import fr.esgi.al5.tayarim.services.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -113,7 +114,7 @@ public class AuthController implements ControllerUtils {
    * Envoie lien mot de passe oublié.
    */
   @PostMapping(path = "/sendRecover")
-  public ResponseEntity<Void> sendRecover(@RequestBody UserRecoverDto recoverDto) {
+  public ResponseEntity<Void> sendRecover(@Valid @RequestBody UserRecoverDto recoverDto) {
     authService.sendRecover(recoverDto.getEmail());
     return new ResponseEntity<>(
         HttpStatus.OK
@@ -124,7 +125,8 @@ public class AuthController implements ControllerUtils {
    * changement mot de passe.
    */
   @PostMapping(path = "/recover")
-  public ResponseEntity<Void> recover(@RequestBody UserUpdatePasswordDto userUpdatePasswordDto) {
+  public ResponseEntity<Void> recover(
+      @Valid @RequestBody UserUpdatePasswordDto userUpdatePasswordDto) {
     authService.recover(userUpdatePasswordDto);
     return new ResponseEntity<>(
         HttpStatus.OK
@@ -136,8 +138,8 @@ public class AuthController implements ControllerUtils {
    */
   @PostMapping(path = "/verifyRecover")
   public ResponseEntity<Void> verifyRecover(
-      @RequestParam(name = "token") String token) {
-    authService.verifyRecover(token);
+      @RequestBody @Valid UserVerifyRecoverDto userVerifyRecoverDto) {
+    authService.verifyRecover(userVerifyRecoverDto.getToken());
     return new ResponseEntity<>(
         HttpStatus.OK
     );

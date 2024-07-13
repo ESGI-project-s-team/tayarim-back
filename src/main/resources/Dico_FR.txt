@@ -91,3 +91,5 @@
 "error_reservation_invalid_identifier": "L'identifiant de réservation est invalide",
 "error_reservation_invalid_message": "Le message est invalide",
 "error_reservation_notExist": "Cette réservation n'existe pas",
+"error_user_invalid_token": "Le token est invalide",
+"error_user_invalid_password": "Le mot de passe est invalide",
