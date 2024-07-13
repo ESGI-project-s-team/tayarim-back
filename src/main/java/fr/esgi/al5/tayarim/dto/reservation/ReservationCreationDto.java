@@ -22,11 +22,9 @@ public class ReservationCreationDto {
 
   @Valid
 
-  @NotBlank(message = "error_reservation_invalid_mail")
   @Pattern(regexp = "[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,4}", message = "error_reservation_invalid_mail")
   private String email;
 
-  @NotBlank(message = "error_reservation_invalid_phone")
   @Pattern(regexp = "^[+]?[(]?\\d{3}[)]?[-\\s.]?\\d{3}[-\\s.]?\\d{4,6}$",
       message = "error_reservation_invalid_phone")
   private String numTel;

@@ -13,6 +13,7 @@ import fr.esgi.al5.tayarim.entities.Notification;
 import fr.esgi.al5.tayarim.entities.Reservation;
 import fr.esgi.al5.tayarim.exceptions.LogementNotFoundException;
 import fr.esgi.al5.tayarim.exceptions.NotificationSendError;
+import fr.esgi.al5.tayarim.exceptions.ReservationCreationInvalidError;
 import fr.esgi.al5.tayarim.exceptions.ReservationDateConflictError;
 import fr.esgi.al5.tayarim.exceptions.ReservationDateInvalideError;
 import fr.esgi.al5.tayarim.exceptions.ReservationDateTooShortError;
@@ -106,6 +107,14 @@ public class ReservationService {
       throw new LogementNotFoundException();
     }
 
+    if (!isAdmin && ((reservationCreationDto.getEmail() == null
+        || reservationCreationDto.getEmail().isBlank())
+        || (reservationCreationDto.getNumTel() == null
+        || reservationCreationDto.getNumTel().isBlank()))
+    ) {
+      throw new ReservationCreationInvalidError();
+    }
+
     if (!isAdmin && reservationCreationDto.getNbPersonnes() > optionalLogement.get()
         .getCapaciteMaxPersonne()) {
       throw new ReservationPeopleCapacityError();
@@ -162,24 +171,24 @@ public class ReservationService {
         )
     );
 
-    System.out.println(reservation.getLogement().getImages().get(0).getUrl().replace(" ", "%20"));
-
-    emailService.sendCreationReservationEmail(
-        reservation.getEmail(),
-        reservation.getNom(),
-        reservation.getPrenom(),
-        reservation.getIdCommande(),
-        LocalDate.now().toString(),
-        reservation.getMontant().toString(),
-        "https://storage.googleapis.com/tayarim-tf-storage/"
-            + reservation.getLogement().getImages().get(0).getUrl().replace(" ", "%20"),
-        reservation.getLogement().getAdresse(),
-        reservation.getDateArrivee().toString(),
-        Long.toString(
-            reservation.getDateDepart().toEpochDay() - reservation.getDateArrivee().toEpochDay()),
-        reservation.getNbPersonnes().toString(),
-        reservation.getLanguage()
-    );
+    if (reservation.getEmail() != null && !reservation.getEmail().isBlank()) {
+      emailService.sendCreationReservationEmail(
+          reservation.getEmail(),
+          reservation.getNom(),
+          reservation.getPrenom(),
+          reservation.getIdCommande(),
+          LocalDate.now().toString(),
+          reservation.getMontant().toString(),
+          "https://storage.googleapis.com/tayarim-tf-storage/"
+              + reservation.getLogement().getImages().get(0).getUrl().replace(" ", "%20"),
+          reservation.getLogement().getAdresse(),
+          reservation.getDateArrivee().toString(),
+          Long.toString(
+              reservation.getDateDepart().toEpochDay() - reservation.getDateArrivee().toEpochDay()),
+          reservation.getNbPersonnes().toString(),
+          reservation.getLanguage()
+      );
+    }
 
     return ReservationMapper.entityToDto(
         reservation
