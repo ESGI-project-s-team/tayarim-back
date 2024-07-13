@@ -20,10 +20,10 @@ public class ReservationDto {
   @NonNull
   private String statut;
 
-  @NonNull
+
   private String email;
 
-  @NonNull
+
   private String numTel;
 
   @NonNull
