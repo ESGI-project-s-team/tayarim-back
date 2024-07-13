@@ -40,10 +40,10 @@ public class Reservation {
   @Column(name = "STATUT", nullable = false)
   private String statut;
 
-  @Column(name = "EMAIL", nullable = false)
+  @Column(name = "EMAIL")
   private String email;
 
-  @Column(name = "NUMTEL", nullable = false)
+  @Column(name = "NUMTEL")
   private String numTel;
 
   @Column(name = "NOM", nullable = false)
@@ -102,8 +102,8 @@ public class Reservation {
    * @param paymentIntent   L'identifiant du paiement associé à la reservation.
    */
   @Builder
-  public Reservation(@NonNull String idCommande, @NonNull String statut, @NonNull String email,
-      @NonNull String numTel, @NonNull String nom, @NonNull String prenom,
+  public Reservation(@NonNull String idCommande, @NonNull String statut, String email,
+      String numTel, @NonNull String nom, @NonNull String prenom,
       @NonNull Integer nbPersonnes, @NonNull Float montant,
       @NonNull LocalTime checkIn, @NonNull LocalTime checkOut,
       @NonNull LocalDate dateArrivee, @NonNull LocalDate dateDepart,
