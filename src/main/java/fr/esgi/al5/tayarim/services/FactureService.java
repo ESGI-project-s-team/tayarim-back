@@ -212,12 +212,16 @@ public class FactureService {
 
     Facture facture = optionalFacture.get();
 
-    myWebSocketHandler.sendNotif(facture.getProprietaire().getId(), LocalDate.now(),
-        "notif_facture", "facture");
+    try {
+      myWebSocketHandler.sendNotif(facture.getProprietaire().getId(), LocalDate.now(),
+          "notification_facture_send", "facture");
+    } catch (Exception ignored) {
+      // Ignored
+    }
 
     notificationRepository.save(new Notification(
         "facture",
-        "notif_facture",
+        "notification_facture_send",
         LocalDate.now(),
         facture.getProprietaire(),
         false

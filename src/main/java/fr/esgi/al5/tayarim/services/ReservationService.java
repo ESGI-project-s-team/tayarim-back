@@ -159,11 +159,7 @@ public class ReservationService {
       status = "reserved";
     }
 
-    try {
-      sendNotif(logement, isAdmin);
-    } catch (Exception e) {
-      throw new NotificationSendError();
-    }
+    sendNotif(logement, isAdmin);
 
     Reservation reservation = reservationRepository.save(
         ReservationMapper.creationDtoToEntity(
@@ -209,8 +205,13 @@ public class ReservationService {
 
   private void sendNotif(@NonNull Logement logement, @NonNull Boolean isAdmin) {
 
-    myWebSocketHandler.sendNotif(logement.getProprietaire().getId(), LocalDate.now(),
-        "notification_reservation_creation", "Reservation");
+    try {
+      myWebSocketHandler.sendNotif(logement.getProprietaire().getId(), LocalDate.now(),
+          "notification_reservation_creation", "Reservation");
+    } catch (Exception ignored) {
+      // Ignored
+    }
+
 
     notificationRepository.save(new Notification(
         "Reservation",
@@ -223,8 +224,12 @@ public class ReservationService {
     if (!isAdmin) {
       //ici
       for (Administrateur administrateur : administrateurRepository.findAll()) {
-        myWebSocketHandler.sendNotif(administrateur.getId(), LocalDate.now(),
-            "notification_reservation_creation", "Reservation");
+        try {
+          myWebSocketHandler.sendNotif(administrateur.getId(), LocalDate.now(),
+              "notification_reservation_creation", "Reservation");
+        } catch (Exception ignored) {
+          // Ignored
+        }
 
         notificationRepository.save(new Notification(
             "Reservation",
