@@ -37,6 +37,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -147,7 +148,13 @@ public class ReservationService {
 
     String status;
     if (isAdmin) {
-      status = "payed";
+      if(dateDepart.isBefore(LocalDate.now()) || dateDepart.isEqual(LocalDate.now())){
+        status = "done";
+      }else if(dateArrivee.isBefore(LocalDate.now()) || dateArrivee.isEqual(LocalDate.now())){
+        status = "in progress";
+      }else{
+        status = "payed";
+      }
     } else {
       status = "reserved";
     }
@@ -422,6 +429,21 @@ public class ReservationService {
 
     return reservation;
 
+  }
+
+  @Transactional
+  @Scheduled(cron = "0 59 23 * * *")
+  protected void doCheckStatus(){
+    System.out.println("Checking status");
+    List<Logement> logements = logementRepository.findAll();
+    for (Logement logement : logements) {
+      List<Reservation> reservations = reservationRepository.findAllByLogementIdAndStatutIn(
+          logement.getId(), List.of("payed", "in progress")
+      );
+      for (Reservation reservation : reservations) {
+        checkStatus(reservation);
+      }
+    }
   }
 
   /**

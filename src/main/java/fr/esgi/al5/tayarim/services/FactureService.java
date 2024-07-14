@@ -447,8 +447,10 @@ public class FactureService {
         generateLogementCell(table, logement, secondaryColor, proprietaire.getLanguage());
         secondaryColor = !secondaryColor;
 
+        System.out.println("isLouable : " + logement.getIsLouable());
         if (logement.getIsLouable()) {
 
+          System.out.println("Reservations : " + reservations.size());
           for (Reservation reservation : reservations) {
             generateReservationCell(table, reservation, secondaryColor, proprietaire.getLanguage());
             total += reservation.getMontant();
