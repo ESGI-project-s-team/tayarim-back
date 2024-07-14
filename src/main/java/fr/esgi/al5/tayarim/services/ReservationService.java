@@ -193,7 +193,10 @@ public class ReservationService {
           Long.toString(
               reservation.getDateDepart().toEpochDay() - reservation.getDateArrivee().toEpochDay()),
           reservation.getNbPersonnes().toString(),
-          reservation.getLanguage()
+          reservation.getLanguage(),
+          reservation.getCheckIn().toString(),
+          reservation.getCheckOut().toString(),
+          reservation.getDateDepart().toString()
       );
     }
 
@@ -354,7 +357,10 @@ public class ReservationService {
         Long.toString(
             reservation.getDateDepart().toEpochDay() - reservation.getDateArrivee().toEpochDay()),
         reservation.getNbPersonnes().toString(),
-        reservation.getLanguage()
+        reservation.getLanguage(),
+        reservation.getCheckIn().toString(),
+        reservation.getCheckOut().toString(),
+        reservation.getDateDepart().toString()
     );
 
     return ReservationMapper.entityToDto(reservation);
@@ -497,7 +503,10 @@ public class ReservationService {
         Long.toString(
             reservation.getDateDepart().toEpochDay() - reservation.getDateArrivee().toEpochDay()),
         reservation.getNbPersonnes().toString(),
-        reservation.getLanguage()
+        reservation.getLanguage(),
+        reservation.getCheckIn().toString(),
+        reservation.getCheckOut().toString(),
+        reservation.getDateDepart().toString()
 
     );
 
