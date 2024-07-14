@@ -148,11 +148,11 @@ public class ReservationService {
 
     String status;
     if (isAdmin) {
-      if(dateDepart.isBefore(LocalDate.now()) || dateDepart.isEqual(LocalDate.now())){
+      if (dateDepart.isBefore(LocalDate.now()) || dateDepart.isEqual(LocalDate.now())) {
         status = "done";
-      }else if(dateArrivee.isBefore(LocalDate.now()) || dateArrivee.isEqual(LocalDate.now())){
+      } else if (dateArrivee.isBefore(LocalDate.now()) || dateArrivee.isEqual(LocalDate.now())) {
         status = "in progress";
-      }else{
+      } else {
         status = "payed";
       }
     } else {
@@ -433,7 +433,7 @@ public class ReservationService {
 
   @Transactional
   @Scheduled(cron = "0 59 23 * * *")
-  protected void doCheckStatus(){
+  protected void doCheckStatus() {
     System.out.println("Checking status");
     List<Logement> logements = logementRepository.findAll();
     for (Logement logement : logements) {
