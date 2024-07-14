@@ -37,6 +37,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -147,16 +148,18 @@ public class ReservationService {
 
     String status;
     if (isAdmin) {
-      status = "payed";
+      if (dateDepart.isBefore(LocalDate.now()) || dateDepart.isEqual(LocalDate.now())) {
+        status = "done";
+      } else if (dateArrivee.isBefore(LocalDate.now()) || dateArrivee.isEqual(LocalDate.now())) {
+        status = "in progress";
+      } else {
+        status = "payed";
+      }
     } else {
       status = "reserved";
     }
 
-    try {
-      sendNotif(logement, isAdmin);
-    } catch (Exception e) {
-      throw new NotificationSendError();
-    }
+    sendNotif(logement, isAdmin);
 
     Reservation reservation = reservationRepository.save(
         ReservationMapper.creationDtoToEntity(
@@ -186,7 +189,10 @@ public class ReservationService {
           Long.toString(
               reservation.getDateDepart().toEpochDay() - reservation.getDateArrivee().toEpochDay()),
           reservation.getNbPersonnes().toString(),
-          reservation.getLanguage()
+          reservation.getLanguage(),
+          reservation.getCheckIn().toString(),
+          reservation.getCheckOut().toString(),
+          reservation.getDateDepart().toString()
       );
     }
 
@@ -199,8 +205,13 @@ public class ReservationService {
 
   private void sendNotif(@NonNull Logement logement, @NonNull Boolean isAdmin) {
 
-    myWebSocketHandler.sendNotif(logement.getProprietaire().getId(), LocalDate.now(),
-        "notification_reservation_creation", "Reservation");
+    try {
+      myWebSocketHandler.sendNotif(logement.getProprietaire().getId(), LocalDate.now(),
+          "notification_reservation_creation", "Reservation");
+    } catch (Exception ignored) {
+      // Ignored
+    }
+
 
     notificationRepository.save(new Notification(
         "Reservation",
@@ -213,8 +224,12 @@ public class ReservationService {
     if (!isAdmin) {
       //ici
       for (Administrateur administrateur : administrateurRepository.findAll()) {
-        myWebSocketHandler.sendNotif(administrateur.getId(), LocalDate.now(),
-            "notification_reservation_creation", "Reservation");
+        try {
+          myWebSocketHandler.sendNotif(administrateur.getId(), LocalDate.now(),
+              "notification_reservation_creation", "Reservation");
+        } catch (Exception ignored) {
+          // Ignored
+        }
 
         notificationRepository.save(new Notification(
             "Reservation",
@@ -347,7 +362,10 @@ public class ReservationService {
         Long.toString(
             reservation.getDateDepart().toEpochDay() - reservation.getDateArrivee().toEpochDay()),
         reservation.getNbPersonnes().toString(),
-        reservation.getLanguage()
+        reservation.getLanguage(),
+        reservation.getCheckIn().toString(),
+        reservation.getCheckOut().toString(),
+        reservation.getDateDepart().toString()
     );
 
     return ReservationMapper.entityToDto(reservation);
@@ -424,6 +442,21 @@ public class ReservationService {
 
   }
 
+  @Transactional
+  @Scheduled(cron = "0 59 23 * * *")
+  protected void doCheckStatus() {
+    System.out.println("Checking status");
+    List<Logement> logements = logementRepository.findAll();
+    for (Logement logement : logements) {
+      List<Reservation> reservations = reservationRepository.findAllByLogementIdAndStatutIn(
+          logement.getId(), List.of("payed", "in progress")
+      );
+      for (Reservation reservation : reservations) {
+        checkStatus(reservation);
+      }
+    }
+  }
+
   /**
    * Tente d'annuler une reservation.
    *
@@ -475,7 +508,10 @@ public class ReservationService {
         Long.toString(
             reservation.getDateDepart().toEpochDay() - reservation.getDateArrivee().toEpochDay()),
         reservation.getNbPersonnes().toString(),
-        reservation.getLanguage()
+        reservation.getLanguage(),
+        reservation.getCheckIn().toString(),
+        reservation.getCheckOut().toString(),
+        reservation.getDateDepart().toString()
 
     );
 

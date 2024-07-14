@@ -204,7 +204,7 @@ public class EmailService {
       String numeroReservation,
       String dateReservation, String montantReservation, String imageReservation,
       String adresseReservation, String dateArrivee, String nbNuits, String nbPersonnes,
-      String lang) {
+      String lang, String checkIn, String checkOut, String dateDepart) {
     ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
     messageSource.setBasename("messages");
     messageSource.setDefaultEncoding("UTF-8");
@@ -230,6 +230,11 @@ public class EmailService {
     String msgSincerely = messageSource.getMessage("msg_sincerely", null, locale);
     String msgSignatureYaronTayarim = messageSource.getMessage("msg_signature_yaron_tayarim", null,
         locale);
+    String msgReservationCheckIn = messageSource.getMessage("msg_reservation_check_in", null,
+        locale);
+    String msgReservationCheckOut = messageSource.getMessage("msg_reservation_check_out", null,
+        locale);
+    String msgDepartureDate = messageSource.getMessage("msg_departure_date", null, locale);
     String msgCopyright = messageSource.getMessage("msg_copyright", null, locale);
 
     OkHttpClient client = new OkHttpClient().newBuilder().build();
@@ -276,6 +281,12 @@ public class EmailService {
             + "\"msg_manage_reservation\":\"" + msgManageReservation + "\","
             + "\"msg_sincerely\":\"" + msgSincerely + "\","
             + "\"msg_signature_yaron_tayarim\":\"" + msgSignatureYaronTayarim + "\","
+            + "\"msg_reservation_check_in\":\"" + msgReservationCheckIn + "\","
+            + "\"checkIn\":\"" + checkIn + "\","
+            + "\"msg_reservation_check_out\":\"" + msgReservationCheckOut + "\","
+            + "\"checkOut\":\"" + checkOut + "\","
+            + "\"msg_departure_date\":\"" + msgDepartureDate + "\","
+            + "\"dateDepart\":\"" + dateDepart + "\","
             + "\"msg_copyright\":\"" + msgCopyright + "\""
             + "}"
             + "}");
@@ -287,6 +298,7 @@ public class EmailService {
         .build();
     try {
       Response response = client.newCall(request).execute();
+      System.out.println(response);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
@@ -310,7 +322,8 @@ public class EmailService {
       String numeroReservation,
       String dateReservation, String montantReservation, String imageReservation,
       String adresseReservation, String dateArrivee, String nbNuits, String nbPersonnes,
-      String lang) {
+      String lang, String checkIn, String checkOut,
+      String dateDepart) {
     ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
     messageSource.setBasename("messages");
     messageSource.setDefaultEncoding("UTF-8");
@@ -334,6 +347,11 @@ public class EmailService {
     String msgSincerely = messageSource.getMessage("msg_sincerely", null, locale);
     String msgSignatureYaronTayarim = messageSource.getMessage("msg_signature_yaron_tayarim", null,
         locale);
+    String msgReservationCheckIn = messageSource.getMessage("msg_reservation_check_in", null,
+        locale);
+    String msgReservationCheckOut = messageSource.getMessage("msg_reservation_check_out", null,
+        locale);
+    String msgDepartureDate = messageSource.getMessage("msg_departure_date", null, locale);
     String msgCopyright = messageSource.getMessage("msg_copyright", null, locale);
     String msgManageReservation = messageSource.getMessage("msg_manage_reservation", null, locale);
 
@@ -380,6 +398,12 @@ public class EmailService {
             + "/modification-reservation" + "\","
             + "\"msg_sincerely\":\"" + msgSincerely + "\","
             + "\"msg_signature_yaron_tayarim\":\"" + msgSignatureYaronTayarim + "\","
+            + "\"msg_reservation_check_in\":\"" + msgReservationCheckIn + "\","
+            + "\"checkIn\":\"" + checkIn + "\","
+            + "\"msg_reservation_check_out\":\"" + msgReservationCheckOut + "\","
+            + "\"checkOut\":\"" + checkOut + "\","
+            + "\"msg_departure_date\":\"" + msgDepartureDate + "\","
+            + "\"dateDepart\":\"" + dateDepart + "\","
             + "\"msg_copyright\":\"" + msgCopyright + "\""
             + "}"
             + "}");
@@ -414,7 +438,7 @@ public class EmailService {
       String numeroReservation,
       String dateReservation, String montantReservation, String imageReservation,
       String adresseReservation, String dateArrivee, String nbNuits, String nbPersonnes,
-      String lang) {
+      String lang, String checkIn, String checkOut, String dateDepart) {
     ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
     messageSource.setBasename("messages");
     messageSource.setDefaultEncoding("UTF-8");
@@ -439,6 +463,11 @@ public class EmailService {
     String msgSincerely = messageSource.getMessage("msg_sincerely", null, locale);
     String msgSignatureYaronTayarim = messageSource.getMessage("msg_signature_yaron_tayarim", null,
         locale);
+    String msgReservationCheckIn = messageSource.getMessage("msg_reservation_check_in", null,
+        locale);
+    String msgReservationCheckOut = messageSource.getMessage("msg_reservation_check_out", null,
+        locale);
+    String msgDepartureDate = messageSource.getMessage("msg_departure_date", null, locale);
     String msgCopyright = messageSource.getMessage("msg_copyright", null, locale);
 
     OkHttpClient client = new OkHttpClient().newBuilder().build();
@@ -484,6 +513,12 @@ public class EmailService {
             + "\"msg_manage_reservation\":\"" + msgManageReservation + "\","
             + "\"msg_sincerely\":\"" + msgSincerely + "\","
             + "\"msg_signature_yaron_tayarim\":\"" + msgSignatureYaronTayarim + "\","
+            + "\"msg_reservation_check_in\":\"" + msgReservationCheckIn + "\","
+            + "\"checkIn\":\"" + checkIn + "\","
+            + "\"msg_reservation_check_out\":\"" + msgReservationCheckOut + "\","
+            + "\"checkOut\":\"" + checkOut + "\","
+            + "\"msg_departure_date\":\"" + msgDepartureDate + "\","
+            + "\"dateDepart\":\"" + dateDepart + "\","
             + "\"msg_copyright\":\"" + msgCopyright + "\""
             + "}"
             + "}");
@@ -503,9 +538,9 @@ public class EmailService {
   /**
    * Envoi un email de réinitialisation de mot de passe.
    *
-   * @param nom                  Le nom de l'utilisateur.
-   * @param prenom               Le prénom de l'utilisateur.
-   * @param token                Le token de réinitialisation de mot de passe.
+   * @param nom    Le nom de l'utilisateur.
+   * @param prenom Le prénom de l'utilisateur.
+   * @param token  Le token de réinitialisation de mot de passe.
    */
   public void sendPasswordResetEmail(String email, String nom, String prenom,
       String token, String lang) {

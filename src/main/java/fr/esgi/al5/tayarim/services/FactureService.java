@@ -212,12 +212,16 @@ public class FactureService {
 
     Facture facture = optionalFacture.get();
 
-    myWebSocketHandler.sendNotif(facture.getProprietaire().getId(), LocalDate.now(),
-        "notif_facture", "facture");
+    try {
+      myWebSocketHandler.sendNotif(facture.getProprietaire().getId(), LocalDate.now(),
+          "notification_facture_send", "facture");
+    } catch (Exception ignored) {
+      // Ignored
+    }
 
     notificationRepository.save(new Notification(
         "facture",
-        "notif_facture",
+        "notification_facture_send",
         LocalDate.now(),
         facture.getProprietaire(),
         false
@@ -447,8 +451,10 @@ public class FactureService {
         generateLogementCell(table, logement, secondaryColor, proprietaire.getLanguage());
         secondaryColor = !secondaryColor;
 
+        System.out.println("isLouable : " + logement.getIsLouable());
         if (logement.getIsLouable()) {
 
+          System.out.println("Reservations : " + reservations.size());
           for (Reservation reservation : reservations) {
             generateReservationCell(table, reservation, secondaryColor, proprietaire.getLanguage());
             total += reservation.getMontant();

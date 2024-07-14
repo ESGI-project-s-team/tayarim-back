@@ -122,11 +122,8 @@ public class IndisponibiliteService {
         )
     );
 
-    try {
-      sendNotif(logement, isAdmin);
-    } catch (Exception e) {
-      throw new NotificationSendError();
-    }
+    System.out.println("sendNotif : " + logement.getTitre() + " " + isAdmin);
+    sendNotif(logement, isAdmin);
 
     return IndisponibiliteMapper.entityToDto(
         indisponibilite
@@ -135,8 +132,12 @@ public class IndisponibiliteService {
 
   private void sendNotif(@NonNull Logement logement, @NonNull Boolean isAdmin) {
     if (isAdmin) {
-      myWebSocketHandler.sendNotif(logement.getProprietaire().getId(), LocalDate.now(),
-          "notification_indisponibilite_creation", "Indisponibilite");
+      try {
+        myWebSocketHandler.sendNotif(logement.getProprietaire().getId(), LocalDate.now(),
+            "notification_indisponibilite_creation", "Indisponibilite");
+      } catch (Exception ignored) {
+        // Ignored
+      }
       notificationRepository.save(new Notification(
           "Indisponibilite",
           "notification_indisponibilite_creation",
@@ -145,9 +146,15 @@ public class IndisponibiliteService {
           false
       ));
     } else {
+      System.out.println("not admin");
       for (Administrateur administrateur : administrateurRepository.findAll()) {
-        myWebSocketHandler.sendNotif(administrateur.getId(), LocalDate.now(),
-            "notification_indisponibilite_creation", "Indisponibilite");
+        try {
+          myWebSocketHandler.sendNotif(administrateur.getId(), LocalDate.now(),
+              "notification_indisponibilite_creation", "Indisponibilite");
+        } catch (Exception ignored) {
+          // Ignored
+        }
+
         notificationRepository.save(new Notification(
             "Indisponibilite",
             "notification_indisponibilite_creation",

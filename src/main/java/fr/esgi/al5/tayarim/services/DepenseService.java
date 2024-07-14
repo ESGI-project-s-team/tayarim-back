@@ -94,20 +94,19 @@ public class DepenseService {
       myWebSocketHandler.sendNotif(logement.getProprietaire().getId(), date,
           "notification_expense_creation",
           "Depense");
-
-      notificationRepository.save(
-          new Notification(
-              "Depense",
-              "notification_expense_creation",
-              date,
-              logement.getProprietaire(),
-              false
-          )
-      );
-
     } catch (Exception e) {
       throw new NotificationSendError();
     }
+
+    notificationRepository.save(
+        new Notification(
+            "Depense",
+            "notification_expense_creation",
+            date,
+            logement.getProprietaire(),
+            false
+        )
+    );
 
     return DepenseMapper.entityToDto(
         depense

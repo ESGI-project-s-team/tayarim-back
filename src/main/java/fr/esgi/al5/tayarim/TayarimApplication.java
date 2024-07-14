@@ -12,12 +12,14 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * Classe principale de l'application Spring Boot pour Tayarim. Cette classe lance l'application en
  * utilisant SpringApplication, configurant automatiquement le contexte de l'application Spring basé
  * sur les annotations, les classes de configuration, et les chemins de balayage de composants.
  */
+@EnableScheduling
 @SpringBootApplication
 public class TayarimApplication {
 
