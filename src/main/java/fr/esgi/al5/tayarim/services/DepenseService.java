@@ -82,6 +82,14 @@ public class DepenseService {
 
     Logement logement = optionalLogement.get();
 
+    String message = "";
+    message += logement.getTitre() + ";";
+    message += logement.getAdresse() + ";";
+    message += logement.getVille() + ";";
+    message +=
+        "https://storage.googleapis.com/tayarim-tf-storage/" + logement.getImages().get(0).getUrl()
+            .replace("House images", "House%20images") + ";";
+
     Depense depense = depenseRepository.save(
         DepenseMapper.creationDtoToEntity(
             depenseCreationDto,
@@ -90,9 +98,12 @@ public class DepenseService {
         )
     );
 
+    message += depense.getLibelle() + ";";
+    message += depense.getPrix() + ";";
+
     try {
       myWebSocketHandler.sendNotif(logement.getProprietaire().getId(), date,
-          "notification_expense_creation",
+          message,
           "Depense");
     } catch (Exception e) {
       throw new NotificationSendError();
@@ -101,7 +112,7 @@ public class DepenseService {
     notificationRepository.save(
         new Notification(
             "Depense",
-            "notification_expense_creation",
+            message,
             date,
             logement.getProprietaire(),
             false
