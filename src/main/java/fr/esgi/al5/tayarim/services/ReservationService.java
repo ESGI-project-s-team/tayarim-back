@@ -237,14 +237,14 @@ public class ReservationService {
       for (Administrateur administrateur : administrateurRepository.findAll()) {
         try {
           myWebSocketHandler.sendNotif(administrateur.getId(), LocalDate.now(),
-              "notification_reservation_creation", "Reservation");
+              message, "Reservation");
         } catch (Exception ignored) {
           // Ignored
         }
 
         notificationRepository.save(new Notification(
             "Reservation",
-            "notification_reservation_creation",
+            message,
             LocalDate.now(),
             administrateur,
             false
