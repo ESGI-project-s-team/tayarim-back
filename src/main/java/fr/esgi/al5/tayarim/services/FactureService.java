@@ -212,16 +212,21 @@ public class FactureService {
 
     Facture facture = optionalFacture.get();
 
+    String message = "";
+    message += facture.getNumeroFacture() + ";";
+    message += facture.getMontant() + ";";
+    message += facture.getDateFacture().toString() + ";";
+    message += facture.getUrl() + ";";
     try {
       myWebSocketHandler.sendNotif(facture.getProprietaire().getId(), LocalDate.now(),
-          "notification_facture_send", "facture");
+          message, "facture");
     } catch (Exception ignored) {
       // Ignored
     }
 
     notificationRepository.save(new Notification(
         "facture",
-        "notification_facture_send",
+        message,
         LocalDate.now(),
         facture.getProprietaire(),
         false
@@ -443,15 +448,15 @@ public class FactureService {
       System.out.println("Logements : " + logements.size());
       boolean secondaryColor = false;
       for (Logement logement : logements) {
-        float total = 0f;
-        List<Reservation> reservations = reservationRepository
-            .findAllByLogementIdAndStatutInAndDateDepartBetween(
-                logement.getId(), List.of("done"), firstDayOfMonth, lastDayOfMonth);
 
         generateLogementCell(table, logement, secondaryColor, proprietaire.getLanguage());
         secondaryColor = !secondaryColor;
 
         System.out.println("isLouable : " + logement.getIsLouable());
+        List<Reservation> reservations = reservationRepository
+            .findAllByLogementIdAndStatutInAndDateDepartBetween(
+                logement.getId(), List.of("done"), firstDayOfMonth, lastDayOfMonth);
+        float total = 0f;
         if (logement.getIsLouable()) {
 
           System.out.println("Reservations : " + reservations.size());
