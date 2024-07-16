@@ -123,24 +123,35 @@ public class IndisponibiliteService {
     );
 
     System.out.println("sendNotif : " + logement.getTitre() + " " + isAdmin);
-    sendNotif(logement, isAdmin);
+    sendNotif(logement, isAdmin, indisponibilite);
 
     return IndisponibiliteMapper.entityToDto(
         indisponibilite
     );
   }
 
-  private void sendNotif(@NonNull Logement logement, @NonNull Boolean isAdmin) {
+  private void sendNotif(@NonNull Logement logement, @NonNull Boolean isAdmin,
+      @NonNull Indisponibilite indisponibilite) {
+    String message = "";
+    message += logement.getTitre() + ";";
+    message += logement.getAdresse() + ";";
+    message += logement.getVille() + ";";
+    message +=
+        "https://storage.googleapis.com/tayarim-tf-storage/" + logement.getImages().get(0).getUrl()
+            .replace("House images", "House%20images") + ";";
+    message += indisponibilite.getDateDebut() + ";";
+    message += indisponibilite.getDateFin() + ";";
+
     if (isAdmin) {
       try {
         myWebSocketHandler.sendNotif(logement.getProprietaire().getId(), LocalDate.now(),
-            "notification_indisponibilite_creation", "Indisponibilite");
+            message, "Indisponibilite");
       } catch (Exception ignored) {
         // Ignored
       }
       notificationRepository.save(new Notification(
           "Indisponibilite",
-          "notification_indisponibilite_creation",
+          message,
           LocalDate.now(),
           logement.getProprietaire(),
           false
@@ -150,14 +161,14 @@ public class IndisponibiliteService {
       for (Administrateur administrateur : administrateurRepository.findAll()) {
         try {
           myWebSocketHandler.sendNotif(administrateur.getId(), LocalDate.now(),
-              "notification_indisponibilite_creation", "Indisponibilite");
+              message, "Indisponibilite");
         } catch (Exception ignored) {
           // Ignored
         }
 
         notificationRepository.save(new Notification(
             "Indisponibilite",
-            "notification_indisponibilite_creation",
+            message,
             LocalDate.now(),
             administrateur,
             false

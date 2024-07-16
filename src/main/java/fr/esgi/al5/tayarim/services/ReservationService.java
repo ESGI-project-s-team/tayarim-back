@@ -159,8 +159,6 @@ public class ReservationService {
       status = "reserved";
     }
 
-    sendNotif(logement, isAdmin);
-
     Reservation reservation = reservationRepository.save(
         ReservationMapper.creationDtoToEntity(
             reservationCreationDto,
@@ -173,6 +171,8 @@ public class ReservationService {
             reservationCreationDto.getPaymentIntent()
         )
     );
+
+    sendNotif(logement, isAdmin, reservation);
 
     if (reservation.getEmail() != null && !reservation.getEmail().isBlank()) {
       emailService.sendCreationReservationEmail(
@@ -203,19 +203,30 @@ public class ReservationService {
 
   }
 
-  private void sendNotif(@NonNull Logement logement, @NonNull Boolean isAdmin) {
+  private void sendNotif(@NonNull Logement logement, @NonNull Boolean isAdmin,
+      @NonNull Reservation reservation) {
+
+    String message = "";
+    message += logement.getTitre() + ";";
+    message += logement.getAdresse() + ";";
+    message += logement.getVille() + ";";
+    message +=
+        "https://storage.googleapis.com/tayarim-tf-storage/" + logement.getImages().get(0).getUrl()
+            .replace("House images", "House%20images") + ";";
+    message += reservation.getDateArrivee() + ";";
+    message += reservation.getDateDepart() + ";";
+    message += reservation.getNbPersonnes() + ";";
 
     try {
       myWebSocketHandler.sendNotif(logement.getProprietaire().getId(), LocalDate.now(),
-          "notification_reservation_creation", "Reservation");
+          message, "Reservation");
     } catch (Exception ignored) {
       // Ignored
     }
 
-
     notificationRepository.save(new Notification(
         "Reservation",
-        "notification_reservation_creation",
+        message,
         LocalDate.now(),
         logement.getProprietaire(),
         false
@@ -226,14 +237,14 @@ public class ReservationService {
       for (Administrateur administrateur : administrateurRepository.findAll()) {
         try {
           myWebSocketHandler.sendNotif(administrateur.getId(), LocalDate.now(),
-              "notification_reservation_creation", "Reservation");
+              message, "Reservation");
         } catch (Exception ignored) {
           // Ignored
         }
 
         notificationRepository.save(new Notification(
             "Reservation",
-            "notification_reservation_creation",
+            message,
             LocalDate.now(),
             administrateur,
             false
